@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
 USA.
 *)
 
-(* Travail de GUILLAUME ALLAIS, n'est pas inclus dans le projet COQUILLE *)
+(* This work has been mainly taken from Guillaume Allais's internship (MARELLE team - INRIA Sophia Antipolis)*)
+
 Require Import Rbase.
 Require Import Ranalysis.
 Require Import Rfunctions.
