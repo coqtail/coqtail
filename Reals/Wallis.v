@@ -20,7 +20,6 @@ USA.
 *)
 
 Require Import Reals.
-Add LoadPath "../mytheories/myReals/".
 Require Import Rintegral.
 Require Import Rintegral_usual.
 Require Import Rintegral_tactic.
@@ -365,9 +364,34 @@ assert (H2n1 : (fun n : nat => fact (S(2*n))) ~ (fun n : nat => (S(2*n) / exp 0)
   unfold db; apply extractor_comp.
   apply extractor_S.
   apply extractor_mult_2.
+  
+apply Rseq_equiv_cv_constant.
+Open Local Scope Rseq_scope.
+apply Rseq_equiv_eq_compat with 
+  (Un := 2 * (fun n => 2 ^ (4 * n)) * fact * fact * fact * fact *
+  / (PI * (fun n => fact (2 * n)) * (fun n => fact (S (2 * n))))) (Vn := (l² / (2 * PI))%R).
+intro n; unfold Rseq_mult, Rseq_inv, Rdiv, Rseq_constant; ring.
+intro; reflexivity.
+apply Rseq_equiv_trans with 
+(2 * (fun n => 2 ^ (4 * n)) * ((fun n : nat => ((n / exp 0) ^ n * sqrt n * l)%R))*((fun n : nat => ((n / exp 0) ^ n * sqrt n * l)%R))*((fun n : nat => ((n / exp 0) ^ n * sqrt n * l)%R))*((fun n : nat => ((n / exp 0) ^ n * sqrt n * l)%R))*
+  / (PI * (fun n : nat => ((2 * n / exp 0) ^ (2 * n) * sqrt (2 * n) * l)%R) *  (fun n => (S (2 * n) / exp 0) ^ S (2 * n) * sqrt (S (2 * n)) * l)%R)).
 
-assert(neq_2_0 : 2 <> 0).
-  replace 2 with (IZR 2) by trivial; apply not_0_IZR; auto with *.
+repeat apply Rseq_equiv_mult_compat;
+  try apply Rseq_equiv_refl; try assumption.
+apply Rseq_equiv_inv_compat.
+intro n; unfold Rseq_mult, Rseq_constant.
+admit. (* repeat apply Rmult_integral_contrapositive_currified *)
+
+intro n; unfold Rseq_mult, Rseq_constant.
+admit. (* repeat apply Rmult_integral_contrapositive_currified *)
+apply Rseq_equiv_mult_compat.
+apply Rseq_equiv_mult_compat.
+apply Rseq_equiv_refl.
+assumption.
+assumption.
+clear Hl H2n H2n1.
+apply Rseq_cv_equiv_constant.
+admit.
 Admitted.
     
 
