@@ -702,15 +702,21 @@ replace I with (f (g b) - f (g a)).
     | (left Hax, left Hxb) => let (x,H) := (Hfog x (conj Hax Hxb)) in x
     | (_, _) => 0
   end) as foo.
-  (*
-  pose proof (prolongement_C1_derivable (comp f g) foo).
+  exists foo.
   intros x Haxb.
-  destruct (Hfog x Haxb) as [z Hz].
-  
-  idtac.
-  destruct (prolongement_C1_C1 (comp f g) foo a b Hab).
-   intros; apply Hff'.*)
-  admit.
+  unfold foo. case (Rle_dec a x) ; case (Rle_dec x b).
+     intros Hxb Hax.
+     destruct (Hfog x (conj Hax Hxb)).
+     assumption.
+     
+     intros H1 H2.
+     destruct H1. intuition.
+     
+     intros H1 H2.
+     destruct H2. intuition.
+     
+     intros H1 H2.
+     destruct H1. intuition.
  destruct Efog' as (fog', Hfog').
  
  symmetry.
@@ -732,15 +738,19 @@ replace I with (f (g b) - f (g a)).
    assert (Hconteq : forall x, a <= x <= b -> continuity_pt (fun x => f' (g x) * g' x) x).
     intros x Haxb.
     reg; auto.
-   (*intros x Haxb e epos.
+   
+   (*
+   intros x Haxb e epos.
    destruct (Hconteq x Haxb e epos) as [alp Halp].
    exists alp; intuition.
    repeat rewrite <- EQ; intuition.
    intuition.
-   intuition.*)
+   intuition.
+   *)
    admit.
 Qed.
 
+End Rint_props.
 (*
    pose proof derivable_pt_lim_comp g f x (g' x) (f (g x)).
 
