@@ -606,6 +606,7 @@ apply pow_lt. fourier.
 rewrite Rmult_1_l. apply IHHn.
 Qed.
 
+(** ** Every positive real has a n root *)
 Lemma exist_root_n_pos : forall r n, r >= 0 -> (n > 0)%nat -> {root | root ^ n = r}%R.
 Proof.
 intros r n Hr Hn.
@@ -629,6 +630,8 @@ intros H. destruct H as (x, H).
 apply Hpos. assumption.
 exists  x. intuition.
 Qed.
+
+(** ** Every complex has a n root *) 
 
 Lemma exist_root_n : forall n z, (n > 0)%nat -> {root | root ^ n = z}.
 Proof.

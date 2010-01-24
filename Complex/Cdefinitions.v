@@ -24,6 +24,8 @@ Require Export Fourier.
 
 Open Scope R_scope.
 
+(** ** Definition of C and basic operations over C *)
+
 Definition C : Set := (prod R R).
 
 Definition R_R_to_C (a : R) (b : R) : C := (a, b).

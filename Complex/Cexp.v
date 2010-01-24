@@ -34,6 +34,7 @@ Require Export Complex.
 Open Scope C_scope.
 
 (* TODO : à replacer *)
+(* begin hide *)
 Lemma sum_f_R0_multnat_compat : forall n1 f, (forall n, f (S (2 * n)) = 0) ->
 sum_f_R0 (fun n2 : nat => f n2) (2 * n1)
 =
@@ -63,7 +64,9 @@ replace (S (S (2 * n1))) with (2 * (S n1))%nat by ring.
 rewrite H.
 ring.
 Qed.
+(* end hide *)
 
+(** ** Definition of Complex exponential as an infinite sum*)
 Definition expc_in (z l:C) : Prop :=
   infinite_sum (fun j:nat => / INR (fact j) * z ^ j) l.
 
@@ -127,6 +130,9 @@ Definition expc (z:C) : C := proj1_sig (exist_expc z).
 
 
 (* TODO : RHAAAA mais c'est moche !!!! *)
+
+(** ** Euler's Formula*)
+
 Lemma expc_R_compat : forall a : R, exp (a) = Cre (expc (a +i 0))
 /\ Cim (expc (a +i 0)) = 0%R.
 Proof.
@@ -402,6 +408,8 @@ Lemma euler_formula : forall a, cos a +i sin a = expc (0 +i a).
 Proof.
 apply expc_trigo_compat.
 Qed.
+
+(** ** Properties of the exponential *)
 
 Lemma expc_abs_cv x : {l | Cser_abs_cv (fun n => (/ INR (fact n) * x ^ n)%C) l}.
 Proof.

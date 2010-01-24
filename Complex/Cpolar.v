@@ -29,16 +29,7 @@ Require Export Complex.
 
 Open Scope R_scope.
 
-Lemma id_trigo : forall x, cos (arctan x) = (1 / sqrt(1 + x^2))%R.
-Proof.
-apply arctancos.
-Qed.
-
-Lemma id_trigo2 : forall x, sin (arctan x) = (x / sqrt(1 + x^2))%R.
-Proof.
-apply arctansin.
-Qed.
-
+(** ** Every complex number has polar coordinate *) 
 
 (* TODO on fait tout le temps la meme chose *)
 
@@ -51,7 +42,7 @@ exists (-Cnorm (a +i b))%R.
 exists (arctan(Cim (a +i b) / Cre (a +i b))).
 simpl. CusingR_simpl.
 (* Real*) 
-rewrite id_trigo. unfold Cnorm.
+rewrite arctancos. unfold Cnorm.
 unfold Cmodcarre. replace (1 + (b/a) ^ 2)%R with ((a^2 + b^2) /a^2)%R. simpl.
 Focus 2. field. assumption.
 rewrite Ropp_mult_distr_l_reverse. unfold Rdiv. rewrite Rmult_1_l.
@@ -74,7 +65,7 @@ replace (a*a)%R with (-a * -a)%R by ring. apply Rmult_lt_0_compat ; fourier.
 replace (b*b)%R with (Rsqr b)%R by (unfold Rsqr ; ring).
 auto with real.  replace (a*a)%R with (-a * -a)%R by ring. apply Rmult_lt_0_compat ; fourier.
 (*Imaginary*)
-rewrite id_trigo2. unfold Cnorm. unfold Cmodcarre.
+rewrite arctansin. unfold Cnorm. unfold Cmodcarre.
 replace (1 + (b/a) ^ 2)%R with ((a^2 + b^2) /a^2)%R. simpl.
 repeat rewrite Rmult_1_r. rewrite sqrt_div. 
 unfold Rdiv. rewrite Rinv_mult_distr. rewrite Rinv_involutive.
@@ -129,7 +120,7 @@ exists (Cnorm (a +i b))%R.
 exists (arctan(Cim (a +i b) / Cre (a +i b))).
 simpl. CusingR_simpl.
 (* Real*) 
-rewrite id_trigo. unfold Cnorm.
+rewrite arctancos. unfold Cnorm.
 unfold Cmodcarre. replace (1 + (b/a) ^ 2)%R with ((a^2 + b^2) /a^2)%R. simpl.
 Focus 2. field. assumption.
 unfold Rdiv. rewrite Rmult_1_l.
@@ -151,7 +142,7 @@ apply Rmult_lt_0_compat ; fourier.
 replace (b*b)%R with (Rsqr b)%R by (unfold Rsqr ; ring).
 auto with real. apply Rmult_lt_0_compat ; fourier.
 (*Imaginary*)
-rewrite id_trigo2. unfold Cnorm. unfold Cmodcarre.
+rewrite arctansin. unfold Cnorm. unfold Cmodcarre.
 replace (1 + (b/a) ^ 2)%R with ((a^2 + b^2) /a^2)%R. simpl.
 repeat rewrite Rmult_1_r. rewrite sqrt_div. 
 unfold Rdiv. rewrite Rinv_mult_distr. rewrite Rinv_involutive.

@@ -27,6 +27,8 @@ Require Import Cpow.
 
 Open Scope C_scope.
 
+(** ** Tactics ring and field in the Complex field *)
+
 Lemma Cring : @ring_theory C 0 1 Cadd Cmult Cminus Copp (eq(A:=C)).
 Proof.
   constructor.
