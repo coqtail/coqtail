@@ -20,6 +20,7 @@ USA.
 *)
 
 Require Import Rbase.
+Require Import Rsequence.
 Require Import Ranalysis.
 Require Import Rfunctions.
 Require Import Rseries.
@@ -56,7 +57,7 @@ Qed.
 
 Lemma IVT_interv_prelim1 : forall (x y b:R) (D : R -> bool),
        x < y ->
-       Un_cv (dicho_up x y D) b ->
+       Rseq_cv (dicho_up x y D) b ->
        interval x y b.
 Proof.
 intros x y x0 D x_lt_y bnd.
