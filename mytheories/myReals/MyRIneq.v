@@ -22,7 +22,7 @@ USA.
 Require Export Raxioms.
 Require Import RIneq.
 Require Import Rfunctions.
-Require Import MyRanalysis_def.
+Require Import Ranalysis_def.
 
 Open Scope R_scope.
 

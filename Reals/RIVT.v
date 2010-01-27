@@ -27,7 +27,7 @@ Require Import Rseries.
 Require Import Fourier.
 Require Import RiemannInt.
 Require Import SeqProp.
-Require Import MyRanalysis_def.
+Require Import Ranalysis_def.
 Require Import MyRIneq.
 
 Local Open Scope R_scope.

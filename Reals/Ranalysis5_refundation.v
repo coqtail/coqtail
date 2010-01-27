@@ -28,7 +28,7 @@ Require Import RiemannInt.
 Require Import SeqProp.
 Require Import Max.
 Require Import MyRIneq.
-Require Import MyRanalysis_def.
+Require Import Ranalysis_def.
 Require Import RIVT.
 
 
