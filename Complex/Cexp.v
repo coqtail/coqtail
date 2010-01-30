@@ -172,7 +172,7 @@ intros eps Heps.
 generalize (H1 eps Heps). intros H2.
 destruct H2 as (N, H2).
 exists N. intros n HN. generalize (H2 n HN). intros H3.
-unfold Cmet.C_dist in *. (*clear H1. clear H2.*)
+unfold Cmet.C_dist in *.
 unfold R_dist.
 assert (H4 : Rabs (Cnorm (sum_f_C0 (fun j : nat => / INR (fact j) * (a +i  0) ^ j) n) - 
 Cnorm (l1)) <=
