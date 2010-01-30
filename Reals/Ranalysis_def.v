@@ -38,6 +38,11 @@ Definition continuity_open_interval (f : R -> R) (lb ub:R) := forall x:R,
 Definition continuity_interval (f : R -> R) (lb ub:R) := forall x:R,
       interval lb ub x -> continuity_pt f x.
 
+Definition derivable_open_interval (f : R -> R) (lb ub:R) := forall x:R,
+      open_interval lb ub x -> derivable_pt f x.
+Definition derivable_interval (f : R -> R) (lb ub:R) := forall x:R,
+      interval lb ub x -> derivable_pt f x.
+
 Definition injective_interval (f : R -> R) (lb ub:R) := forall (x y:R),
       interval lb ub x -> interval lb ub y -> f x = f y -> x = y.
 Definition surjective_interval (f : R -> R) (lb ub:R) := forall y:R,
@@ -148,7 +153,6 @@ intros f lb ub f_cont b b_in_I eps eps_pos.
  unfold Rminus ; rewrite <- Ropp_plus_distr, Rabs_Ropp ; apply (proj2 Hx).
 Qed.
 
-
 Lemma strictly_increasing_increasing_interval : forall f lb ub,
      strictly_increasing_interval f lb ub -> increasing_interval f lb ub.
 Proof.
@@ -165,6 +169,14 @@ intros f lb ub f_incr x y x_in_I y_in_I x_le_y.
  destruct x_le_y as [x_lt_y | x_eq_y].
  left ; apply f_incr ; assumption.
  right ; subst ; reflexivity.
+Qed.
+
+Lemma strictly_monotonous_monotonous_interval : forall f lb ub,
+     strictly_monotonous_interval f lb ub ->
+     monotonous_interval f lb ub.
+Proof.
+intros f lb ub [H | H] ; [left ; apply strictly_increasing_increasing_interval
+ | right ; apply strictly_decreasing_decreasing_interval] ; apply H.
 Qed.
 
 Lemma strictly_increasing_strictly_decreasing_interval : forall f lb ub,
@@ -199,6 +211,15 @@ intros f c r f_decr ; intros x y x_in_B y_in_B x_lt_y.
 Qed.
 
 Lemma reciprocal_opp_compat_interval : forall f g lb ub,
+       reciprocal_interval f g lb ub ->
+       reciprocal_interval (fun x =>f(-x)) (-g)%F lb ub.
+Proof.
+intros f g lb ub f_recip_g x x_in_I.
+ unfold comp, opp_fct ; simpl ; rewrite Ropp_involutive ;
+ apply f_recip_g ; assumption.
+Qed.
+
+Lemma reciprocal_opp_compat_interval2 : forall f g lb ub,
        reciprocal_interval f g lb ub ->
        reciprocal_interval (-f)%F (fun x => g (-x)) (-ub) (-lb).
 Proof.

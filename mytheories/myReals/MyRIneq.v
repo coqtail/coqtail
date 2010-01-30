@@ -28,6 +28,11 @@ Open Scope R_scope.
 
 Implicit Type r : R.
 
+Lemma Rabs_eq_compat : forall r1 r2, r1 = r2 -> Rabs r1 = Rabs r2.
+Proof.
+intros ; subst ; reflexivity.
+Qed.
+
 Lemma Req_dec : forall r1 r2, {r1 = r2} + {r1 <> r2}.
 Proof.
 intros r1 r2.

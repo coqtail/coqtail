@@ -344,3 +344,92 @@ intros f g lb ub lb_le_ub f_mono f_eq_g f_cont_interv.
 apply continuity_open_interval_opp_rev ; rewrite Rmin_comm, Rmax_comm ;
 assumption.
 Qed.
+
+Lemma derivable_pt_lim_recip_interv : forall (f g:R->R) (lb ub:R)
+       (f_deriv : derivable_interval f (g lb) (g ub)),
+       reciprocal_interval f g lb ub ->
+       forall x (g_incr : interval (g lb) (g ub) (g x)),
+       continuity_pt g x ->
+       open_interval lb ub x ->
+       derive_pt f (g x) (f_deriv (g x) g_incr) <> 0 ->
+       derivable_pt_lim g x (1 / derive_pt f (g x) (f_deriv (g x) g_incr)).
+Proof.
+intros f g lb ub f_deriv f_recip_g x g_incr g_cont x_in_I df_neq ; pose (y := g x) ;
+ assert (x_encad2 := open_interval_interval _ _ _ x_in_I) ;
+ elim (f_deriv (g x)); simpl; intros l Hl ; assert (l_neq : l <> 0) by (intro l_null ;
+ rewrite l_null in Hl ; apply df_neq ; rewrite derive_pt_eq ; assumption) ;
+ intros eps eps_pos ; fold y.
+ assert (Hlinv := limit_inv).
+ destruct (Hl eps eps_pos) as [delta Hdelta] ; simpl in Hlinv ; unfold R_dist in Hlinv.
+ assert (Hlinv' := Hlinv (fun h => (f (y+h) - f y)/h) (fun h => h <>0) l 0).
+ unfold limit1_in, limit_in in Hlinv' ; simpl in Hlinv' ; unfold R_dist in Hlinv'.
+ assert (Premisse : (forall eps:R, eps > 0 -> exists alp : R,
+     alp > 0 /\ (forall x : R, (fun h => h <>0) x /\ Rabs (x - 0) < alp ->
+     Rabs ((f (y + x) - f y) / x - l) < eps))).
+  intros eps0 eps0_pos ; elim (Hl eps0 eps0_pos) ; intros delta2 Hdelta2 ;
+  exists delta2 ; split ; [apply delta2.(cond_pos) |].
+ intros h [h_neq h_bd] ; rewrite Rminus_0_r in h_bd ; apply Hdelta2 ; assumption.
+  destruct (Hlinv' Premisse l_neq eps eps_pos) as [alpha [alpha_neq Halpha]] ;
+  clear Premisse Hlinv Hlinv' Hl.
+  pose (mydelta := Rmin delta alpha) ; assert (mydelta_pos : 0 < mydelta).
+   unfold mydelta ; apply Rmin_pos ; [apply delta.(cond_pos) | assumption].
+   destruct (g_cont mydelta mydelta_pos) as [delta' [delta'_pos Hdelta']].
+  pose (mydelta'' := Rmin delta' (Rmin (x - lb) (ub - x))) ; assert(mydelta''_pos : mydelta'' > 0).
+   unfold mydelta'' ; repeat apply Rmin_pos ; [assumption | |] ; unfold open_interval in * ;
+   intuition ; fourier.
+  pose (delta'' := mkposreal mydelta'' mydelta''_pos) ; exists delta'' ; intros h h_neq h_bd.
+  assert (Sublemma2 : forall x y, Rabs x < Rabs y -> y > 0 -> x < y).
+   intros m n Hyp_abs y_pos ; apply Rlt_le_trans with (r2:=Rabs n).
+   apply Rle_lt_trans with (r2:=Rabs m) ; [ | assumption] ; apply RRle_abs.
+   apply Req_le ; apply Rabs_right ; apply Rgt_ge ; assumption.
+  assert (xh_encad : interval lb  ub (x +h)).
+   split.
+   assert (Sublemma : forall x y z, -z <= y - x -> x <= y + z) by (intros ; fourier) ;
+   apply Sublemma ; apply Rlt_le ; apply Sublemma2.
+   rewrite Rabs_Ropp.
+   apply Rlt_le_trans with (r2:=x-lb) ; [| apply RRle_abs] ;
+   apply Rlt_le_trans with (r2:=Rmin (x - lb) (ub - x)) ; [| apply Rmin_l] ;
+   apply Rlt_le_trans with (r2:=Rmin delta' (Rmin (x - lb) (ub - x))).
+   assumption.
+   apply Rmin_r.
+   unfold open_interval in * ; intuition ; fourier.
+   assert (Sublemma : forall x y z, y <= z - x -> x + y <= z) by (intros ; fourier) ;
+   apply Sublemma ; apply Rlt_le ; apply Sublemma2.
+   apply Rlt_le_trans with (r2:=ub-x) ; [| apply RRle_abs] ;
+   apply Rlt_le_trans with (r2:=Rmin (x - lb) (ub - x)) ; [| apply Rmin_r] ;
+   apply Rlt_le_trans with (r2:=Rmin delta' (Rmin (x - lb) (ub - x))) ; [| apply Rmin_r] ; assumption.
+   unfold open_interval in * ; intuition ; fourier.
+  assert (g(x+h) - y <> 0).
+   intro Hf ; apply Rminus_diag_uniq in Hf.
+   assert (Hfalse : (comp f g) (x+h) = (comp f g) x).
+    intros ; unfold comp ; rewrite Hf ; trivial.
+   do 2 rewrite f_recip_g in Hfalse ; unfold id in Hfalse.
+   apply Rplus_0_r_uniq in Hfalse ; apply h_neq ; assumption.
+   assumption. assumption. assumption.
+  replace ((g (x + h) - y) / h) with (1/ (h / (g (x + h) - y))).
+  assert (Hrew : h = (comp f g ) (x+h) - (comp f g) x).
+  repeat rewrite f_recip_g ; unfold id ; [ring | |] ; assumption.
+  rewrite Hrew at 1 ; unfold comp ; replace (g(x+h)) with (y + (g (x+h) - y)) by ring ;
+  pose (h':=g (x+h) - y) ; fold y h' ; replace (y + h' - y) with h' by ring.
+  apply Rle_lt_trans with (Rabs (/ ((f (y + h') - f y) / h') - / l)) ;
+  [right ; apply Rabs_eq_compat ; field |] ; repeat split.
+  assumption. assumption.
+  unfold h' ; intro Hf ; replace (y + (g (x+h) -y)) with (g (x+h)) in Hf.
+  unfold reciprocal_interval, comp in f_recip_g ; unfold y in Hf ;
+  do 2 rewrite f_recip_g in Hf ; unfold id in Hf.
+  apply h_neq ; ring_simplify in Hf ; assumption.
+  assumption. assumption. assumption.
+  unfold y ; ring.
+  apply Halpha ; split.
+  assumption.
+  apply Rlt_le_trans with mydelta ; [| apply Rmin_r].
+  rewrite Rminus_0_r ; simpl in Hdelta' ; unfold R_dist, y in * ; apply Hdelta' ;
+  split.
+  unfold D_x, no_cond ; split ; [trivial |].
+  intro Hf ; apply h_neq ; apply Rplus_eq_reg_l with x ; rewrite Rplus_0_r ;
+  symmetry ; assumption.
+  replace (x + h - x) with h by ring ; apply Rlt_le_trans with mydelta''.
+  assumption.
+  apply Rmin_l.
+  field ; split ; assumption.
+Qed.
