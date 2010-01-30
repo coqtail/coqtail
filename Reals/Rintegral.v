@@ -583,8 +583,8 @@ Lemma Rint_derive2 f a b d :
   Rint d a b (f b - f a).
 Proof.
 intros f a b d Hder Hcont.
-destruct (Rle_dec a b).
-  rewrite Rmin_def, Rmax_def  in *; try assumption.
+destruct (Rle_dec a b) as [n|n].
+ rewrite Rmin_def, Rmax_def in *; try assumption.
 apply Rint_derive; assumption.
 apply Rnot_le_lt, Rlt_le in n.
   rewrite Rmin_comm, Rmax_comm, Rmin_def, Rmax_def  in *; try assumption.
@@ -592,6 +592,32 @@ apply <- Rint_reverse; replace (- (f b - f a)) with (f a - f b) by ring.
 apply Rint_derive; assumption.
 Qed.
 
+Lemma Rint_derive3 f a b d :
+  a <= b ->
+  (forall x, a < x < b -> derivable_pt_abs f x (d x)) ->
+  (Riemann_integrable d a b) ->
+  Rint d a b (f b - f a).
+Proof.
+intros f a b d Hab Hder Hint.
+exists Hint.
+admit.
+Qed.
+
+Lemma Rint_derive4 f a b d :
+  (forall x, Rmin a b < x < Rmax a b -> derivable_pt_abs f x (d x)) ->
+  (Riemann_integrable d a b) ->
+  Rint d a b (f b - f a).
+Proof.
+intros f a b d Hder Hint.
+destruct (Rle_dec a b) as [n|n].
+ rewrite Rmin_def, Rmax_def in *; try assumption.
+apply Rint_derive3; assumption.
+apply Rnot_le_lt, Rlt_le in n.
+  rewrite Rmin_comm, Rmax_comm, Rmin_def, Rmax_def  in *; try assumption.
+apply <- Rint_reverse; replace (- (f b - f a)) with (f a - f b) by ring.
+apply Rint_derive3; auto.
+apply RiemannInt_P1; auto.
+Qed.
 
 Lemma Rint_parts f g a b f' g' Ifg' If'g :
 a <= b ->
@@ -734,10 +760,18 @@ replace I with (f (g b) - f (g a)).
    intros x H; apply EQ.
    rewrite Rmin_def in H; rewrite Rmax_def in H; auto.
    
-   apply Rint_derive; auto.
+   apply Rint_derive3; auto.
+    intros.
+    apply Hfog'.
+    intuition.
    assert (Hconteq : forall x, a <= x <= b -> continuity_pt (fun x => f' (g x) * g' x) x).
     intros x Haxb.
     reg; auto.
+   
+   (*apply Rint_derive; auto.
+   assert (Hconteq : forall x, a <= x <= b -> continuity_pt (fun x => f' (g x) * g' x) x).
+    intros x Haxb.
+    reg; auto.*)
    
    (*
    intros x Haxb e epos.
