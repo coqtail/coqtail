@@ -1,0 +1,107 @@
+/*
+   ******
+Définitions des principaux conteneurs
+   ******
+*/
+
+body {
+	background-color: #FFFFCC;
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+}
+
+#container {
+	position: relative;
+	height:100%;
+	width: 900px;
+	margin: auto;
+	margin-top: 20px;
+}
+
+#top {
+	position: relative;
+	width: 100%;
+}
+
+#left_top {
+	float: left;
+	width: 250px;
+	text-align: center;
+}
+
+#right_top {
+	margin-left: 260px;
+}
+
+#language {
+	text-align: right;
+}
+
+#description {
+	text-align: right;
+}
+
+#description h1 {
+	margin-bottom:-15px;
+}
+
+#menu {
+	margin-top:30px;
+	text-align: right;
+}
+
+#middle {
+	position: relative;
+	width: 100%;
+	text-align: justify;
+}
+
+#footer {
+	margin-top:200px;
+	text-align: right;
+}
+
+.clean {
+  clear: both;
+}
+
+/*
+   ******
+Définitions des classes de span
+   ******
+*/
+
+.highlight {
+	font-weight: bold;
+	color: red;
+}
+
+/*
+   ******
+Définitions du menu linéaire
+   ******
+*/
+
+#menu a:link, #menu a:visited {
+	margin: auto;	
+	padding: 5px;
+	border: 1px solid #FFCC33;
+	text-decoration: none;
+	text-align: center;
+	color: black;
+	font-weight: bold;
+}
+
+#menu a:hover {
+	background-color: #FFFF99;
+}
+
+#menu li {
+display:inline;
+padding-right:1px;
+}
+
+#menu ul {
+	margin:0;
+	padding:0;
+}
