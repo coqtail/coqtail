@@ -57,7 +57,7 @@ body {
 }
 
 #footer {
-	margin-top:200px;
+	margin-top:100px;
 	text-align: right;
 }
 
@@ -78,7 +78,7 @@ Définitions des classes de span
 
 /*
    ******
-Définitions du menu linéaire
+Définitions des listes
    ******
 */
 
@@ -104,4 +104,8 @@ padding-right:1px;
 #menu ul {
 	margin:0;
 	padding:0;
+}
+
+#middle ul {
+	list-style-type: square;
 }
