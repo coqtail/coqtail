@@ -96,9 +96,13 @@ Définitions des listes
 	background-color: #FFFF99;
 }
 
+#menu #current {
+	background-color: #FFFF99;
+}
+
 #menu li {
 display:inline;
-padding-right:1px;
+padding-right:5px;
 }
 
 #menu ul {

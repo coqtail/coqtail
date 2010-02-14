@@ -27,12 +27,19 @@
 			</div>
 			<div id="menu">
 				<ul>
-				<li><a href="main.php">Accueil</a></li>
-				<li><a href="#team.php">Équipe</a></li>
-				<li><a href="results.php">Résultats</a></li>
-				<li><a href="#doc.php">Documentation</a></li>
+<?php
+
+$bound = count ($pages) - 1;
+for($i=0; $i <= $bound; $i++)
+{
+	if ($i == $page) { $ext = ' id="current"'; }
+	else { $ext = ''; }
+	echo '<li><a href="'.$_SERVER['PHP_SELF'].'?page='.$i.'"'.$ext.'>'.$pages[$i].'</a></li>';
+}
+
+?>
 				</ul>
-			</div>
+		</div>
 		</div>
 		<div class="clean"></div>
 	</div>

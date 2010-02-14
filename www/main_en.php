@@ -1,5 +1,11 @@
 <?php
-include('top_en.inc.php');
+
+$pages = array('Home', 'Team', 'Results', 'Documentation');
+
+if (isset ($_GET['page'])) { $page = (int) $_GET['page']; }
+else { $page=0; }
+
+include('top.inc.php');
 ?>
 
 <h2>Origin & Objectives</h2>
