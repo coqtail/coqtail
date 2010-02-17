@@ -4,21 +4,29 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<link href="main.css" rel="stylesheet" type="text/css" media="all">
+	<link href="main.css" rel="stylesheet" type="text/css" media="all" />
 
 	<title>Coqtail - site officiel</title>
 
 </head>
+<body>
 <div id="container">
 
 	<div id="top">
 		<div id="left_top">
-			<img src="img/coqtail.png" title="Coqtail's logo" width="200" height="200"/>
+			<img src="img/coqtail.png" title="Coqtail's logo" width="200" height="200" alt="coqtail's logo" />
 		</div>
 		<div id="right_top">
 			<div id="language">
-				<a href="main.php"><img src="img/fr.png" title="French" /></a>
-				<a href="main_en.php"><img src="img/gb.png" title="English" /></a>
+<?php
+$ext = '';
+if ($_SERVER['QUERY_STRING'] != '')
+{
+	$ext = '?'.$_SERVER['QUERY_STRING'];
+}
+?>
+				<a href="main.php<?=$ext?>"><img src="img/fr.png" title="French" alt="French" /></a>
+				<a href="main_en.php<?=$ext?>"><img src="img/gb.png" title="English" alt="English" /></a>
 			</div>
 			<div id="description"><h1>Coqtail</h1>
 				<h2><span class="highlight">COQ</span> <span class="highlight">T</span>heorems, 

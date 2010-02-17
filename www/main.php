@@ -11,7 +11,7 @@ if($page == 0)
 {
 
 ?>
-<h2>Origine & Objectifs</h2>
+<h2>Origine &amp; Objectifs</h2>
 
 <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail `Preuves` du projet 
 <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>. Il se fonde donc sur 
@@ -38,11 +38,12 @@ de niveau licence.</p>
 elseif($page == 1)
 {
 
-/*
-**************************
-***      team.php      ***
-**************************
-*/
+?>
+<ul>
+	<li><a href="http://sourceforge.net/project/memberlist.php?group_id=298939">Équipe actuelle</a></li>
+	<li><a href="http://graal.ens-lyon.fr/coquille/index.php?page=team">Ancienne équipe</a> (projet COQUILLE)</li>
+</ul>
+<?php
 
 }
 
@@ -54,7 +55,7 @@ elseif($page == 2)
 <ul>
 	<li><b>R</b> est indénombrable</li>
 	<li>L'axiomatique des réels implique le principe de Markov</li>
-	<li>La limite de zeta (2) est pi²/6</li>
+	<li>Zeta(2) a pour valeur pi²/6</li>
 </ul>
 
 <h2>De nouvelles bibliothèques</h2>

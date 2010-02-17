@@ -37,6 +37,10 @@ body {
 	text-align: right;
 }
 
+#language a img {
+	border: none;
+}
+
 #description {
 	text-align: right;
 }
