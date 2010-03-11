@@ -52,7 +52,7 @@ elseif($page == 2)
 ?>
 <h2>A bunch of nice results</h2>
 <ul>
-	<li>The undenumbrability of <b>R</b></li>
+	<li>The uncountability of <b>R</b></li>
 	<li>The reals axioms imply Markov principle</li>
 	<li>Zeta(2)'s value is pi²/6</li>
 </ul>
