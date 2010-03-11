@@ -26,8 +26,8 @@ them in french <i>Classes préparatoires</i>, this project will proove licence-l
 	<li>Analysis (real and complex)</li>
 	<li>Arithmetic</li>
 	<li>Calculability</li>
-	<li><b>C</b> implementation</li>
-	<li>Logic and <b>R</b> axiomatic expressivity</li>
+	<li>&#x2102; implementation</li>
+	<li>Logic and &#x211d; axiomatic expressivity</li>
 	<li>Topology</li>
 </ul>
 <?php
@@ -52,9 +52,9 @@ elseif($page == 2)
 ?>
 <h2>A bunch of nice results</h2>
 <ul>
-	<li>The uncountability of <b>R</b></li>
+	<li>The uncountability of &#x211d;</li>
 	<li>The reals axioms imply Markov principle</li>
-	<li>Zeta(2)'s value is pi²/6</li>
+	<li>&zeta;(2)'s value is &pi;²/6</li>
 </ul>
 
 <h2>New libraries</h2>

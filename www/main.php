@@ -27,8 +27,8 @@ de niveau licence.</p>
 	<li>Analyse (réelle et complexe)</li>
 	<li>Arithmétique</li>
 	<li>Calculabilité</li>
-	<li>Implémentation de <b>C</b></li>
-	<li>Logique, expressivité de l'axiomatique de <b>R</b></li>
+	<li>Implémentation de &#x2102;</li>
+	<li>Logique, expressivité de l'axiomatique de &#x211d;</li>
 	<li>Topologie</li>
 </ul>
 <?php
@@ -53,9 +53,9 @@ elseif($page == 2)
 ?>
 <h2>Quelques jolis résultats</h2>
 <ul>
-	<li><b>R</b> est indénombrable</li>
+	<li>&#x211d; est indénombrable</li>
 	<li>L'axiomatique des réels implique le principe de Markov</li>
-	<li>Zeta(2) a pour valeur pi²/6</li>
+	<li>&zeta;(2) a pour valeur &pi;²/6</li>
 </ul>
 
 <h2>De nouvelles bibliothèques</h2>
