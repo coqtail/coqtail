@@ -19,11 +19,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
 USA.
 *)
 
-(** This file requires the most basic facts on Complex (Cnorm, Cpow, ring/field ...)*)
+Require Export Complex.
+Require Export Csequence.
+Require Import Rsequence.
+Open Local Scope C_scope.
+Open Local Scope Cseq_scope.
 
-Require Export Cbase.
-Require Export Cnorm.
-Require Export Cpow.
-Require Export Cfunctions.
-Require Export Cprop_base.
-Require Export Ctacfield.
+(** * Convergence of series *)
+Definition Cser_cv Un l := Cseq_cv (sum_f_C0 Un) l.
+
+Definition Cser_abs_cv Un l := Rseq_cv (sum_f_R0 (fun n => Cnorm (Un n))) l.
+
+Definition Cser_cv_infty Un := Rseq_cv_pos_infty (sum_f_R0 (fun n => Cnorm (Un n))).
+
+(** * Bounds *)
+Definition Cser_bound Un M := forall n, Cnorm (sum_f_C0 Un n) <= M.
+
+Definition Cser_abs_bound Un M := forall n, sum_f_R0 (fun k => Cnorm (Un k)) n <= M.
+
+
+(** * Remainders of series *)
+Definition Cser_rem (Un : nat -> R) (l : R) (Hcv : Cser_cv Un l) (n : nat) := 
+ (l - (sum_f_C0 Un n))%C.
