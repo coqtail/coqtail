@@ -1,7 +1,7 @@
 	</div>
 
 	<div id="footer">
-		last modified : February 2010
+		last modified : April 2010
 		<p>
    		<a href="http://validator.w3.org/check?uri=referer"><img
         	style="border:0;width:88px;height:31px"

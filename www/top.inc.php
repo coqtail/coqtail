@@ -1,3 +1,13 @@
+<?php
+if (isset ($_GET['doc']))
+{
+	$tmp = htmlspecialchars($_GET['doc']);
+	if (file_exists('doc/'.$tmp.'.html')) { $doc = 'doc/'.$tmp.'.html'; }
+}
+
+if (! isset ($doc)) { $doc=0; }
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
     "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
@@ -5,6 +15,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<link href="main.css" rel="stylesheet" type="text/css" media="all" />
+	<link href="doc/coqdoc.css" rel="stylesheet" type="text/css" media="all" />
 
 	<title>Coqtail - site officiel</title>
 
@@ -16,6 +27,7 @@
 		<div id="left_top">
 			<img src="img/coqtail.png" title="Coqtail's logo" width="200" height="200" alt="coqtail's logo" />
 		</div>
+
 		<div id="right_top">
 			<div id="language">
 <?php
@@ -23,6 +35,7 @@ $ext = '';
 if ($_SERVER['QUERY_STRING'] != '')
 {
 	$ext = '?'.$_SERVER['QUERY_STRING'];
+	$ext = str_replace('&', '&amp;', $ext);
 }
 ?>
 				<a href="main.php<?=$ext?>"><img src="img/fr.png" title="French" alt="French" /></a>

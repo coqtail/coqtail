@@ -11,6 +11,14 @@ if($page == 0)
 {
 
 ?>
+
+<!--
+<div id="news"><h3>News</h3>
+
+<p>[J-5] The first release of COQTAIL is now in 5 days !</p>
+</div>
+!-->
+
 <h2>Origine &amp; Objectifs</h2>
 
 <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail `Preuves` du projet 
@@ -73,10 +81,18 @@ elseif($page == 2)
 
 elseif($page == 3)
 {
-
+if ($doc) { include($doc); }
+else
+{
 ?>
-<a href="http://graal.ens-lyon.fr/coquille/coqdoc/">Documentation de COQUILLE</a>
+<h2>Liens</h2>
+<ul>
+	<li><a href="http://sourceforge.net/apps/mediawiki/coqtail/index.php?title=Main_Page">Wiki du projet</a></li>
+	<li><a href="http://graal.ens-lyon.fr/coquille/coqdoc/">Documentation de COQUILLE</a></li>
+</ul>
 <?php
+include ('doc/index.html');
+}
 }
 include('foot.inc.php')
 ?>

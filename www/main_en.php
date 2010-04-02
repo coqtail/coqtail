@@ -72,10 +72,19 @@ elseif($page == 2)
 
 elseif($page == 3)
 {
-
+if ($doc) { include($doc); }
+else
+{
 ?>
-<a href="http://graal.ens-lyon.fr/coquille/coqdoc/">COQUILLE's project documentation</a>
+<h2>Links</h2>
+<ul>
+	<li><a href="http://sourceforge.net/apps/mediawiki/coqtail/index.php?title=Main_Page">The project's Wiki</a></li>
+	<li><a href="http://graal.ens-lyon.fr/coquille/coqdoc/">COQUILLE's project documentation</a></li>
+</ul>
+
 <?php
+include('doc/index_en.html');
+}
 }
 include('foot_en.inc.php')
 ?>
