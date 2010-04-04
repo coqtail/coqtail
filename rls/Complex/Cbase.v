@@ -108,9 +108,9 @@ intros z. apply <- C0_neq_R0_neq.
 Qed.
 Hint Resolve HintC0_neq_R0_neq : complex.
 
-Lemma C0_norm_R0 : forall z, z = 0 <-> Cmodcarre z = 0%R.
+Lemma C0_norm_R0 : forall z, z = 0 <-> Cnorm_sqr z = 0%R.
 Proof.
-intro z ; unfold Cmodcarre ; split ; intro Hrew.
+intro z ; unfold Cnorm_sqr ; split ; intro Hrew.
  destruct (proj2 (Ceq z 0) Hrew) as (H1, H2) ; destruct z as (r1,r2);
  simpl in * ; rewrite H1 ; rewrite H2 ; field.
  apply (proj1 (Ceq _ _)) ; split.
@@ -127,7 +127,7 @@ intro z ; unfold Cmodcarre ; split ; intro Hrew.
 Qed.
 Hint Resolve C0_norm_R0 : complex.
 
-Lemma HC0_norm_R0 : forall z, Cmodcarre z = 0%R -> z = 0.
+Lemma HC0_norm_R0 : forall z, Cnorm_sqr z = 0%R -> z = 0.
 Proof.
 intros. apply <- C0_norm_R0. assumption.
 Qed.
@@ -135,6 +135,16 @@ Hint Resolve HC0_norm_R0 : complex.
 
 
 (** Cre / Cim compatibility with simple operators *)
+
+Lemma Cre_simpl : forall (a b : R), Cre (a +i b) = a.
+Proof.
+intros ; reflexivity.
+Qed.
+
+Lemma Cim_simpl : forall (a b : R), Cim (a +i b) = b.
+Proof.
+intros ; reflexivity.
+Qed.
 
 Lemma Cre_opp_compat : forall z, (- Cre z = Cre (-z))%R.
 Proof.
@@ -234,23 +244,23 @@ Hint Resolve Copp_invol : complex.
 
 (** Minus *)
 
-Lemma Cminus_plus_distr : forall z z', - (z + z') = -z - z'.
+Lemma Copp_add_distr : forall z z', - (z + z') = -z - z'.
 Proof.
 CusingR_f.
 Qed.
-Hint Resolve Cminus_plus_distr : complex.
+Hint Resolve Copp_add_distr : complex.
 
-Lemma Cminus_minus_distr : forall z z', - (z - z') = - z + z'.
+Lemma Copp_minus_distr : forall z z', - (z - z') = - z + z'.
 Proof.
 CusingR_f.
 Qed.
-Hint Resolve Cminus_minus_distr : complex.
+Hint Resolve Copp_minus_distr : complex.
 
-Lemma Cminus_sym : forall z z', (z - z') = - (z' - z).
+Lemma Cminus_antisym : forall z z', (z - z') = - (z' - z).
 Proof.
 CusingR_f.
 Qed.
-Hint Resolve Cminus_sym : complex.
+Hint Resolve Cminus_antisym : complex.
 
 (**  Multiplication. *)
 Lemma Cmult_comm : forall z1 z2 : C, z1 * z2 = z2 * z1.
@@ -294,15 +304,15 @@ intros z z_neq ; destruct z as (r, r0) ; apply (proj1 (Ceq _ _)) ; split ;
      (((r * r) + - (- r0 * r0)) / (r * r + r0 * r0))%R.
  unfold Rdiv ; replace (- (- r0 * r0))%R with (r0 * r0)%R by field.
  apply Rinv_r. intro Hyp ; apply z_neq.
- apply (proj2 (C0_norm_R0 _)) ; unfold Cmodcarre ; intuition.
+ apply (proj2 (C0_norm_R0 _)) ; unfold Cnorm_sqr ; intuition.
  field.
- replace (r * r + r0 * r0)%R with (Cmodcarre (r +i r0)).
+ replace (r * r + r0 * r0)%R with (Cnorm_sqr (r +i r0)).
  intro H ; apply z_neq ; apply (proj2 (C0_norm_R0 _) H).
- unfold Cmodcarre ; intuition.
+ unfold Cnorm_sqr ; intuition.
  field.
- replace (r * r + r0 * r0)%R with (Cmodcarre (r +i r0)).
+ replace (r * r + r0 * r0)%R with (Cnorm_sqr (r +i r0)).
  intro H ; apply z_neq ; apply (proj2 (C0_norm_R0 _) H).
- unfold Cmodcarre ; intuition.
+ unfold Cnorm_sqr ; intuition.
 Qed.
 Hint Resolve Cinv_l : complex.
 
