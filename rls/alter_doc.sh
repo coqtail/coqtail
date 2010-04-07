@@ -21,16 +21,13 @@
 
 # subscript of the Makefile to generate a correct documentation
 
-rev=`svn info --xml | grep revision= | sed 's/.*revision="\([0-9]*\)".*$/\1/' | head -n 1`
 mkdir -p doc
 cd doc
 if [ -f index.html ]
 then
 	rm index.html
 	
-	echo '<h2>Documentation (r' >> list
-	echo $rev >> list
-	echo ')</h2><div id="main">' >> list
+	echo '<h2>Documentation (1.0rc1)</h2><div id="main">' >> list
 	for i in `ls *.html | sed 's/\..*//' | uniq`
 	do
 		echo "<h2 class=\"doc\">$i</h2>" >> list
