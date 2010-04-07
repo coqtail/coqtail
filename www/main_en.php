@@ -9,8 +9,13 @@ include('top.inc.php');
 
 if ($page == 0)
 {
-
 ?>
+
+<div id="news"><h3>News</h3>
+
+<p>[07 avril] The first release is now available ! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
+</div>
+
 <h2>Origin &amp; Objectives</h2>
 
 <p>The <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> project is the biological
