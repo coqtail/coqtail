@@ -20,7 +20,7 @@
 THEORIES = myReals
 LIBTHEORIES = $(addprefix mytheories/, $(THEORIES))
 
-LIBDIRS = $(LIBTHEORIES) Reals Complex Arith Topology Sets Hierarchy
+LIBDIRS = $(LIBTHEORIES) Reals Complex Arith
 INCLUDES = $(addprefix -I , $(LIBDIRS)) -I .
 
 COQDEP = coqdep
@@ -45,16 +45,7 @@ COMPLEX_VO = $(COMPLEX_V:.v=.vo)
 ARITH_V = $(shell find Arith/ -name "*.v")
 ARITH_VO = $(ARITH_V:.v=.vo)
 
-SETS_V = $(shell find Sets/ -name "*.v")
-SETS_VO = $(SETS_V:.v=.vo)
-
-HIERARCHY_V = $(shell find Hierarchy/ -name "*.v")
-HIERARCHY_VO = $(HIERARCHY_V:.v=.vo)
-
-TOPOLOGY_V = $(shell find Topology/ -name "*.v")
-TOPOLOGY_VO = $(TOPOLOGY_V:.v=.vo)
-
-all: tools theories reals complex arith sets topology hierarchy doc
+all: theories reals complex arith doc
 
 reals: $(REALS_VO)
 
@@ -62,27 +53,13 @@ complex: $(COMPLEX_VO)
 
 arith: $(ARITH_VO)
 
-sets: $(SETS_VO)
-
-hierarchy: $(HIERARCHY_VO)
+theories: $(THEORIES_VO)
 
 doc: doc_dir $(SRC_DOC)
 	sh alter_doc.sh
 
 doc_dir:
 	mkdir -p doc
-
-topology: $(TOPOLOGY_VO)
-
-tools: Tools.vo
-
-indep: $(INDEP_VO)
-
-theories: $(THEORIES_VO)
-
-#INDEP = mytheories/myReals/Ranalysis5
-#$(INDEP).vo $(INDEP).glob : $(INDEP).v
-#	$(COQC) -dump-glob $(INDEP).glob $(INDEP).v
 
 clean:
 	find . -name '*.vo' -o -name '*.glob' -o -name '*.v.d' | xargs rm -f
