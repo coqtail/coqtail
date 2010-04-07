@@ -1,0 +1,14 @@
+This is the stable version of the libraries available from the coqtail project (rev 83).
+Feel free to send us feedback or ideas on the coqtail-devml mailing-list.
+
+** How-to build the libraries **
+The Makefile should work : open a terminal and type "make"
+
+** How-to use the libraries **
+You can use coqide's "-I" option to add paths where it should search for coq modules
+
+
+** The coqtail project links **
+Website (with online coqdoc of the current stable version) : http://coqtail.sourceforge.net/
+Sourceforge : http://sourceforge.net/projects/coqtail/
+Wiki (doc) : http://sourceforge.net/apps/mediawiki/coqtail/
