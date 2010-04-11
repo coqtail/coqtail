@@ -35,7 +35,7 @@ then
 	do
 		echo "<h2 class=\"doc\">$i</h2>" >> list
 		echo "<ul>" >> list
-		ls $i*.html | sed 's/^\(.*\)\.\(.*\).html$/<li><a href="main.php?page=3&amp;doc=\1.\2">\2<\/a><\/li>/' >> list
+		ls $i*.html | sed 's/^\(.*\)\.\(.*\).html$/<li><a href="main.php?page=3\&amp;doc=\1.\2">\2<\/a><\/li>/' >> list
 		echo "</ul>" >> list
 	done
 	mv list index.html
