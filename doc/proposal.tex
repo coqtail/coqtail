@@ -7,11 +7,16 @@
 \usepackage{biblatex}
 \usepackage{fullpage}
 
+\title{Candidature pour les labos juniors}
+\date{}
+\author{}
 \bibliography{bibliography}
 
 \newcommand{\coqtail}{\textsc{Coqtail}}
 
 \begin{document}
+
+\maketitle
 
 \section{Brainstorming}
 
@@ -42,9 +47,11 @@ Donc important de modéliser le physique pour être capable de prouver des compo
 
 % TODO: On vire les passages sur l'importance mathématique de résultats en coq ? (je parle de ceux de coqtail)... Utilité dans la vie réelle ? Système physiques ? Faudrait dire plus clairement qu'on ne fait pas que de la branlette intélectuelle.
 
-\section{Présentation Coqtail}
+\section{Présentation \coqtail{}}
 
 % TODO: Militantisme pro suppression des guillemets...
+
+\subsection{Conjoncture}
 
 La correspondance de Curry--Howard établit le lien entre une preuve et un processus calculatoire : démontrer un théorème et construire une fonction qui, à partir des hypothèses, \emph{renvoie} la conclusion sont un seul et même problème.
 
@@ -56,6 +63,8 @@ Coq\cite{L:BC04} est un assistant de preuves formelles par ordinateur utilisant 
 
 Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatres couleurs\cite{Gonthier07} ainsi que la création d'un compilateur certifié pour un important sous-ensemble de \texttt{C}\cite{compcert}.
 
+\subsection{Héritage de COQUILLE}
+
 % TODO :Problème de Bâle ?
 Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Le projet fait suite au projet COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
@@ -63,14 +72,45 @@ Les développements actuels ont déjà permis de poser des bases solides au sein
 
 % TODO:  euh le "à terme equa diff" c'est pas ce qu'on veut faire tout court? Cn c'est pas déjà largement défini(genre ça se fait en 5min)... Faudrait pas trop se foutre de leur gueule non?
 
+\subsection{Objectifs}
+
 Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc de formaliser des notions de régularité telles que le fait d'être $\mathcal{C}^n$ (voire $\mathcal{C}^\infty$) ainsi que la notion d'équation différentielle. Ces formalisations seront accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
 
 % TODO:Retoucher le paragraphe suivant
 Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{} : tout commence par l'analyse des résultats connus et la réécriture des grandes preuves permettant de dégager les résultats intermédiaires clefs. La définition des concepts est, ensuite, une étape cruciale qui nécessite un recul vis-à-vis du sujet à traiter et de ses enjeux. Une structure bien choisie permettra de faciliter les preuves tandis qu'un choix peu éclairé peu alourdir fortement la charge de travail à fournir.
 
+\subsubsection{Refonder les réels}
+
+Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq.
+
+C-Corn se veut être un corpus de démonstrations exclusivement constructives au sens de Curry-Howard : chaque preuve est en fait un programme, et la formule logique exprimée est la spécification de ce programme. Les réels y sont construits \emph{ex nihilo}, selon un long cheminement partant des entiers naturels aux rationnels. Le corps des réels est alors vu comme la clôture de $\mathbb{Q}$ sous forme de suites de Cauchy pour la norme habituelle.
+
+Dans la bibliothèque standard de Coq, les réels sont définis de manière axiomatique comme un corps archimédien complet, sans référence aucune à une véritable structure constructive sous-jacente.
+
+Chacun de ces points de vue possède avantages et inconvénients.
+
+C-Corn est le plus strict des deux. Il refuse les propositions non-constructives, et se restreint à travailler dans le monde des programmes de Coq (sorte \texttt{Set}). Ainsi, cette bibliothèque peut être utilisée pour calculer avec des réels. D'un autre côté, ce refus entraîne aussi le refus d'accepter des axiomes classiques\footnote{Nommément le tiers-exclu, mais aussi d'autres axiomes naturels de la théorie des ensembles, comme l'extensionnalité de l'égalité ou l'existence de types quotients.} dans le monde des propositions (sorte \texttt{Prop}), ce qui pose de nombreux problèmes pour prouver des propriétés anodines d'un point de vue calculatoire, par exemple :
+
+$$\forall x.\neg\neg(x = 0) \Rightarrow x = 0$$
+$$\forall x.\neg(x < 0) \Rightarrow x \geq 0$$
+
+Ceci empêche aussi l'utilisation de tactiques puissantes qui trivialisent certains énoncés. Par ailleurs, certains énoncés basiques de l'analyse réelle deviennent simplement impossibles à prouver, puisqu'ils ne sont pas constructifs : théorème de Bolzano-Weierstrass, etc.
+
+Dans \texttt{stdlib}, au contraire, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques le plus naturellement du monde. Malheureusement, ces choix impliquent un univers classique dans \texttt{Set} et l'existence de fonctions non-calculables, ce qui réduit à néant la dualité preuve-programme.
+
+\bigskip
+Nous proposons de prendre le meilleur des deux mondes, en réformant l'axiomatique de la bibliothèque standard pour en éliminer les propriétés non-constructives du monde des programmes, tout en conservant les propriétés classiques dans le monde des propositions. Cependant, ce choix se fera au détriment de la simplicité, puisqu'il faudra dupliquer les propriétés, classiques (dans \texttt{Prop}) et constructivistes (dans \texttt{Set}).
+
+\subsubsection{Intégration}
+
+\subsubsection{Équations différentielles}
+
+
+\subsection{Quels outils ?}
+
 % TODO on va pas leur apprendre ce qu'est un svn si? Re: Si ! 
-Quels outils ?
-Le projet \coqtail{} dispose déjà d'un site internet\cite{coqtail} et d'un système de versionnage de fichiers qui permet le travail collaboratif en parrallèle. Nous comptons continuer à utiliser ce mode de fonctionnement dans la mesure où il a fait ses preuves.
+
+Le projet \coqtail{} dispose déjà d'un site internet\cite{coqtail} et d'un système de versionnage de fichiers qui permet le travail collaboratif en parallèle. Nous comptons continuer à utiliser ce mode de fonctionnement dans la mesure où il s'agit d'une des bases du génie logiciel.
 
 %% À VIRER ? {
 
