@@ -66,18 +66,18 @@ Coq permet une construction interactive des preuves ainsi que la définition de 
 \subsection{Héritage de COQUILLE}
 
 % TODO :Problème de Bâle ?
-Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Le projet fait suite au projet COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
+Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
-Les développements actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats dits élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
+Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats dits élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
 
 % TODO:  euh le "à terme equa diff" c'est pas ce qu'on veut faire tout court? Cn c'est pas déjà largement défini(genre ça se fait en 5min)... Faudrait pas trop se foutre de leur gueule non?
 
 \subsection{Objectifs}
 
-Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc de formaliser des notions de régularité telles que le fait d'être $\mathcal{C}^n$ (voire $\mathcal{C}^\infty$) ainsi que la notion d'équation différentielle. Ces formalisations seront accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
+Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc la formalisation et l'étude des équations différentielles et des notions connexes (classes de fonctions, fonctions analytiques, etc.). Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
 
 % TODO:Retoucher le paragraphe suivant
-Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{} : tout commence par l'analyse des résultats connus et la réécriture des grandes preuves permettant de dégager les résultats intermédiaires clefs. La définition des concepts est, ensuite, une étape cruciale qui nécessite un recul vis-à-vis du sujet à traiter et de ses enjeux. Une structure bien choisie permettra de faciliter les preuves tandis qu'un choix peu éclairé peu alourdir fortement la charge de travail à fournir.
+Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
 
 \subsubsection{Refonder les réels}
 
@@ -121,7 +121,19 @@ Les théorèmes que nous prouverons pourront s'inscrire dans le challenge lancé
 \coqtail{} offre de réelles perspectives : au delà de fournir des preuves d'une certitude reconnue, %TODO
 il permettra potentiellement d'aider à la modélisation de systèmes physique utilisant le numérique et de prouver leur comportement (un bras de robot par exemple). % Et mon cul c'est du poulet.
 
-L'équipe comportera TODO membres et TODO MAIS BORDEL LA IL FAUT ETRE PRECIS SUR LE CALENDRIER ET ON SAIT MEME PAS CE QU'ON FAIT
+\subsection{L'Équipe}
+
+L'équipe comporte 5 membres :
+
+\begin{itemize}
+ \item Marc Lasson : Responsable du laboratoire junior
+ \item Guillaume Allais
+ \item Sylvain Dailler
+ \item Jean-Marie Madiot
+ \item Pierre-Marie Pédrot
+\end{itemize}
+
+Le projet débutera en septembre 2010 pour une durée de un an.
 
 \printbibliography
 
