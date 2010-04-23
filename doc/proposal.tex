@@ -13,35 +13,36 @@
 \bibliography{bibliography}
 
 \newcommand{\coqtail}{\textsc{Coqtail}}
+\newcommand{\coquille}{\textsc{Coquille}}
 
 \begin{document}
 
 \maketitle
 
-\section{Brainstorming}
+%\section{Brainstorming}
 
-Blablabla les systèmes physiques avec du numérique dedans c'est l'avenir (bras de robot = du numérique mais aussi des temps de latence, des comportements continus = du sinusoidal, bordel !)
+%Blablabla les systèmes physiques avec du numérique dedans c'est l'avenir (bras de robot = du numérique mais aussi des temps de latence, des comportements continus = du sinusoidal, bordel !)
 
-Donc important de modéliser le physique pour être capable de prouver des comportements (référence proco certifiés, calcul approché, norme IEEméfess)   
+%Donc important de modéliser le physique pour être capable de prouver des comportements (référence proco certifiés, calcul approché, norme IEEméfess)   
 
-\begin{itemize}
-  \item Trouver des abstractions puissantes pour décrire certains objets mathématiques (plus particulièrement tout ce qui touche au fait d'être $\mathcal{C}^n$) et pour les problèmes leur étant associés (équations différentielles).
-  \begin{itemize}
-    \item[$\Rightarrow$] Avantage : réutilisable massivement (the more general, the more reusable)
-    \item[$\Rightarrow$] Donne des bases pour aborder des problèmes plus complexes : travail jamais perdu
-  \end{itemize}
-
-  \item Équas diffs super utiles dans toutes les disciplines ingénieuristiques... Tout est système continu et représentable par équa diff (asservissement...)
-
-  \item Faire apparaitre le caractère purement algorithmique de certaines preuves (moué euh bon ?)
-  \item Programmation certifiée
-  \begin{itemize}
-    \item[$\Rightarrow$] Vers de la mécanique certifiée ? (Oh my god, je me touche)
-  \end{itemize}
-
-  \item Vérification (dans longtemps) de problème pas forcément simple à vérifier (dont 3 personnes sont au courant de la preuve etc ?)
-  \item Concours sur les 100 théorèmes (on va battre HOL il y a pas de raison)
-\end{itemize}
+%\begin{itemize}
+%  \item Trouver des abstractions puissantes pour décrire certains objets mathématiques (plus particulièrement tout ce qui touche au fait d'être $\mathcal{C}^n$) et pour les problèmes leur étant associés (équations différentielles).
+%  \begin{itemize}
+%    \item[$\Rightarrow$] Avantage : réutilisable massivement (the more general, the more reusable)
+%    \item[$\Rightarrow$] Donne des bases pour aborder des problèmes plus complexes : travail jamais perdu
+%  \end{itemize}
+%
+%  \item Équas diffs super utiles dans toutes les disciplines ingénieuristiques... Tout est système continu et représentable par équa diff (asservissement...)
+%
+%  \item Faire apparaitre le caractère purement algorithmique de certaines preuves (moué euh bon ?)
+%  \item Programmation certifiée
+%  \begin{itemize}
+%    \item[$\Rightarrow$] Vers de la mécanique certifiée ? (Oh my god, je me touche)
+%  \end{itemize}
+%
+%  \item Vérification (dans longtemps) de problème pas forcément simple à vérifier (dont 3 personnes sont au courant de la preuve etc ?)
+%  \item Concours sur les 100 théorèmes (on va battre HOL il y a pas de raison)
+%\end{itemize}
 
 %%%%%%%%%%%%%%%%%%
 
@@ -63,21 +64,18 @@ Coq\cite{L:BC04} est un assistant de preuves formelles par ordinateur utilisant 
 
 Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatres couleurs\cite{Gonthier07} ainsi que la création d'un compilateur certifié pour un important sous-ensemble de \texttt{C}\cite{compcert}.
 
-\subsection{Héritage de COQUILLE}
+\subsection{Héritage de \coquille{}}
 
-% TODO :Problème de Bâle ?
-Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
+Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à \coquille{} développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
 Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats dits élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
-
-% TODO:  euh le "à terme equa diff" c'est pas ce qu'on veut faire tout court? Cn c'est pas déjà largement défini(genre ça se fait en 5min)... Faudrait pas trop se foutre de leur gueule non?
 
 \subsection{Objectifs}
 
 Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc la formalisation et l'étude des équations différentielles et des notions connexes (classes de fonctions, fonctions analytiques, etc.). Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
 
 % TODO:Retoucher le paragraphe suivant
-Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
+Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets \coquille{} puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
 
 \subsubsection{Refonder les réels}
 
@@ -96,10 +94,17 @@ $$\forall x.\neg(x < 0) \Rightarrow x \geq 0$$
 
 Ceci empêche aussi l'utilisation de tactiques puissantes qui trivialisent certains énoncés. Par ailleurs, certains énoncés basiques de l'analyse réelle deviennent simplement impossibles à prouver, puisqu'ils ne sont pas constructifs : théorème de Bolzano-Weierstrass, etc.
 
-Dans \texttt{stdlib}, au contraire, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques le plus naturellement du monde. Malheureusement, ces choix impliquent un univers classique dans \texttt{Set} et l'existence de fonctions non-calculables, ce qui réduit à néant la dualité preuve-programme.
+Dans la bibliothèque standard, au contraire, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques le plus naturellement du monde. Malheureusement, ces choix impliquent un univers classique dans \texttt{Set} et l'existence de fonctions non-calculables, ce qui réduit à néant la dualité preuve-programme.
 
 \bigskip
-Nous proposons de prendre le meilleur des deux mondes, en réformant l'axiomatique de la bibliothèque standard pour en éliminer les propriétés non-constructives du monde des programmes, tout en conservant les propriétés classiques dans le monde des propositions. Cependant, ce choix se fera au détriment de la simplicité, puisqu'il faudra dupliquer les propriétés, classiques (dans \texttt{Prop}) et constructivistes (dans \texttt{Set}).
+Nous proposons notre propre axiomatique des réels, éliminant les propriétés non-constructives du monde des programmes (\texttt{Set}), tout en conservant des propriétés classiques du monde des propositions (\texttt{Prop}). 
+Elle sera modulaire et donc adaptable aux deux axiomatisations déjà existantes : 
+\begin{itemize}
+	\item à C-Corn en ajoutant des propriétés classiques du monde des propositions
+	\item à la librairie standard bien que nous ne nous servirons pas des propriétés non-constructives du monde des programmes
+\end{itemize}
+Cette axiomatique nous permettra de prouver les théorèmes du domaine que l'on aborde (intégration et équations différentielles) tout en conservant la possibilité d'extraire nos preuves.
+%TODO modifier un peu cette partie pour avoir l'air moins intégriste.
 
 \subsubsection{Intégration}
 
@@ -108,13 +113,11 @@ Nous proposons de prendre le meilleur des deux mondes, en réformant l'axiomatiq
 
 \subsection{Quels outils ?}
 
-% TODO on va pas leur apprendre ce qu'est un svn si? Re: Si ! 
-
 Le projet \coqtail{} dispose déjà d'un site internet\cite{coqtail} et d'un système de versionnage de fichiers qui permet le travail collaboratif en parallèle. Nous comptons continuer à utiliser ce mode de fonctionnement dans la mesure où il s'agit d'une des bases du génie logiciel.
 
 %% À VIRER ? {
 
-Les théorèmes que nous prouverons pourront s'inscrire dans le challenge lancé par Freek (TODO 100 théorèmes machin machin ou alors remplacer ça par l'intérêt mathématiques) Notre travail pourra être réutilisé pour des développements plus complexes. Notre expérience (acquise lors du projet COQUILLE) nous permet de garantir l'obtention de résultats qui, même partiels, pourront être réutilisés.
+%Les théorèmes que nous prouverons pourront s'inscrire dans le challenge lancé par Freek (TODO 100 théorèmes machin machin ou alors remplacer ça par l'intérêt mathématiques) Notre travail pourra être réutilisé pour des développements plus complexes. Notre expérience (acquise lors du projet \coquille{}) nous permet de garantir l'obtention de résultats qui, même partiels, pourront être réutilisés.
 
 %% }
 
