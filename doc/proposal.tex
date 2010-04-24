@@ -18,39 +18,37 @@
 \begin{document}
 
 \maketitle
-
-%\section{Brainstorming}
-
-%Blablabla les systèmes physiques avec du numérique dedans c'est l'avenir (bras de robot = du numérique mais aussi des temps de latence, des comportements continus = du sinusoidal, bordel !)
-
-%Donc important de modéliser le physique pour être capable de prouver des comportements (référence proco certifiés, calcul approché, norme IEEméfess)   
-
-%\begin{itemize}
-%  \item Trouver des abstractions puissantes pour décrire certains objets mathématiques (plus particulièrement tout ce qui touche au fait d'être $\mathcal{C}^n$) et pour les problèmes leur étant associés (équations différentielles).
-%  \begin{itemize}
-%    \item[$\Rightarrow$] Avantage : réutilisable massivement (the more general, the more reusable)
-%    \item[$\Rightarrow$] Donne des bases pour aborder des problèmes plus complexes : travail jamais perdu
-%  \end{itemize}
-%
-%  \item Équas diffs super utiles dans toutes les disciplines ingénieuristiques... Tout est système continu et représentable par équa diff (asservissement...)
-%
-%  \item Faire apparaitre le caractère purement algorithmique de certaines preuves (moué euh bon ?)
-%  \item Programmation certifiée
-%  \begin{itemize}
-%    \item[$\Rightarrow$] Vers de la mécanique certifiée ? (Oh my god, je me touche)
-%  \end{itemize}
-%
-%  \item Vérification (dans longtemps) de problème pas forcément simple à vérifier (dont 3 personnes sont au courant de la preuve etc ?)
-%  \item Concours sur les 100 théorèmes (on va battre HOL il y a pas de raison)
-%\end{itemize}
+% 
+% \section{Brainstorming}
+% 
+% Blablabla les systèmes physiques avec du numérique dedans c'est l'avenir (bras de robot = du numérique mais aussi des temps de latence, des comportements continus = du sinusoidal, bordel !)
+% 
+% Donc important de modéliser le physique pour être capable de prouver des comportements (référence proco certifiés, calcul approché, norme IEEméfess)   
+% 
+% \begin{itemize}
+%   \item Trouver des abstractions puissantes pour décrire certains objets mathématiques (plus particulièrement tout ce qui touche au fait d'être $\mathcal{C}^n$) et pour les problèmes leur étant associés (équations différentielles).
+%   \begin{itemize}
+%     \item[$\Rightarrow$] Avantage : réutilisable massivement (the more general, the more reusable)
+%     \item[$\Rightarrow$] Donne des bases pour aborder des problèmes plus complexes : travail jamais perdu
+%   \end{itemize}
+% 
+%   \item Équas diffs super utiles dans toutes les disciplines ingénieuristiques... Tout est système continu et représentable par équa diff (asservissement...)
+% 
+%   \item Faire apparaitre le caractère purement algorithmique de certaines preuves (moué euh bon ?)
+%   \item Programmation certifiée
+%   \begin{itemize}
+%     \item[$\Rightarrow$] Vers de la mécanique certifiée ? (Oh my god, je me touche)
+%   \end{itemize}
+% 
+%   \item Vérification (dans longtemps) de problème pas forcément simple à vérifier (dont 3 personnes sont au courant de la preuve etc ?)
+%   \item Concours sur les 100 théorèmes (on va battre HOL il y a pas de raison)
+% \end{itemize}
 
 %%%%%%%%%%%%%%%%%%
 
 % TODO: On vire les passages sur l'importance mathématique de résultats en coq ? (je parle de ceux de coqtail)... Utilité dans la vie réelle ? Système physiques ? Faudrait dire plus clairement qu'on ne fait pas que de la branlette intélectuelle.
 
 \section{Présentation \coqtail{}}
-
-% TODO: Militantisme pro suppression des guillemets...
 
 \subsection{Conjoncture}
 
@@ -66,52 +64,51 @@ Coq permet une construction interactive des preuves ainsi que la définition de 
 
 \subsection{Héritage de \coquille{}}
 
-Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à \coquille{} développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
+Le projet \coqtail{} s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
-Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats dits élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
+Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats connus et/ou élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
 
 \subsection{Objectifs}
 
-Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc la formalisation et l'étude des équations différentielles et des notions connexes (classes de fonctions, fonctions analytiques, etc.). Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
-
-% TODO:Retoucher le paragraphe suivant
-Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets \coquille{} puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
-
-\subsubsection{Refonder les réels}
-
-Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq.
-
-C-Corn se veut être un corpus de démonstrations exclusivement constructives au sens de Curry-Howard : chaque preuve est en fait un programme, et la formule logique exprimée est la spécification de ce programme. Les réels y sont construits \emph{ex nihilo}, selon un long cheminement partant des entiers naturels aux rationnels. Le corps des réels est alors vu comme la clôture de $\mathbb{Q}$ sous forme de suites de Cauchy pour la norme habituelle.
-
-Dans la bibliothèque standard de Coq, les réels sont définis de manière axiomatique comme un corps archimédien complet, sans référence aucune à une véritable structure constructive sous-jacente.
-
-Chacun de ces points de vue possède avantages et inconvénients.
-
-C-Corn est le plus strict des deux. Il refuse les propositions non-constructives, et se restreint à travailler dans le monde des programmes de Coq (sorte \texttt{Set}). Ainsi, cette bibliothèque peut être utilisée pour calculer avec des réels. D'un autre côté, ce refus entraîne aussi le refus d'accepter des axiomes classiques\footnote{Nommément le tiers-exclu, mais aussi d'autres axiomes naturels de la théorie des ensembles, comme l'extensionnalité de l'égalité ou l'existence de types quotients.} dans le monde des propositions (sorte \texttt{Prop}), ce qui pose de nombreux problèmes pour prouver des propriétés anodines d'un point de vue calculatoire, par exemple :
-
-$$\forall x.\neg\neg(x = 0) \Rightarrow x = 0$$
-$$\forall x.\neg(x < 0) \Rightarrow x \geq 0$$
-
-Ceci empêche aussi l'utilisation de tactiques puissantes qui trivialisent certains énoncés. Par ailleurs, certains énoncés basiques de l'analyse réelle deviennent simplement impossibles à prouver, puisqu'ils ne sont pas constructifs : théorème de Bolzano-Weierstrass, etc.
-
-Dans la bibliothèque standard, au contraire, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques le plus naturellement du monde. Malheureusement, ces choix impliquent un univers classique dans \texttt{Set} et l'existence de fonctions non-calculables, ce qui réduit à néant la dualité preuve-programme.
-
-\bigskip
-Nous proposons notre propre axiomatique des réels, éliminant les propriétés non-constructives du monde des programmes (\texttt{Set}), tout en conservant des propriétés classiques du monde des propositions (\texttt{Prop}). 
-Elle sera modulaire et donc adaptable aux deux axiomatisations déjà existantes : 
-\begin{itemize}
-	\item à C-Corn en ajoutant des propriétés classiques du monde des propositions
-	\item à la librairie standard bien que nous ne nous servirons pas des propriétés non-constructives du monde des programmes
-\end{itemize}
-Cette axiomatique nous permettra de prouver les théorèmes du domaine que l'on aborde (intégration et équations différentielles) tout en conservant la possibilité d'extraire nos preuves.
-%TODO modifier un peu cette partie pour avoir l'air moins intégriste.
-
-\subsubsection{Intégration}
-
-
+Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc la formalisation et l'étude des équations différentielles et des notions connexes. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
 
 \subsubsection{Équations différentielles}
 
+Notre principal soucis est la formalisation des équations différentielles. Nous avons bien entendu en tête les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
+
+\subsubsection{Intégration}
+
+Les équations différentielles faisant intervenir des dérivées $n$-ième, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une sur-couche à la librairie standard permettant une utilisation plus simple de celle-ci.
+
+
+
+
+% \subsubsection{Refonder les réels}
+% 
+% Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq.
+% 
+% C-Corn se veut être un corpus de démonstrations exclusivement constructives au sens de Curry-Howard : chaque preuve est en fait un programme, et la formule logique exprimée est la spécification de ce programme. Les réels y sont construits \emph{ex nihilo}, selon un long cheminement partant des entiers naturels aux rationnels. Le corps des réels est alors vu comme la clôture de $\mathbb{Q}$ sous forme de suites de Cauchy pour la norme habituelle.
+% 
+% Dans la bibliothèque standard de Coq, les réels sont définis de manière axiomatique comme un corps archimédien complet, sans référence aucune à une véritable structure constructive sous-jacente.
+% 
+% Chacun de ces points de vue possède avantages et inconvénients.
+% 
+% C-Corn est le plus strict des deux. Il refuse les propositions non-constructives, et se restreint à travailler dans le monde des programmes de Coq (sorte \texttt{Set}). Ainsi, cette bibliothèque peut être utilisée pour calculer avec des réels. D'un autre côté, ce refus entraîne aussi le refus d'accepter des axiomes classiques\footnote{Nommément le tiers-exclu, mais aussi d'autres axiomes naturels de la théorie des ensembles, comme l'extensionnalité de l'égalité ou l'existence de types quotients.} dans le monde des propositions (sorte \texttt{Prop}), ce qui pose de nombreux problèmes pour prouver des propriétés anodines d'un point de vue calculatoire, par exemple :
+% 
+% $$\forall x.\neg\neg(x = 0) \Rightarrow x = 0$$
+% $$\forall x.\neg(x < 0) \Rightarrow x \geq 0$$
+% 
+% Ceci empêche aussi l'utilisation de tactiques puissantes qui trivialisent certains énoncés. Par ailleurs, certains énoncés basiques de l'analyse réelle deviennent simplement impossibles à prouver, puisqu'ils ne sont pas constructifs : théorème de Bolzano-Weierstrass, etc.
+% 
+% Dans \texttt{stdlib}, au contraire, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques le plus naturellement du monde. Malheureusement, ces choix impliquent un univers classique dans \texttt{Set} et l'existence de fonctions non-calculables, ce qui réduit à néant la dualité preuve-programme.
+% 
+% \bigskip
+% Nous proposons de prendre le meilleur des deux mondes, en réformant l'axiomatique de la bibliothèque standard pour en éliminer les propriétés non-constructives du monde des programmes, tout en conservant les propriétés classiques dans le monde des propositions. Cependant, ce choix se fera au détriment de la simplicité, puisqu'il faudra dupliquer les propriétés, classiques (dans \texttt{Prop}) et constructivistes (dans \texttt{Set}).
+
+
+\subsection{Déroulement}
+
+Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
 
 \subsection{Quels outils ?}
 
@@ -149,12 +146,11 @@ Nous prévoyons de publier plusieurs versions qui nous permettrons de juger de l
 \item version finale fin août 2011
 \end{itemize}
 
-Nous prévoyons de participer à des conférences :
+Nous prévoyons d'assister aux conférences d'ITP et de profiter de l'occasion pour présenter nos résultats lors du Workshop Coq (si ces deux événements sont regroupés comme c'est le cas cette année) (frais d'inscription seulement) :
 \begin{itemize}
-	\item Coq Workshop en mars/avril (50€ / personne)
-	\item ITP squand ça? (150€ / personne) 
+	\item Coq Workshop (50€ / personne)
+	\item ITP (150€ / personne) 
 \end{itemize}
-%TODO ce serait cool que quelqu'un comprenne les frais...
 
 \printbibliography
 
