@@ -61,32 +61,32 @@ Coq\cite{L:BC04} est un assistant de preuves formelles par ordinateur utilisant 
   \item de définir des spécifications et de fournir une fonction les vérifiant.
 \end{itemize}
 
-Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatres couleurs\cite{Gonthier07} ainsi que la création d'un compilateur certifié pour un important sous-ensemble de \texttt{C}\cite{compcert}.
+Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatre couleurs\cite{Gonthier07} ainsi que la création d'un compilateur certifié pour un important sous-ensemble de \texttt{C}\cite{compcert}.
 
 \subsection{Héritage de \coquille{}}
 
 Le projet \coqtail{} (COQ Theorems, Abstractions and Implementations (Licence-level)) s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
-Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats connus et/ou élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuves\cite{Freek}.
+Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats connus ou élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuve\cite{Freek}.
 
 \subsection{Objectifs}
 
-Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. Les 2 objectifs principaux de \coqtail{} seront donc la formalisation et l'étude des équations différentielles et des graphes. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).
+Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. Les deux objectifs principaux de \coqtail{} seront donc la formalisation et l'étude des équations différentielles et des graphes. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).
 
 \subsubsection{Refonder les réels}
 %TODO ok c'est pas clair mais c'est a peu pres aussi vague que le reste et je ne sais pas si c'est pas préférable que ça reste vague... sinon ça devient trop important par rapport au reste (genre on va faire que ça)
 Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq. C-Corn est une bibliothèque qui permet de calculer avec les
-réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. A l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
+réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. À l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
 
 Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques.
 
 \subsubsection{Équations différentielles}
 
-Notre principal soucis est la formalisation des équations différentielles. Nous allons, bien entendu, aborder les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
+Notre principal souci est la formalisation des équations différentielles. Nous allons, bien entendu, aborder les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
 
 \subsubsection{Intégration}
 
-Les équations différentielles faisant intervenir des dérivées $n$-ième, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une sur-couche à la librairie standard permettant une utilisation plus simple de celle-ci.
+Les équations différentielles faisant intervenir des dérivées $n$-ièmes, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une sur-couche à la librairie standard permettant une utilisation plus simple de celle-ci.
 
 \subsubsection{Graphes}
 
@@ -117,7 +117,7 @@ Les graphes ne disposant pas, à ce jour, de bibliothèques de théorèmes de ba
 
 \subsection{Déroulement}
 
-Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvés les six mois passés.
+Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvé les six mois passés.
 
 \subsection{Quels outils ?}
 
@@ -156,7 +156,7 @@ Nous prévoyons de publier plusieurs versions qui nous permettrons de juger de l
 \item version finale fin août 2011
 \end{itemize}
 
-Nous prévoyons d'assister aux conférences d'ITP (Interactive Theorem Proving ) et de profiter de l'occasion pour présenter nos résultats lors du Workshop Coq (si ces deux événements sont regroupés comme c'est le cas cette année) (frais d'inscription seulement) :
+Nous prévoyons d'assister aux conférences d'ITP (Interactive Theorem Proving) et de profiter de l'occasion pour présenter nos résultats lors du Coq Workshop (si ces deux événements sont regroupés comme c'est le cas cette année) (frais d'inscription seulement) :
 \begin{itemize}
 	\item Coq Workshop (50€ par personne)
 	\item ITP (150€ par personne) 
