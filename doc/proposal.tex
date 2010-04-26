@@ -12,6 +12,23 @@
 \newcommand{\coqtail}{\textsc{Coqtail}}
 \newcommand{\coquille}{\textsc{Coquille}}
 
+\makeatletter
+\def\maketitle{%
+  \begin{center}\leavevmode
+    \normalfont%
+    {\LARGE \@title\par}%
+    \vskip 0.2cm
+    \hrule height 1pt%
+    \vskip 0.4cm
+    {\Large \@author\par}%
+    \vskip 0.3cm
+    {\Large \@date\par}%
+    \vskip 0.4cm
+    \hrule height 1pt%
+  \end{center}%
+  }
+\makeatother
+
 \title{Candidature pour la création d'un laboratoire junior}
 \date{Date : de septembre 2010 à septembre 2011}
 \author{Projet \coqtail{}}
@@ -50,7 +67,7 @@
 
 % TODO: On vire les passages sur l'importance mathématique de résultats en coq ? (je parle de ceux de coqtail)... Utilité dans la vie réelle ? Système physiques ? Faudrait dire plus clairement qu'on ne fait pas que de la branlette intélectuelle.
 
-\section{Présentation \coqtail{}}
+\section{Présentation du projet \coqtail{}}
 
 \subsection{Conjoncture}
 
@@ -82,13 +99,13 @@ Les graphes sont, quant à eux, très présents en informatique que ce soit pour
 %TODO ok c'est pas clair mais c'est a peu pres aussi vague que le reste et je ne sais pas si c'est pas préférable que ça reste vague... sinon ça devient trop important par rapport au reste (genre on va faire que ça)
 Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn~\cite{C-Corn}, et de l'autre, la bibliothèque standard de Coq. C-Corn est une bibliothèque qui permet de calculer avec les réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. À l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
 
-Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques. Cette construction servira de base aux développements d'analyse réelle mais elle sera également reliée à l'axiomatique de la librairie standard afin de faire en sorte que nos résultats soient réutilisables par le plus grand nombre.
+Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques. Cette construction servira de base aux développements d'analyse réelle mais elle sera également reliée à l'axiomatique de la bibliothèque standard afin de faire en sorte que nos résultats soient réutilisables par le plus grand nombre.
 
 \subsection{Équations différentielles}
 
 Notre principal souci est la formalisation des équations différentielles. Nous allons, bien entendu, aborder les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
 
-Les équations différentielles faisant intervenir des dérivées $n$-ièmes, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une surcouche à la librairie standard permettant une utilisation plus simple de celle-ci.
+Les équations différentielles faisant intervenir des dérivées $n$-ièmes, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une surcouche à la bibliothèque standard permettant une utilisation plus simple de celle-ci.
 
 \subsection{Graphes}
 
@@ -179,7 +196,7 @@ En comptant l'aller-retour Lyon--Paris à 75~€ et la participation à un group
 \subsubsection{Conférences}
 Nous prévoyons d'assister aux conférences d'ITP et au Coq Workshop si ces deux événements sont regroupés comme c'est le cas cette année.
 
-ITP est une conférence internationale sur la preuve interactive de théorèmes dédiée aux applications et études de cas mais également aux fondations théoriques de la preuve interactive et aux langages de preuves. Ce sera l'occasion pour nous de voir ce qui se fait à l'heure actuelle pour, éventuellement, en tirer de nouveaux objectifs. Le Coq Workshop est l'occasion de proposer des présentations plus informelles et de partager entre développeurs, contributeurs et utilisateurs de Coq. Nous proposerons une présentation du projet \coqtail{} et des résultats obtenus afin d'inciter d'autres chercheurs à les réutiliser et à les intégrer dans les contributions (voire la libraire standard si cela est possible).
+ITP est une conférence internationale sur la preuve interactive de théorèmes dédiée aux applications et études de cas mais également aux fondations théoriques de la preuve interactive et aux langages de preuves. Ce sera l'occasion pour nous de voir ce qui se fait à l'heure actuelle pour, éventuellement, en tirer de nouveaux objectifs. Le Coq Workshop est l'occasion de proposer des présentations plus informelles et de partager entre développeurs, contributeurs et utilisateurs de Coq. Nous proposerons une présentation du projet \coqtail{} et des résultats obtenus afin d'inciter d'autres chercheurs à les réutiliser et à les intégrer dans les contributions, voire la bibliothèque standard si cela est possible.
 
 Nous déposerons des dossiers afin d'obtenir le financement d'une partie de nos frais par la conférence : une centaine de bourses (\emph{student travel support}) sont décernées afin de permettre à des étudiants de venir assister aux conférences (financement jusqu'à \textbf{750~€} par personne uniquement sur les frais de transport et de logement).
 
