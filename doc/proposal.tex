@@ -8,7 +8,7 @@
 \usepackage{eurosym}
 \usepackage{fullpage}
 
-\title{Candidature pour les labos juniors}
+\title{Candidature pour les laboratoires juniors}
 \date{}
 \author{}
 \bibliography{bibliography}
@@ -71,11 +71,18 @@ Les résultats actuels ont déjà permis de poser des bases solides au sein de d
 
 \subsection{Objectifs}
 
-Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. L'objectif principal de \coqtail{} sera donc la formalisation et l'étude des équations différentielles et des notions connexes. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorème plus ardus (notamment, à terme, les théorèmes de résolution d'équations différentielles).
+Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. Les 2 objectifs principaux de \coqtail{} seront donc la formalisation et l'étude des équations différentielles et des graphes. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).
+
+\subsubsection{Refonder les réels}
+%TODO ok c'est pas clair mais c'est a peu pres aussi vague que le reste et je ne sais pas si c'est pas préférable que ça reste vague... sinon ça devient trop important par rapport au reste (genre on va faire que ça)
+Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq. C-Corn est une bibliothèque qui permet de calculer avec les
+réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. A l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
+
+Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques.
 
 \subsubsection{Équations différentielles}
 
-Notre principal soucis est la formalisation des équations différentielles. Nous avons bien entendu en tête les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
+Notre principal soucis est la formalisation des équations différentielles. Nous allons, bien entendu, aborder les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
 
 \subsubsection{Intégration}
 
