@@ -65,28 +65,32 @@ Coq permet une construction interactive des preuves ainsi que la définition de 
 
 \subsection{Héritage de \coquille{}}
 
-Le projet \coqtail{} (COQ Theorems, Abstractions and Implementations (Licence-level)) s'est, jusqu'à présent, attaché à fournir des bibliothèques permettant de faciliter les démonstrations en Coq. Il fait suite à COQUILLE développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
+Le projet \coqtail{} (COQ Theorems, Abstractions and Implementations (Licence-level)) s'est, jusqu'à présent, attaché à fournir des outils (formalisations d'objets et résultats théoriques attachés) permettant d'aborder simplement des problèmes de niveau Licence en Coq. Il fait suite à \coquille{} développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
 
-Les résultats actuels ont déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats connus ou élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuve\cite{Freek}.
+Le travail fourni jusqu'à présent a déjà permis de poser des bases solides au sein de divers domaines (suites réelles, complexes, analyse complexe, séries entières, etc.) et de démontrer des résultats connus ou élégants (formule de Stirling, indénombrabilité de $\mathbb{R}$, problème de Bâle) faisant l'objet d'une compétition entre les différents assistants de preuve\cite{Freek}.
 
-\subsection{Objectifs}
+\section{Objectifs}
 
-Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. Les objectifs principaux de \coqtail{} seront donc la formalisation et l'étude des équations différentielles. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).
+Notre objectif est maintenant de mettre à profit les outils développés et la maturité acquise pour aborder des sujets plus fondamentaux et plus complexes. Dans ce cadre, nos efforts seront orientés vers la formalisation et l'étude des équations différentielles d'une part et des graphes d'autre part. Ces formalisations seront, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).
 
-\subsubsection{Refonder les réels}
+Ces deux sujets sont fondamentaux : les équations différentielles sont présentes dans tous les systèmes physiques et si l'on désire modéliser ces systèmes, il sera absolument nécessaire d'être capable de les manipuler. Notre démarche étant de démontrer les théorèmes de manière la plus constructive possible, il sera possible d'extraire des méthodes d'approximation de nos résultats.
+Les graphes sont, quant à eux, très présents en Informatique que ce soit pour des problèmes d'ordonnancement, de routage ou en théorie de la complexité. Être capable de les manipuler et de décider l'équivalence de deux graphes permettra donc d'avoir des outils de base pour aborder de tels problèmes.
+
+\subsection{Refonder les réels}
 %TODO ok c'est pas clair mais c'est a peu pres aussi vague que le reste et je ne sais pas si c'est pas préférable que ça reste vague... sinon ça devient trop important par rapport au reste (genre on va faire que ça)
-Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq. C-Corn est une bibliothèque qui permet de calculer avec les
-réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. À l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
+Il existe actuellement deux grandes formalisations des réels en Coq. D'un côté, la construction des réels en C-Corn, et de l'autre, la bibliothèque standard de Coq. C-Corn est une bibliothèque qui permet de calculer avec les réels mais dans laquelle certains énoncés sont indémontrables car elle refuse les propositions non-constructives. À l'inverse, dans la bibliothèque standard, l'axiomatique a été choisie de manière à pouvoir exprimer des propriétés classiques. Malheureusement, ce choix implique l'existence de fonctions non-calculables.
 
-Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques.
+Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques. Cette construction servira de base aux développements d'analyse réelle mais elle sera également reliée à l'axiomatique de la librairie standard afin de faire en sorte que nos résultats soient réutilisables par le plus grand nombre.
 
-\subsubsection{Équations différentielles}
+\subsection{Équations différentielles}
 
 Notre principal souci est la formalisation des équations différentielles. Nous allons, bien entendu, aborder les théorèmes de résolution et d'unicité de la solution si les conditions initiales sont fixées. Nous explorerons également des sujets très proches comme les classes de fonctions et les fonctions analytiques.
 
-\subsubsection{Intégration}
-
 Les équations différentielles faisant intervenir des dérivées $n$-ièmes, il parait légitime de s'inquiéter de l'existence d'une formalisation aisément manipulable de la théorie de l'intégration et des principaux résultats. La première \textit{release} de \coqtail{} fournit déjà un ensemble de bibliothèques qui forment une sur-couche à la librairie standard permettant une utilisation plus simple de celle-ci.
+
+\subsubsection{Graphes}
+
+Les graphes ne disposant pas, à ce jour, de bibliothèques de théorèmes de base et de tactiques simples d'utilisation pour décider de propriétés telles que l'homomorphisme de graphes, ou autres résultats dont on aimerait disposer pour faciliter les preuves de théorèmes plus complexes, nous avons l'intention de concevoir et implémenter une telle bibliothèque. L'enjeu sera de choisir les bonnes définitions, et d'identifier les théorèmes essentiels, de manière à la rendre aussi puissante et simple d'utilisation que possible.
 
 % \subsubsection{Refonder les réels}
 % 
@@ -111,7 +115,7 @@ Les équations différentielles faisant intervenir des dérivées $n$-ièmes, il
 % Nous proposons de prendre le meilleur des deux mondes, en réformant l'axiomatique de la bibliothèque standard pour en éliminer les propriétés non-constructives du monde des programmes, tout en conservant les propriétés classiques dans le monde des propositions. Cependant, ce choix se fera au détriment de la simplicité, puisqu'il faudra dupliquer les propriétés, classiques (dans \texttt{Prop}) et constructivistes (dans \texttt{Set}).
 
 
-\subsection{Déroulement}
+\section{Déroulement}
 
 Nos méthodes de travail sont directement héritées des mois passés à travailler sur les projets COQUILLE puis \coqtail{}. Une phase de bibliographie et de recherche de preuves simples (et constructives) précède toute décision. Le choix des structures de données est ensuite fait de manière à trouver un compromis acceptable entre les définitions traditionnelles et les définitions les plus simples à manipuler ; c'est une étape cruciale qui peut faire varier de manière non négligeable la difficulté des preuves à écrire par la suite. Le travail de réécriture des preuves et d'implémentation peut ensuite être découpé suivant les affinités de chacun pour les sujets abordés : l'exercice se porte particulièrement bien au travail en parallèle comme nous l'ont prouvé les six mois passés.
 
@@ -130,33 +134,57 @@ Le projet \coqtail{} dispose déjà d'un site internet\cite{coqtail} et d'un sys
 
 \subsection{L'Équipe}
 
-L'équipe comporte 5 membres :
+L'équipe comporte 6 membres :
 
 \begin{itemize}
  \item Marc Lasson : Responsable du laboratoire junior
  \item Guillaume Allais
+ \item Marthe Bonamy
  \item Sylvain Dailler
  \item Jean-Marie Madiot
  \item Pierre-Marie Pédrot
 \end{itemize}
 
-\subsection{Calendrier et Budget}
+\section{Calendrier et Budget}
+
+\subsection{Calendrier}
 
 Le projet débutera en septembre 2010 pour une durée d'un an.
 %TODO retranscription d'un mail sur le calendrier, à modifier
 Nous prévoyons de publier plusieurs versions qui nous permettrons de juger de l'état d'avancement du projet : 
 \begin{itemize}
-\item première version fin février 2011
-\item deuxième version mars/avril 2011 avec une participation au Coq Workshop
-\item version finale fin août 2011
+ \item première version fin février 2011
+ \item deuxième version mars/avril 2011 avec une participation au Coq Workshop
+ \item rapport et version finale fin août 2011
 \end{itemize}
 
-Nous prévoyons d'assister aux conférences d'ITP (Interactive Theorem Proving) et de profiter de l'occasion pour présenter nos résultats lors du Coq Workshop (si ces deux événements sont regroupés comme c'est le cas cette année) (frais d'inscription seulement) :
+\subsection{Budget}
+
+\subsubsection{Groupes de travail}
+
+Nous comptons assister à quelques groupes de travail au cours de l'année (à Lyon comme ailleurs) afin de présenter nos résultats à d'autres équipes et échanger des idées à ce sujet. 
+
+En nous basant sur un aller-retour Lyon--Paris à 75 € en moyenne et la participation à un groupe de travail par personne en moyenne (le déplacement de toute l'équipe n'est pas requis pour chaque présentation), cela nous reviendrait à \textbf{450 €} pour l'année soit environ 3 à 6 participations (1 à 2 membre de l'équipe en moyenne).
+
+
+\subsubsection{Conférences}
+Nous prévoyons d'assister aux conférences d'ITP et au Coq Workshop si ces deux événements sont regroupés comme c'est le cas cette année.
+
+ITP est une conférence internationale sur la preuve interactive de théorèmes dédiée aux applications et études de cas mais également aux fondations théoriques de la preuve interactive et aux langages de preuves. Ce sera l'occasion pour nous de voir ce qui se fait à l'heure actuelle pour, pourquoi pas, en tirer de nouveaux objectifs. Le Coq Workshop est l'occasion de proposer des présentations plus informelles et de partager entre développeurs, contributeurs et utilisateurs de Coq. Nous proposerons une présentation du projet \coqtail{} et des résultats obtenus afin d'inciter d'autres chercheurs à les réutiliser et à les intégrer dans les contributions (voire la libraire standard si cela est possible).
+
+Nous déposerons des dossiers afin d'obtenir le financement d'une partie de nos frais par la conférence : une centaine de bourses (student travel support) sont décernées afin de permettre à des étudiants de venir assiter aux conférences (financement jusqu'à \textbf{750 €} par personne uniquement sur les frais de transport et de logement).
+
+Cela nous coûterait donc (frais d'inscription seulement) :
 \begin{itemize}
-	\item Coq Workshop (50€ par personne)
-	\item ITP (150€ par personne) 
+	\item Coq Workshop (42€ par personne)
+	\item ITP (150€ par personne)
 \end{itemize}
-Cela fait un budget total de 1200€.
+
+Ce qui représente \textbf{1152 €} ($6 * 192$ €).
+
+\subsubsection{Total}
+
+Cela fait un budget total de \textbf{1600 €}.
 
 \printbibliography
 
