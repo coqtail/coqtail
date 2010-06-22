@@ -44,7 +44,7 @@ elseif($page == 1)
 
 ?>
 <ul>
-	<li><a href="http://sourceforge.net/project/memberlist.php?group_id=298939">Team</a></li>
+	<li><a href="http://sourceforge.net/project/memberlist.php?group_id=298939">Current team</a></li>
 	<li><a href="http://graal.ens-lyon.fr/coquille/index.php?page=team">Former team</a> (COQUILLE project)</li>
 </ul>
 <?php
@@ -59,7 +59,8 @@ elseif($page == 2)
 <ul>
 	<li>The uncountability of &#x211d;</li>
 	<li>The reals axioms imply Markov principle</li>
-	<li>&zeta;(2)'s value is &pi;²/6</li>
+	<li>Basel problem (<em>1+1/2²+1/3²+1/4²+...= &pi;²/6</em>)</li>
+	<li>Stirling Formula (approximation for <em>n!</em>)</li>
 </ul>
 
 <h2>New libraries</h2>
@@ -68,8 +69,8 @@ elseif($page == 2)
 	<li>Arithmetic</li>
 	<li>Topology (Various typeclasses definitions)</li>
 	<li>Clean libraries on sequences of reals or complexes</li>
-   <li>Complexes' definition and collection of basic results</li>
-   <li>Formalization of power series and their convergence radius</li>
+	<li>Complexes' definition and collection of basic results</li>
+	<li>Formalization of power series and their convergence radius</li>
 </ul>
 <?php
 

@@ -1,0 +1,70 @@
+
+  DEVELOPMENT DIRECTIONS FOR COQTAIL
+
+New axiomatics
+  Motivations
+    - stdlib's axiomatics is not constructive and implies Markov (and it is bad)
+    - C-CoRN abuses of Set (for the excluded middle for example) (and use heavy notations)
+  Goals for provability
+    - (C-CoRN reals) ≤ (coqtail's reals)
+    - note: in CoRN/Rreals.v they show (R ⊧ CReals)
+    - Be able to convert most stdlib's proofs into coqtail's reals
+  Choice of axiomatics
+    RECALL STDLIB's real numbers
+      - R 0 1 + * 1/ - <
+      - up : R -> Z
+      - operations
+          +comm +assoc r+-r=0 0+r=r
+          *comm *assoc /r*r=1 1*r=r
+          +*distr
+      - order :
+          1<>0
+          total_order {<}+{=}+{>}
+          <asym <trans +<compat *<compat
+      - archimed
+          forall r:R, IZR (up r) > r /\ IZR (up r) - r <= 1
+      - completeness
+          forall E:R -> Prop,
+            bound E -> (exists x : R, E x) -> { m:R | is_lub E m }.
+    RECALL C-CoRN's real numbers
+      - R : ordered field
+        - ring
+            abeliangroup 1 * + (setoids) +*distr *assoc *1monoid 1#0
+        - field
+            ring +
+            x#0 → /x * x = 1
+        - ordered :
+            < ≤ > ≥
+            (< is a strict order)
+            <+ compat
+            0<x → 0<y → 0<x*y
+            x#y iff x<y or y<x
+            relations between ≤<, ><, ≥≤
+      - lim : build x ∈ R from a cauchy sequence (which is indeed the limit)
+    
+    Discussion
+      - C-CoRN has an interesting framework and has some problems but it would be
+      very interesting to list them all:
+        - forces the usage of the excluded middle in Set, whereas EM in Prop is 
+            morally enough
+        - horrible notations and abbreviations (a quick tutorial may fix that)
+    
+    Constructive:
+      what about building as R as Q with an upper bound ?
+
+Hierarchy
+  maybe it will be interesting to rely on C-CoRN's structures¹ to build a better/more 
+  compatible/popular Hierarchy organisation. It would be great to rely on C-CoRN to 
+  prove things with minimal hypotheses (like JM did in Commutative_ring_binomial as a 
+  little proof of concept) like guys in Nijmegen did on a regular basis. C-CoRN is 
+  promising but quite hard to read. Maybe a great thing to put sugar in it.
+  
+  ¹coq's setoid ← Setoid ← CSetoid ← CSemigroup ← CMonoid ← CGroup ← CAbGroup
+  ← CRing ← CField ← COrdField ← CReals ← CC_set
+
+Proof that e is transcendental
+  JM will look into it
+  http://planetmath.org/encyclopedia/EIsTranscendental.html
+
+
+

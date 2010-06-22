@@ -61,7 +61,8 @@ elseif($page == 2)
 <ul>
 	<li>&#x211d; est indénombrable</li>
 	<li>L'axiomatique des réels implique le principe de Markov</li>
-	<li>&zeta;(2) a pour valeur &pi;²/6</li>
+	<li>Problème de Bâle (<em>1+1/2²+1/3²+1/4²+...= &pi;²/6</em>)</li>
+	<li>Formule de Stirling (approximation de <em>n!</em>)</li>
 </ul>
 
 <h2>De nouvelles bibliothèques</h2>
@@ -70,8 +71,8 @@ elseif($page == 2)
 	<li>Arithmétique</li>
 	<li>Topologie (définition de nombreuses typeclass de base, recherche de définitions les plus générales possibles)</li>
 	<li>Bibliothèques ordonnées de résultats sur les suites et séries réelles et les suites complexes</li>
-   <li>Définition et manipulation des complexes et des concepts de base</li>
-   <li>Formalisation des séries entières et développements sur les rayons de convergence</li>
+	<li>Définition et manipulation des complexes et des concepts de base</li>
+	<li>Formalisation des séries entières et développements sur les rayons de convergence</li>
 </ul>
 <?php
 
