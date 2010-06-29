@@ -1,0 +1,49 @@
+
+\documentclass[a4paper,11pt]{article}
+ 
+% Import des extensions
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[french]{babel}
+
+\begin{document}
+
+Axiomatique de Pim : 
+\begin{itemize}
+\item Axiomes naturels (stdlib) sur les corps
+\item Axiome de compatibilité du $<$
+\item On dispose d'une fonction $up$ : R -> Z. $up$ est la partie entière + 1.
+\item Pour toute fonction (f : nat -> bool) représentant l'écriture binaire d'un réel on peut 
+associer un réel le plus proche (donc le réel de la représentation).
+\end{itemize}
+
+
+Problème : \\
+
+La combinaison de $up$ et de l'axiome de completeness semble permettre de prouver des formules de $\Pi_1$ 
+\footnote{Les propositions à un seul quantifieur universel}.\\
+
+Démonstration :
+
+Soit $P$ une proposition décidable : $\forall n, \{ P \ n \} + \{~P\ n\}$\\
+On prend l'écriture binaire d : nat -> $\{ 0, 1 \}$ :\\
+d n = 
+0 si $(\exists k < n, ~P \ k)$ \\
+1 sinon.\\
+
+Soit x le réel défini par ce développement (axiome du completeness).\\
+
+$up \ x = 2 <-> \forall k, P \ k$\\
+\emph{Par exemple : \\
+up (0,11111111...111) = up(1) = 2\\
+up (0,11111111000... 0000) = 1\\
+}
+Donc :\\
+Si P n'a pas de contre-exemple on a x = 0,111...111.. = 1 et donc up(x) = 2 \\ 
+si P a un contre-exemple on a x = 0,1111...100.. et donc up(x) = 1. \\
+
+Donc on a créé une procédure de décision pour P décidable.\\
+
+Qed.
+
+\end{document}
