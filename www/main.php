@@ -14,7 +14,7 @@ if($page == 0)
 
 <div id="news"><h3>News</h3>
 
-<p>[07 avril] The first release is now available ! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
+<p>[07 april] The first release is now available ! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
 </div>
 
 <h2>Origine &amp; Objectifs</h2>
