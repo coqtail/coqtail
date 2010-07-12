@@ -42,9 +42,13 @@ if ($_SERVER['QUERY_STRING'] != '')
 				<a href="main_en.php<?=$ext?>"><img src="img/gb.png" title="English" alt="English" /></a>
 			</div>
 			<div id="description"><h1>Coqtail</h1>
-				<h2><span class="highlight">COQ</span> <span class="highlight">T</span>heorems, 
-				<span class="highlight">A</span>bstractions and <span class="highlight">I</span>mplementations 
-				(<span class="highlight">L</span>icence-level)</h2>
+				<h2 class="sigle">
+				  <span class="highlight">COQ</span>
+				  <span class="highlight">T</span>heorems, 
+				  <span class="highlight">A</span>bstractions and
+				  <span class="highlight">I</span>mplementations
+				  (<span class="highlight">L</span>icence-level)
+				</h2>
 			</div>
 			<div id="menu">
 				<ul>

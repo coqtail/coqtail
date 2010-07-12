@@ -45,8 +45,19 @@ elseif($page == 1)
 {
 
 ?>
+Membres du laboratoire junior :
 <ul>
-	<li><a href="http://sourceforge.net/project/memberlist.php?group_id=298939">Équipe actuelle</a></li>
+  <li> Marc Lasson, responsable du laboratoire junior </li>
+  <li> Guillaume Allais </li>
+  <li> Marthe Bonamy </li>
+  <li> Sylvain Dailler </li>
+  <li> Jean-Marie Madiot </li>
+  <li> Pierre-Marie Pédrot </li>
+</ul>
+
+Membres en rapport avec le projet :
+<ul>
+	<li><a href="http://sourceforge.net/project/memberlist.php?group_id=298939">Équipe actuelle</a> (sur Sourceforge)</li>
 	<li><a href="http://graal.ens-lyon.fr/coquille/index.php?page=team">Ancienne équipe</a> (projet COQUILLE)</li>
 </ul>
 <?php
