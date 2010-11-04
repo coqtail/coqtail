@@ -1,0 +1,158 @@
+\documentclass[10pt]{article}
+
+\usepackage{fullpage}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,american]{babel}
+\usepackage{mathtools}
+\usepackage{amssymb}
+
+\begin{document}
+
+\title{Axiomatique constructive de $\mathbb{R}$}
+\author{Allais, Bonamy, Dailler, Lasson, Madiot, Pédrot}
+\date{October 2010}
+
+\maketitle
+
+\section{La monade {\tt inhabited}}
+
+Le type inductif {\tt inhabited} peut être utilisé pour formuler et prouver des propositions constructives (dans la sorte {\tt Type}) à l'aide d'arguments non constructifs (dans la sorte {\tt Prop}). On remplacera dans la suite {\tt inhabited A} par la notation {\tt [ A ]} et on rappelle sa définition :
+
+\begin{verbatim}
+Inductive inhabited (A : Type) : Prop := inhabits : A -> [ A ].
+\end{verbatim}
+
+\subsection{Une monade}
+
+On peut ainsi prouver que {\tt inhabited} définit une monade. Les définitions (immédiates) de $map$, $join$ et $return$ ainsi que les preuves des égalités nécessaires sont détaillées dans le fichier {\tt Monad.v}.
+
+$$return : A → TA$$
+$$map : (A → B) → (TA → TB)$$
+$$join : TTA → TA$$
+
+L'intuition d'irréversibilité du plongement dans la monade (pas d'inverse de $return : A → TA$) est ainsi directement lié au fait qu'on n'utilise pas d'hypothèse dans la sorte {\tt Prop} pour prouver une conclusion dans la sorte {\tt Type}.
+
+% L'important est de remarquer qu'il est possible de prouver des propositions dans la sorte {\tt Type} à l'aide d'arguments dans la sorte {\tt Prop}, sans introduire, mais sans pour autant pouvoir . Par exemple, on peut prouver :
+
+En revanche dans le sens contraire, plonger un résultat dans {\tt [ ]} permet d'utiliser une hypothèse dans {\tt Prop} pour prouver un résultat dans {\tt Type}. On prouve par exemple que {\tt ex}, l'existence dans {\tt Prop}, est équivalent à {\tt [ sig ]}, l'existence dans {\tt Type} plongée dans {\tt inhabited}.
+
+\begin{verbatim}
+forall A (f : A -> Prop), ex f -> [ sig f ]
+\end{verbatim}
+
+
+\subsection{Utilisation}
+
+\subsubsection{Duplications}
+
+Si la différence entre {\tt ex}, {\tt sig} et {\tt sigT} est utile dans Coq, il est en revanche fastidieux de définir et de prouver d'un côté des propriétés constructives et leurs correspondantes non constructives quand on parle de résultats mathématiques.
+
+Par exemple dans une optique d'analyse réelle, on voudrait pouvoir prouver le théorème de Bolzano-Weierstrass qui nécessite l'utilisation du tiers-exclus. Cependant, ce dernier n'est pas constructif et on voudrait tout de même en parler sans admettre de tiers-exclus dans une sorte plus grosse que {\tt Prop}. La monade {\tt [ ]} permet d'exprimer ce résultat et d'utiliser à la fois les résultats constructifs dans {\tt Type} et le tiers-exclus dans {\tt Prop}.
+
+\subsubsection{Fonctions partielles, fonctions non continues}
+
+À l'aide du tiers exclus, on peut parler par exemple de la fonction échelon qui n'est pas continue :
+
+\begin{verbatim}
+Definition Heaviside : inhabited { f : R -> R |
+  forall x, (x < 0 -> f x = 1) /\ (x >= 0 -> f x = 0) }.
+\end{verbatim}
+
+On peut aussi manipuler des fonctions partielles, comme la fonction inverse~:
+
+\begin{verbatim}
+Definition inverse : inhabited { f : R -> R |
+  forall x, ~ x = 0 -> f x * x = 1 }.
+\end{verbatim}
+
+\subsubsection{Constructivisme}
+
+Il n'y a pas besoin d'implémenter les axiomes non constructifs car ils ont leur place dans {\tt Prop}. De plus, les résultats qui ne seront pas dans la monade {\tt [ ]} sont constructifs et extractibles.
+
+\section{Axiomatique de $\mathbb{R}$}
+
+\subsection{Axiomatique choisie}
+
+\subsubsection{Anneau}
+
+On ajoute en tant que paramètre, {\tt R} ainsi que les propriétés d'anneau commutatif~: 
+
+\begin{itemize}
+  \item $(\mathbb{R}, 0, +)$ est un groupe abélien
+  \item $(\mathbb{R}, 1, \times)$ est un monoïde commutatif
+\end{itemize}
+
+Par volonté de minimiser l'axiomatique et de limiter la tailles des fichiers d'axiomatique, on ne fonctorialise pas les notions de groupes comme dans C-CoRN mais on établit la liste des axiomes.
+
+\subsubsection{Ordonné}
+
+On doit ensuite parler d'ordre. Comme on veut une implémentation constructive, on choisit de paramétrer constructivement par la relation d'ordre stricte $<$ de type {\tt R -> R -> Type}.
+
+Les axiomes qu'on choisit pour $<$ sont la transitivité et l'asymétrie ($¬ (x < y \wedge y < x)$). L'irréflexivité ($¬ (x < x)$) se déduit des précédents.
+
+On définit la relation de discriminabilité $\#$ par l'union constructive de $<$ et de sa relation symétrique. Cela permettra par exemple d'extraire de $x \# y$ un témoin $n$ de la différence (qui devra être par exemple supérieure à $2^{-n}$).
+
+On définit l'égalité sur les réels $\equiv$ par la négation de la discriminabilité.
+
+On ajoute les axiomes de compatibilité de $<$ avec $+$ et $\times$.
+
+On ajoute aussi un axiome qui force la non trivialité de l'anneau : $0 < 1$. (Cette inégalité est équivalente à $0 \# 1$).
+%{\bf est-ce qu'on n'a pas une telle chose à l'aide des axiomes qui sont définis à l'aide de <}
+
+\subsubsection{Corps}
+
+Maintenant que la discriminabilité est définie, on peut construire l'inverse d'un réel sous réserve de posséder une preuve (dans {\tt Type}) qu'il est discriminable de 0. Une telle preuve permet en effet de construire le nouveau réel.
+
+\begin{verbatim}
+Axiom Rinv : forall x, x # 0 -> R.
+Axiom Rinv_l : forall x (pr : x # 0), Rinv x pr * x = 1.
+\end{verbatim}
+
+\subsubsection{Congruence}
+
+On ne peut pas disposer d'une égalité de termes convertibles au sens de Coq, car on en arrive à l'unicité de la représentation d'un même réel. On ajoute alors des axiomes de congruence de la relation $\equiv$ à gauche et à droite de $<$.
+
+On pense pour l'instant qu'on a aussi besoin de la compatibilité de $<$ avec l'inverse. Notons que l'axiome qui suit est paramétré par deux preuves. On pourra prouver dans la suite que l'inverse est $\equiv$-stable par changement de preuve de discriminabilité.
+
+\begin{verbatim}
+Axiom Req_inv_compat : forall (x : R) (pr : 0 < x) (pr' : x # 0),
+  0 < Rinv x pr'.
+\end{verbatim}
+
+\subsubsection{$\mathbb{R}$ archimédien}
+
+À l'aide de $0, 1, +, -$ on injecte $\mathbb{Z}$ dans $\mathbb{R}$, et on ajoute un paramètre qui permet de retrouver un entier à partir d'un réel constructif.
+
+\begin{verbatim}
+Definition Rsqr r : R := r * r.
+Parameter Rup : R -> Z.
+Axiom Rup_spec : forall r : R, Rsqr (r - IZR (Rup r)) < R1.
+\end{verbatim}
+
+Pourquoi pas utiliser la spécification de {\tt up} de la stdlib ? Parce qu'elle ne permet pas d'extraire constructivement un entier à partir d'un réel, alors que cet axiome le permet. De plus cet axiome est réalisable car si par exemple l'implémentation des réels est celle des suites de Cauchy, il suffit de lui appliquer $\frac12$ pour obtenir une approximation qui s'intersecte correctement avec les intervalles $]n-1,n+1[$ de $\mathbb{R}$.
+
+Notons que cette définition ne fournit pas une partie entière d'un réel. Elle n'est d'ailleurs pas définie sur $\mbox{\tt R}/\equiv$ car même si $x\equiv y$, on peut avoir $\mbox{\tt Rup}(x) \ne \mbox{\tt Rup}(y)$. Dans le cas contraire on se heurterait encore à la définition d'une fonction non continue et à la comparaison décidable avec un réel.
+
+On vient de voir que la contrainte $n ≤ x < n+1$ qui correspond à la partie entière, n'est pas constructive. On peut aussi légitimement considérer la contrainte $n ≤ x ≤ n+1$, mais celle-ci n'est pas plus constructive car on définit encore une fonction non continue.
+
+Finalement la contrainte adoptée $n-1 < x < n+1$ est équivalente à n'importe quelle contrainte du type $n-1/2-\varepsilon < x < n+1/2+\varepsilon$ ou $\varepsilon$ est supérieur à un $2^{-n}$ qu'on peut donner en argument à une suite de Cauchy, car on peut ainsi couvrir n'importe quel intervalle $]q-2^{-n},q+2^{-n}[$ par un intervalle $]n-1/2-\varepsilon, n+1/2+\varepsilon[$ centré sur un entier.
+
+\subsubsection{$\mathbb{R}$ est complet}
+
+Enfin pour obtenir les réels constructifs, on ajoute à l'aide d'une définition interne des suites de Cauchy une construction d'un nouveau réel.
+
+\begin{verbatim}
+Definition Rseq_Cauchy (Un : nat -> R) : Type := forall k,
+  {N : nat & forall p q, (N <= p)%nat -> (N <= q)%nat ->
+    Rsqr (Un p - Un q) < Rpow_nat Rinv_2 k}.
+
+Definition Rseq_cv (Un : nat -> R) (l : R) : Type := forall k,
+  {N : nat & forall n, (N <= n)%nat ->
+    Rsqr (Un n - l) < Rpow_nat Rinv_2 k}.
+
+Axiom Rcomplete : forall Un, 
+  Rseq_Cauchy Un -> {l : R & Rseq_cv Un l}.
+\end{verbatim}
+
+\end{document}
+
