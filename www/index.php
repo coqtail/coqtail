@@ -1,24 +1,25 @@
 <?php
   include('handleurl.php');
   include('top.inc.php');
-  
+
   if ($pagename == "home") {
     if ($lang == "en") {
       ?>
 
       <div id="news"><h3>News</h3>
 
-      <p>[07 april] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
+	  <p>[2010-11] COQTAIL is now a junior lab funded by the <a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
+      <p>[07 april 2010] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
       </div>
 
       <h2>Origin &amp; Objectives</h2>
 
       <p>The <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> project is the biological
-      son of the workpackage `Proofs` of the <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a> 
+      son of the workpackage `Proofs` of the <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>
       project. It is therefore based on all the results obtained during the development of COQUILLE.</p>
 
-      <p>In addition to implementing tools dedicated to the easy formalization of mathematics as we see 
-      them in french <i>Classes préparatoires</i>, this project will proove licence-level results.</p> 
+      <p>In addition to implementing tools dedicated to the easy formalization of mathematics as we see
+      them in french <i>Classes préparatoires</i>, this project will proove licence-level results.</p>
 
       <h2>Development axis</h2>
 
@@ -35,18 +36,19 @@
       ?>
       <div id="news"><h3>News</h3>
 
+	  <p>[2010-11] COQTAIL est maintenant un laboratoire junior de l'<a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
       <p>[07 avril] La première révision est maintenant disponible ! Vous pouvez la télécharger <a href="http://sourceforge.net/projects/coqtail/files/">ici</a>.</p>
       </div>
 
       <h2>Origine &amp; Objectifs</h2>
 
-      <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail `Preuves` du projet 
-      <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>. Il se fonde donc sur 
+      <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail `Preuves` du projet
+      <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>. Il se fonde donc sur
       l'intégralité des résultats obtenus lors du semestre de développement de COQUILLE.</p>
 
       <p>En plus d'implémenter des outils permettant une formalisation aisée des mathématiques
       abordées en classes préparatoires, ce projet tâchera également de démontrer des résultats
-      de niveau licence.</p> 
+      de niveau licence.</p>
 
       <h2>Axes de développements</h2>
 
@@ -61,7 +63,7 @@
       <?php
     }
   }
-  
+
   elseif($pagename == "team") {
     if ($lang == "en") {
       ?>
@@ -103,7 +105,7 @@
       <?php
     }
   }
-  
+
   elseif($pagename == "results") {
     if ($lang == "en") {
       ?>
@@ -147,7 +149,7 @@
       <?php
     }
   }
-  
+
   elseif($pagename == "doc")
   {
     if ($doc) {
