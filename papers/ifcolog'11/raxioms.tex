@@ -85,7 +85,7 @@
   \end{array}
   \]
   
-  We also add $0<1$ as an axiom (it is stricly equivalent to $0\#1$.
+  We also add $0<1$ as an axiom (it is stricly equivalent to $0\#1$). %By definition of #
   
   Then we must deal with "getting back from $\R$" to some finite structure. We then specify a new parameter 
   
@@ -95,9 +95,9 @@
   \end{array}\\
   \]
   
-  which represents a function mapping the representations of the real numbers to the relative integers. Instead of considering the floor function which is not computable (because not continuous) we choose to have a function which is allowed to return any integer within $\Z\cap]x-\alpha,x+alpha[$ where $\alpha>\frac12$. [[TODO: say why it is computable, in at least another part? In fact I already did some of this in another file]].
+  which represents a function mapping the representations of the real numbers to the relative integers. Instead of considering the floor function which is not computable (because not continuous) we choose to have a function which is allowed to return any integer within $\Z\cap]x-\alpha,x+\alpha[$ where $\alpha>\frac12$. [[TODO: say why it is computable, in at least another part? In fact I already did some of this in another file]].
   
-  If $n$ is an integer then we note $\overline{n}$ the real number $1+1+\dots+1$ where $1$ appears $n$ times (or $-(1+1+\dots+1)$ if $n<0$). Then we want $\llcorner \cdot \lrcorner$ to be such that:
+  If $n$ is an integer then we note $\overline{n}$ the real number $\underbrace{1+1+\dots+1}_{n}$ where $1$ appears $n$ times (or $-(1+1+\dots+1)$ if $n<0$). Then we want $\llcorner \cdot \lrcorner$ to be such that:
   
   \[
   \forall r\in\R, | r - \overline{\llcorner r \lrcorner} | < 1
@@ -118,7 +118,7 @@
   \mbox{cauchy}(u) & \Rightarrow & \exists l, \; u→l
   \end{array}\\
   \]
-  
+  %Derniere ligne ? complete(R) : forall u, cauchy (u) -> exists l, u -> l
     
 \begin{comment}  
   Definition Rseq_Cauchy (Un : nat -> R) : Type := forall eps, R0 < eps ->
@@ -139,5 +139,9 @@
 \subsection{The Markov principle}
 
 \section{A valley of milk and honey}
+
+%Une section pour justifier que vous definissez bien R et qui soit disjointe de la premiere ? Ou au moins parer de vrai maths à un moment... Groupe anneau corps tout ça...
+%Comparaison claire à Std lib et à Ccorn ? pros cons etc ?
+%Une section sur l'equivalence avec des axiomatiques existantes (coq modulo trucs) et un truc constructifs qui réalisent ?
 
 \end{document}
