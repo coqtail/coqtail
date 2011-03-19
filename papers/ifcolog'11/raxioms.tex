@@ -1,14 +1,20 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[utf8x]{inputenc}
-\usepackage{biblatex}
+%\usepackage{biblatex}
 \usepackage{amssymb}
 \usepackage{bussproofs}
 \usepackage{fullpage}
+\usepackage{verbatim}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Type}{\mbox{Type}}
+\newcommand{\Prop}{\mbox{Prop}}
 
 %opening
 \title{Revisiting the formalization of real numbers in Coq}
 \author{Coqtail team}
-\bibliography{biblio}
+%\bibliography{biblio}
 
 \begin{document}
 
@@ -17,12 +23,114 @@
 \begin{abstract}
 	In this paper we present an alternative axiomatic for the real 
 	numbers in Coq. Contrary to the one in the standard library, this 
-	axiomatic does not suffer from classical behaviors such as the 
-	Markov principle, the trichotomy principle or the decidability of
-	the equality.
+	axiomatic is constructive and thus does not provide a decidable 
+	equality. Moreover we provide a way to speak about non-constructive
+	theorems without defining everything twice, using the Prop/Type
+	distinction.
 \end{abstract}
 
 \section{Crossing the desert}
+
+\subsection{The axiomatic}
+  
+  The axiomatic specifies a type $\R$, two objects $0,1$ of $\R$, then some operators on $\R$:
+  \[
+  \begin{array}{ccl}
+  +, \cdot & : & \R→\R→\R \\
+  -    & : & \R → \R
+  \end{array}
+  \]
+  
+  Then to constructively define the reciprocal of a number, i.e. to build this number, one must have a witness of the fact it is not null. We thus have to define a stronger notion of order. Instead of defining $<$ in terms of $≤$ and $=$, our base relation is $<\,\,:\R→\R→\Type$, which has to have the following properties:
+  
+  \[
+  \begin{array}{ccl}
+    \mbox{asymmetric:} & ¬(x<y \wedge y<x)\\
+    \mbox{transitive:} & x<y \wedge y<z \Rightarrow x<z
+  \end{array}
+  \]
+  
+  Note that we don't need the irreflexivity $(¬x<x)$ as it is implied by the asymmetry.
+  
+  We then defines the relation of discriminability thanks to $<$, as a constructive disjonction, and the equality as the negation of the discriminability. Indeed the equality between two real numbers has no computational content, so we don't lose anything by using the negation.
+  
+  \[
+  \begin{array}{ccl}
+  x \# y     & := & x < y \uplus y < x \\
+  x \equiv y & := & ¬ x \# y 
+  \end{array}
+  \]
+  
+  Now we can define a operator for the multiplicative inverse, which expect a real number and the proof that this number is discriminable from 0:
+  
+  \[
+  \begin{array}{ccl}
+  \cdot^{-1}_{[\cdot]} & : & (x:\R), (p:x\#0) \mapsto x^{-1}_{[p]} : \R
+  \end{array}
+  \]
+  
+  We then add the axioms of commutativity, associativity, distributivity of multiplication and/over addition with respect to $\equiv$, and the axioms specifying $0$ and $1$ as the unit for $+$ and $\cdot$. We also specify $-$ with $x+(-x)\equiv 0$. For the multiplicative inverse, we just ask for a proof $p:x\#0$ and say $x^{-1}_{[p]}\cdot x=1$.
+  
+  Moreover we have to say that $+,\cdot,^{-1}$ and even $\equiv$ behave well with respect to $<$ and $\equiv$:
+  
+  \[
+  \begin{array}{rcl}
+  x \equiv x' \;,\; x < y   &  \Rightarrow  & x' < y \\
+  x \equiv x' \;,\; y < x   &  \Rightarrow  & y < x' \\
+  y \equiv y'               &  \Rightarrow  & x + y \equiv x + y' \\
+  y < y'                    &  \Rightarrow  & x + y < x + y' \\
+  0 < x \;,\; y < y'        &  \Rightarrow  & x \cdot y < x \cdot y' \\
+  0 < x \;,\; y \equiv y'   &  \Rightarrow  & x \cdot y \equiv x \cdot y' \\
+  p:0<x \;,\;  p':0\#x      &  \Rightarrow  & 0 < x^{-1}_{[p']} \\
+  \end{array}
+  \]
+  
+  We also add $0<1$ as an axiom (it is stricly equivalent to $0\#1$.
+  
+  Then we must deal with "getting back from $\R$" to some finite structure. We then specify a new parameter 
+  
+  \[
+  \begin{array}{rcl}
+  \llcorner \cdot \lrcorner &    :          & \R → \Z \\
+  \end{array}\\
+  \]
+  
+  which represents a function mapping the representations of the real numbers to the relative integers. Instead of considering the floor function which is not computable (because not continuous) we choose to have a function which is allowed to return any integer within $\Z\cap]x-\alpha,x+alpha[$ where $\alpha>\frac12$. [[TODO: say why it is computable, in at least another part? In fact I already did some of this in another file]].
+  
+  If $n$ is an integer then we note $\overline{n}$ the real number $1+1+\dots+1$ where $1$ appears $n$ times (or $-(1+1+\dots+1)$ if $n<0$). Then we want $\llcorner \cdot \lrcorner$ to be such that:
+  
+  \[
+  \forall r\in\R, | r - \overline{\llcorner r \lrcorner} | < 1
+  \]
+  
+  where the predicate $| \cdot - \cdot | < \cdot $ is defined as:
+  
+  \[
+  | x - y | < d  :=  (x - y < d) \wedge (- d < x - y)
+  \]
+  
+  Finally we complete $\R$ by adding all the limits of the Cauchy sequences.
+  
+  \[
+  \begin{array}{rcl}
+  \mbox{cauchy}(u) & := & \forall \varepsilon>0, \exists N, \forall p,q≥N \; |u_p - u_q | < \varepsilon \\
+  u→l & := & \forall \varepsilon>0, \exists N, \forall n≥N, \; |u_n - l | < \varepsilon \\
+  \mbox{cauchy}(u) & \Rightarrow & \exists l, \; u→l
+  \end{array}\\
+  \]
+  
+    
+\begin{comment}  
+  Definition Rseq_Cauchy (Un : nat -> R) : Type := forall eps, R0 < eps ->
+    {N : nat & forall p q, (N <= p)%nat -> (N <= q)%nat -> Rdist (Un p) (Un q) eps}.
+
+  Definition Rseq_cv (Un : nat -> R) (l : R) : Type := forall eps, R0 < eps ->
+    {N : nat & forall n, (N <= n)%nat -> Rdist (Un n) l eps}.
+
+  Axiom Rcomplete : forall Un, Rseq_Cauchy Un -> {l : R & Rseq_cv Un l}.
+
+  End CReals.
+\end{comment}  
 
 \subsection{The decidable equality on real numbers}
 
