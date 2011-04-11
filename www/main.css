@@ -80,7 +80,14 @@ body {
 
 #footer {
 	margin-top:100px;
-	text-align: right;
+}
+
+#sourceforge {
+	float: left;
+}
+
+#w3c {
+	float:right;
 }
 
 .clean {
