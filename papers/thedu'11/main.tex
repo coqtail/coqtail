@@ -1,0 +1,45 @@
+\documentclass[submission,copyright]{eptcs}
+\providecommand{\event}{THedu 2011} % Name of the event you are submitting to
+\usepackage{breakurl}             % Not needed if you use pdflatex only.
+\usepackage{amssymb, amsmath}
+
+\newcommand{\coq}{Coq}
+\newcommand{\coqtail}{\textsc{coqtail}}
+\newcommand{\R}{$\mathbb{R}$}
+
+\title{\coq{} with power series}
+\author{XXX
+\institute{Junior Laboratory \coqtail{}\\
+Ens Lyon - France\\}
+\email{XXX}}
+\def\titlerunning{\coq{} with power series}
+\def\authorrunning{XXX, \coqtail{} team}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper is based on a \coq{} formalisation of the power series over \R{}. It
+presents briefly the strategy adopted to talk about these objects and then
+advocates for the use of such abstract concepts by showing the benefits that
+one gets for free.
+
+These benefits includes the possibility to define the usual functions ($\sin$,
+$\cos$, $\exp$, ...) in a few lines, to get some of their properties for free
+(eg. being in the $C^{\infty}$ class) and to find solutions of some linear
+differential equations just by looking at sequences over \R{}.
+
+\end{abstract}
+
+\section{Formalisation}
+
+\section{Uses}
+\subsection{Defining usual functions}
+\subsubsection{Comparison to the standard library}
+
+\subsection{Finding solutions of linear differential equations}
+
+\section{Extensions}
+
+
+\end{document}
