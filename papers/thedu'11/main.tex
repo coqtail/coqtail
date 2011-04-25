@@ -5,7 +5,15 @@
 
 \newcommand{\coq}{Coq}
 \newcommand{\coqtail}{\textsc{coqtail}}
-\newcommand{\R}{$\mathbb{R}$}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rbar}{\overline{\mathbb{R}}}
+\newcommand{\cvrw}{\texttt{Cv\_radius\_weak}}
+\newcommand{\fcvr}{\texttt{finite\_cv\_radius}}
+\newcommand{\icvr}{\texttt{infinite\_cv\_radius}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
 
 \title{\coq{} with power series}
 \author{XXX
@@ -19,27 +27,137 @@ Ens Lyon - France\\}
 \maketitle
 
 \begin{abstract}
-This paper is based on a \coq{} formalisation of the power series over \R{}. It
-presents briefly the strategy adopted to talk about these objects and then
-advocates for the use of such abstract concepts by showing the benefits that
-one gets for free.
+This paper is based on a \coq{} formalization of the power series over $\R$. It
+presents briefly the strategy chosen to deal with these objects in \coq{} and
+then advocates for the use of such abstract concepts by showing the benefits
+that one gets for free.
 
 These benefits includes the possibility to define the usual functions ($\sin$,
 $\cos$, $\exp$, ...) in a few lines, to get some of their properties for free
 (eg. being in the $C^{\infty}$ class) and to find solutions of some linear
-differential equations just by looking at sequences over \R{}.
+differential equations just by looking at sequences over $\R$.
+
+\textbf{Files:} all the results mentioned in this paper are available on
+\coqtail{}'s svn repository\footnote{see \url{http://sourceforge.net/projects/coqtail/develop}
+and in particular \texttt{src/Reals/Rpser.v}} and will
+be part of the next release.
 
 \end{abstract}
 
-\section{Formalisation}
+\section{Formalization}
+
+Our formalization of the power series follows more or less what one could find
+in an undergraduate textbook. There is however one important difference on the
+definition of the convergence radius: our definition is much more informative
+than the usual one.
+
+This design choice allows us to get rid off the EM axiom in almost all the
+proofs that usually use it without being harmful: it is proved to be classically
+equivalent to the traditional definition.
+
+\subsection{The convergence radius}
+
+The convergence radius of a power series $\sum_{n \in \N} a_n x^n$ is usually
+defined as the lowest upper bound (in $\R \cup \left\lbrace +\infty \right
+\rbrace$) of the set $\left\lbrace r \in \R ~|~ \text{the sequence } \left|
+a_n r^n\right| \text{ is bounded} \right\rbrace$.
+As being bounded is obviously not decidable, knowing that $r$ is the convergence
+radius of $\sum_n a_n x^n$ (written $\rho (\sum_n a_n x^n) = r$) is not
+sufficient to show that $\forall x \in B(0,r), \left| a_n x^n \right| \text{ is
+bounded}$ without using EM.
+
+That is why we use an alternative definition which describes exactly the same
+concept but, by being more verbose, is easier to use.
+
+\begin{definition}[Rpser\_def] \cvrw{}$(a_n,r)$ means that the convergence
+radius of $\sum_{n \in \N} a_n x^n$ is greater or equal to $r$:
+$$\cvrw{}(a_n,r) = \left| a_n r^n \right| \text{ is bounded}$$
+\end{definition}
+
+\begin{definition}[Rpser\_def]\fcvr{}$(a_n,r)$ means that the
+convergence radius of $\sum_{n \in \N} a_n x^n$ is finite and equal to $r$ ie.
+that for all $x$ smaller than $r$, $\left|a_n x^n\right|$ is bounded and
+that for all $x$ bigger than $r$,  $\left|a_n x^n\right|$ is not.
+$$\fcvr{}(a_n,r) =
+\begin{array}{clcl}
+        & \forall r', & 0 \le r' < r & \Rightarrow \cvrw{}(a_n,r') \\
+ \wedge & \forall r', & r < r' & \Rightarrow \neg \cvrw{}(a_n,r')
+\end{array}$$
+\end{definition}
+
+The classical equivalence between this definition and the usual one is proved
+throught the two following lemmas. Unsurprisingly, the first implication does
+not need the excluded middle axiom: our definition gives more information than
+the usual one.
+
+\begin{lemma}[Rpser\_base\_facts] $\fcvr{}(a_n,r) \Rightarrow r = sup \left\lbrace x |
+\cvrw{}(a_n, x) \right\rbrace$ \end{lemma}
+
+\begin{lemma}[Rpser\_base\_facts] $EM + r = sup \left\lbrace x |
+\cvrw{}(a_n, x) \right\rbrace \Rightarrow \fcvr{}(a_n,r)$ \end{lemma}
+
+\begin{definition}[Rpser\_def] When the convergence radius is infinite we use
+the unary predicate \icvr{}: $$\icvr{}(a_n) = \forall r, \cvrw{}(a_n,r)$$
+\end{definition}
+
+\subsection{Sum of a power series}
+
+The main tool to define the sum of a power series is Abel's lemma which states
+that given a convergence radius, we can sum the power series inside the
+corresponding ball.
+
+\begin{lemma}[Rpser\_radius\_facts] $$\cvrw{}(a_n,r) \Rightarrow
+\forall x \in B(0,r), \exists l, \sum_{n=0}^{+\infty} a_n x^n = l$$
+\end{lemma}
+
+\begin{definition}[Rpser\_sums] From this lemma we can construct the functions
+(namely \texttt{weaksum\_r}, \texttt{sum\_r} and \texttt{sum}) that given either
+$\cvrw{}(a_n,r)$, $\fcvr{}(a_n,r)$ or $\icvr{}(a_n)$ output the piecewise-defined
+function: $$x \mapsto \left\lbrace
+\begin{array}{ll}
+\sum_{n=0}^{+\infty} a_n x^n & \text{ if } x \text{ is inside the convergence
+disk}\\
+0 & \text{otherwise}
+\end{array}\right.$$
+\end{definition}
+
+\subsection{Derivative of a power series}
+
+%TODO: add the description of the derivative of the power series
+
+As the derivative of a power series is a power series, it is therefore trivial
+to show that the function defined as the sum belongs to the $C^{\infty} class$.
+As a consequence, we can get an explicit description of the $n^{th}$ derivative
+of the sum by a simple induction:
+
+\begin{lemma}[\texttt{Rpser\_derivative\_facts}] Explicit description of the
+$k^{th}$ derivative of the power series defined by $(a_n)_{n\in \N}$:
+$$(\sum_{n=0}^{+\infty} a_n x^n)^{(k)} = \sum_{n=0}^{+\infty}
+\frac{(n + k)!}{n!} a_{n+k} x^n$$
+\end{lemma}
 
 \section{Uses}
+
 \subsection{Defining usual functions}
-\subsubsection{Comparison to the standard library}
+
+Thanks to all the formalization work, we can now define all the usual functions
+in a few lines using d'Alembert's ratio test and the compatibility of \cvrw{}
+with the pointwise order on the sequences in order to prove that the considered
+power series have an infinite radius of convergence.
+
+%TODO: add description of exp, cos, sin
+
+\subsection{Comparison to the standard library}
+
+%TODO: recall the definitions of the std lib's exp, cos, sin
+%TODO: compare the length of the definitions
 
 \subsection{Finding solutions of linear differential equations}
 
+%TODO: cf. Dequa_examples
+
 \section{Extensions}
 
+%TODO: Cpser & add multiplication to the differential equations
 
 \end{document}
