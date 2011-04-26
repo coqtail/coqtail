@@ -1,5 +1,6 @@
 \documentclass{article} 
 \usepackage{amsmath, amssymb, amsthm}
+\usepackage[utf8x]{inputenc}
 
 \newtheorem{lemma}{Lemma}
 
@@ -67,14 +68,28 @@ Interesting instanciations for $X$ include excluded-middle, choice, epsilon and 
 $$\vdash \forall A B. (A \rightarrow T B) \rightarrow T (A \rightarrow B)$$
 \end{lemma}
 
-
 This monad permits to have a statically checked analysis of the requirements of a proof. One can also imagine to use a \emph{generic} axiom monad, under the form $T X A$ where $X$ is the list of axioms used.
 
 \begin{remark}
   The easy use of the axiom monads requires to assume the functional extensionality, as most of the time we want to prove properties such as $\mathtt{lift}\ x = \mathtt{lift}\ y$.
 \end{remark}
 
+Sometimes, additional axioms are not that terrible, and one can argue about the burden of the axiom monad. For instance, excluded middle or propositional extensionality are not havoc-wreaking enough to justify embedding them in a monad.
+
+Following Castéran's work, non-constructivism can provide an interesting use of the axiom monad. We recall the \emph{epsilon} axiom:
+
+$$\varepsilon \equiv \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt{exists}\ x, P x) \rightarrow \{x\mid P\  x\}$$
+
+The epsilon axiom is problematic because once it has been admitted, one cannot differenciate between proofs that are extractible and those which are not. Indeed, it allows informative content flow between $\mathtt{Prop}$ and $\mathtt{Type}$.
+
+Using the axiom monad on epsilon gives us back the static discrimination between constructive and non-constructive proofs.
 
 \subsection{$\mathtt{Prop}$-$\mathtt{Type}$ distinction}
+
+A weaker way to encode epsilon is to embed every type in $\mathtt{Prop}$. This is done through the inhabited monad.
+
+$\mathtt{Inductive\ inhabited\ :\ Type \rightarrow Prop\ :=\ inhabits :} \hdots $
+
+We can recover an ersatz of the axiom monad using the choice axiom.
 
 \end{document}
