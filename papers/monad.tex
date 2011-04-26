@@ -1,0 +1,80 @@
+\documentclass{article} 
+\usepackage{amsmath, amssymb, amsthm}
+
+\newtheorem{lemma}{Lemma}
+
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+\theoremstyle{remark}
+
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\section{Monads in a nutshell}
+
+Since the work of Moggi, monads have been widely used in pure functional language, such as Haskell, to encompass a lot of computational effects. They essentially are an encapsulation of such \emph{effects} in an abstract typed construction.
+
+\begin{definition}
+
+A monad is a triple $(T, \mathtt{return}, \mathtt{bind})$ where
+
+\begin{align*}
+T &: \mathtt{Type} \rightarrow \mathtt{Type} \\
+\mathtt{return} &: \forall A. A \rightarrow T A \\
+\mathtt{bind} &: \forall A B. (A \rightarrow T B) \rightarrow T A \rightarrow T B
+\end{align*}
+
+such that the following equalities are verified:
+
+$$BAAAH$$
+
+\end{definition}
+
+\begin{example}
+
+Some classical examples:
+
+\begin{itemize}
+  \item The state monad: $T A = \sigma \rightarrow (\sigma \times A)$ where $\sigma$ is a set of states
+  \item The non-determinism monad: $T A = \mathfrak{P}(A)$
+  \item The CPS monad: $T A = (A \rightarrow \bot) \rightarrow \bot$
+  \item The exception monad: $T A = A + E$ where $E$ is a set of exceptions
+\end{itemize}
+
+\end{example}
+
+\section{Proof-assistants and monads}
+
+Until now, in the real of programming languages, monads have only been used with effects in mind. Yet in the world of proof assistants, we could use some nice features of monads in a brand new way.
+
+\subsection{Dealing with axioms}
+
+Monads permits to keep track of the external hypothesis used in a proof, through the so-called \emph{axiom} monad.
+
+\begin{definition}
+  The axiom monad on $X$ is $T A = X \rightarrow A$ with weakening as $\mathtt{return}$ and contraction as $\mathtt{bind}$.
+\end{definition}
+
+Interesting instanciations for $X$ include excluded-middle, choice, epsilon and virtually any axiom independent from pCIC.
+
+\begin{lemma}
+  The axiom monad is strong w.r.t. implication, that is:
+
+$$\vdash \forall A B. (A \rightarrow T B) \rightarrow T (A \rightarrow B)$$
+\end{lemma}
+
+
+This monad permits to have a statically checked analysis of the requirements of a proof. One can also imagine to use a \emph{generic} axiom monad, under the form $T X A$ where $X$ is the list of axioms used.
+
+\begin{remark}
+  The easy use of the axiom monads requires to assume the functional extensionality, as most of the time we want to prove properties such as $\mathtt{lift}\ x = \mathtt{lift}\ y$.
+\end{remark}
+
+
+\subsection{$\mathtt{Prop}$-$\mathtt{Type}$ distinction}
+
+\end{document}
