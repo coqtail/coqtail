@@ -27,15 +27,18 @@ Ens Lyon - France\\}
 \maketitle
 
 \begin{abstract}
-This paper is based on a \coq{} formalization of the power series over $\R$. It
-presents briefly the strategy chosen to deal with these objects in \coq{} and
-then advocates for the use of such abstract concepts by showing the benefits
-that one gets for free.
+Even if the trigonometric functions are defined in \coq{}'s standard
+library, they were not described as power series because of a lack of
+formalisation of this concept.
+We present the strategy chosen to describe the power series over $\R$
+and then advocates for the broad use of such abstract concepts by
+showing the immediate benefits that one can get from this approach.
 
-These benefits includes the possibility to define the usual functions ($\sin$,
-$\cos$, $\exp$, ...) in a few lines, to get some of their properties for free
-(eg. being in the $C^{\infty}$ class) and to find solutions of some linear
-differential equations just by looking at sequences over $\R$.
+These benefits include the possibility to redefine the usual functions
+($\sin$, $\cos$, $\exp$, ...) in a few lines, to get some of their
+properties for free (eg. being in the $C^{\infty}$ class) and to prove
+that they are solutions of particular differential equations just by
+studying sequences over the reals.
 
 \textbf{Files:} all the results mentioned in this paper are available on
 \coqtail{}'s svn repository\footnote{see \url{http://sourceforge.net/projects/coqtail/develop}
@@ -46,38 +49,50 @@ be part of the next release.
 
 \section{Formalization}
 
-Our formalization of the power series follows more or less what one could find
-in an undergraduate textbook. There is however one important difference on the
-definition of the convergence radius: our definition is much more informative
-than the usual one.
+The main difference between what one can find in an undergraduate textbook
+and our formalization of the power series is at the very begining of the
+library. Our definition of the radius of convergence is much more informative
+in an intuitionistic setting than the usual one.
 
-This design choice allows us to get rid off the EM axiom in almost all the
-proofs that usually use it without being harmful: it is proved to be classically
-equivalent to the traditional definition.
+This design choice allows us to get rid of the EM axiom in almost all
+the proofs that usually use it because of the strenghtening of the
+assumptions that it implies. This is however not harmful given that our
+definition has been proved classicaly equivalent to the more traditional
+one.
 
 \subsection{The convergence radius}
 
-The convergence radius of a power series $\sum_{n \in \N} a_n x^n$ is usually
-defined as the lowest upper bound (in $\R \cup \left\lbrace +\infty \right
-\rbrace$) of the set $\left\lbrace r \in \R ~|~ \text{the sequence } \left|
-a_n r^n\right| \text{ is bounded} \right\rbrace$.
-As being bounded is obviously not decidable, knowing that $r$ is the convergence
-radius of $\sum_n a_n x^n$ (written $\rho (\sum_n a_n x^n) = r$) is not
-sufficient to show that $\forall x \in B(0,r), \left| a_n x^n \right| \text{ is
-bounded}$ without using EM.
+The convergence radius $\rho$ of a power series whose general term is
+$(a_n)_{n \in \N}$ is usually defined as a lowest upper bound (in
+$\R \cup \left\lbrace +\infty \right\rbrace$):
 
-That is why we use an alternative definition which describes exactly the same
-concept but, by being more verbose, is easier to use.
+ $$\rho(\sum_{n \in \N} a_n x^n) = sup \left\lbrace r \in \R ~|~
+   \text{the sequence } \left|a_n r^n\right| \text{ is bounded}
+   \right\rbrace$$
 
-\begin{definition}[Rpser\_def] \cvrw{}$(a_n,r)$ means that the convergence
-radius of $\sum_{n \in \N} a_n x^n$ is greater or equal to $r$:
+As being bounded is obviously not decidable, knowing that $r$ is the
+convergence radius of $\sum_{n \in \N} a_n x^n$ is not sufficient to
+show without using EM that for all x such that $x \in B(0,r)$, the
+sequence $(\left| a_n x^n \right|)_{n \in \N}$ is bounded. That is why
+we use an alternative definition which describes exactly the same
+idea (being the lowest upper bound) but, by being more verbose, is
+easier to use.
+
+\begin{definition}[Rpser\_def] We say that $r$ is a weak convergence
+radius if it is a lower bound for the convergence radius (ie $r$ belongs
+to the set described previously).
 $$\cvrw{}(a_n,r) = \left| a_n r^n \right| \text{ is bounded}$$
 \end{definition}
 
-\begin{definition}[Rpser\_def]\fcvr{}$(a_n,r)$ means that the
-convergence radius of $\sum_{n \in \N} a_n x^n$ is finite and equal to $r$ ie.
-that for all $x$ smaller than $r$, $\left|a_n x^n\right|$ is bounded and
-that for all $x$ bigger than $r$,  $\left|a_n x^n\right|$ is not.
+From this definition, we can derive the definition of the finite
+convergence radius\footnote{The extension to the infinite case is
+straightforward and will not be described here. It is however formalized
+and available on the repository.}.
+
+\begin{definition}[Rpser\_def] The convergence radius is finite and
+equal to $r$ if $r$ is both bigger than all the weak convergence radiuses 
+and smaller or equal to all the reals that are to big to be weak
+convergence radiuses.
 $$\fcvr{}(a_n,r) =
 \begin{array}{clcl}
         & \forall r', & 0 \le r' < r & \Rightarrow \cvrw{}(a_n,r') \\
@@ -87,8 +102,8 @@ $$\fcvr{}(a_n,r) =
 
 The classical equivalence between this definition and the usual one is proved
 throught the two following lemmas. Unsurprisingly, the first implication does
-not need the excluded middle axiom: our definition gives more information than
-the usual one.
+not need the excluded middle axiom: our definition is stronger in an EM-free
+setting than the usual one.
 
 \begin{lemma}[Rpser\_base\_facts] $\fcvr{}(a_n,r) \Rightarrow r = sup \left\lbrace x |
 \cvrw{}(a_n, x) \right\rbrace$ \end{lemma}
@@ -96,15 +111,29 @@ the usual one.
 \begin{lemma}[Rpser\_base\_facts] $EM + r = sup \left\lbrace x |
 \cvrw{}(a_n, x) \right\rbrace \Rightarrow \fcvr{}(a_n,r)$ \end{lemma}
 
-\begin{definition}[Rpser\_def] When the convergence radius is infinite we use
-the unary predicate \icvr{}: $$\icvr{}(a_n) = \forall r, \cvrw{}(a_n,r)$$
-\end{definition}
+Once that we have these definitions and that we know that they are
+equivalent to their usual counterparts, we can start manipulating them.
+The first important tool that we can get is Alembert's ratio criterion.
+It is rather useful to prove that a particular power series has a given
+convergence radius (this result is for example used to prove that $\exp$
+has an infinite convergence radius which implies automatically that this
+is also the case for $\cos$ and $\sin$).
+
+\begin{lemma}[Rpser\_cv\_facts] A weak version of Alembert's ratio
+criterion given that for all $n$, $a_n \neq 0$:
+
+$$\lim\limits_{n \to + \infty}\frac{a_{n+1}}{a_n} = \lambda \neq 0
+  \Rightarrow \forall \left| r \right| < \frac{1}{\left| \lambda \right|
+  }, \cvrw{}(a_n,r)$$
+\end{lemma}
 
 \subsection{Sum of a power series}
 
-The main tool to define the sum of a power series is Abel's lemma which states
-that given a convergence radius, we can sum the power series inside the
-corresponding ball.
+When we know what is the power series' convergence radius, we can start
+summing it on the appropriate domain. Our beloved tool to define the sum
+of a power series is obviously Abel's lemma which states that given a
+convergence radius, we can sum the power series inside the corresponding
+ball.
 
 \begin{lemma}[Rpser\_radius\_facts] $$\cvrw{}(a_n,r) \Rightarrow
 \forall x \in B(0,r), \exists l, \sum_{n=0}^{+\infty} a_n x^n = l$$
@@ -140,17 +169,34 @@ $$(\sum_{n=0}^{+\infty} a_n x^n)^{(k)} = \sum_{n=0}^{+\infty}
 
 \subsection{Defining usual functions}
 
-Thanks to all the formalization work, we can now define all the usual functions
-in a few lines using d'Alembert's ratio test and the compatibility of \cvrw{}
-with the pointwise order on the sequences in order to prove that the considered
-power series have an infinite radius of convergence.
+Thanks to all the formalization work, we can now define all the usual
+functions in a few lines. We begin by defining the exponential using
+d'Alembert's ratio test to prove that its convergence radius is infinite
+(which is rather easy).
+
+Then the compatibility of \cvrw{} with the pointwise order on the
+sequences:
+
+$$\left(\left|b_n\right| \le_{pointwise} \left|a_n\right|\right)
+  \Rightarrow \forall r, \cvrw{}(a_n,r) \Rightarrow \cvrw{}(b_n,r)$$
+
+gives us for free the fact that cosine and sine also have an infinite
+convergence radius.
 
 %TODO: add description of exp, cos, sin
 
 \subsection{Comparison to the standard library}
 
-%TODO: recall the definitions of the std lib's exp, cos, sin
-%TODO: compare the length of the definitions
+We have therefore been able to define $\exp$, $\sin$ and $\cos$ in less
+than 80 lines of Coq source code. It has to be compared to the hundreds
+of lines and the ad-hoc arguments (convergence of alternating series)
+that the standard library dedicates to the definition of these exact
+same functions.
+
+Not only defining these functions is much more easier, but we get for
+free their derivability (and even their being in the $C^{\infty}$ class),
+the exact shape of their $n^{th}$ derivative and therefore we can easily
+prove the relation that exists between them.
 
 \subsection{Finding solutions of linear differential equations}
 
