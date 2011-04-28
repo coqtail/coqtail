@@ -7,6 +7,7 @@
 \newcommand{\coqtail}{\textsc{coqtail}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\D}{\texttt{An\_deriv}}
 \newcommand{\Rbar}{\overline{\mathbb{R}}}
 \newcommand{\cvrw}{\texttt{Cv\_radius\_weak}}
 \newcommand{\fcvr}{\texttt{finite\_cv\_radius}}
@@ -14,6 +15,7 @@
 
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
 
 \title{\coq{} with power series}
 \author{XXX
@@ -41,24 +43,29 @@ that they are solutions of particular differential equations just by
 studying sequences over the reals.
 
 \textbf{Files:} all the results mentioned in this paper are available on
-\coqtail{}'s svn repository\footnote{see \url{http://sourceforge.net/projects/coqtail/develop}
-and in particular \texttt{src/Reals/Rpser.v}} and will
+\coqtail{}'s svn repository\footnote{see
+\url{http://sourceforge.net/projects/coqtail/develop}
+and in particular \texttt{src/Reals/Rpser.v}.} and will
 be part of the next release.
 
 \end{abstract}
 
 \section{Formalization}
 
-The main difference between what one can find in an undergraduate textbook
-and our formalization of the power series is at the very begining of the
-library. Our definition of the radius of convergence is much more informative
-in an intuitionistic setting than the usual one.
+Formalizing power series in an interactive theorem prover is not really
+about design choices: any good undergraduate textbook introduces the
+power series through definitions and a sequence of steps whose
+ordering makes sense. Our library is therefore really close to what one
+can find in such a textbook except for one point: the definition of the
+convergence radius.
 
-This design choice allows us to get rid of the EM axiom in almost all
-the proofs that usually use it because of the strenghtening of the
-assumptions that it implies. This is however not harmful given that our
-definition has been proved classicaly equivalent to the more traditional
-one.
+In an intuitionistic setting, our definition of the radius of convergence
+is much more informative than the usual one. This design choice allowed
+us to get rid of the excluded-middle (EM) axiom in almost all the proofs
+that usually use it without preventing us from proving lemmas whose
+conclusions are now strengthened\footnote{See d'Alembert's ratio
+criterion for example.}. This is however not harmful given that our
+definition has been proved classically equivalent to the traditional one.
 
 \subsection{The convergence radius}
 
@@ -75,8 +82,8 @@ convergence radius of $\sum_{n \in \N} a_n x^n$ is not sufficient to
 show without using EM that for all x such that $x \in B(0,r)$, the
 sequence $(\left| a_n x^n \right|)_{n \in \N}$ is bounded. That is why
 we use an alternative definition which describes exactly the same
-idea (being the lowest upper bound) but, by being more verbose, is
-easier to use.
+idea (being the lowest upper bound), is more verbose and, as a
+consequence, easier to use.
 
 \begin{definition}[Rpser\_def] We say that $r$ is a weak convergence
 radius if it is a lower bound for the convergence radius (ie $r$ belongs
@@ -86,12 +93,12 @@ $$\cvrw{}(a_n,r) = \left| a_n r^n \right| \text{ is bounded}$$
 
 From this definition, we can derive the definition of the finite
 convergence radius\footnote{The extension to the infinite case is
-straightforward and will not be described here. It is however formalized
-and available on the repository.}.
+straightforward: the convergence radius is infinite if and only if
+all the reals are weak convergence radiuses.}.
 
 \begin{definition}[Rpser\_def] The convergence radius is finite and
 equal to $r$ if $r$ is both bigger than all the weak convergence radiuses 
-and smaller or equal to all the reals that are to big to be weak
+and smaller or equal to all the reals that are too big to be weak
 convergence radiuses.
 $$\fcvr{}(a_n,r) =
 \begin{array}{clcl}
@@ -113,11 +120,11 @@ setting than the usual one.
 
 Once that we have these definitions and that we know that they are
 equivalent to their usual counterparts, we can start manipulating them.
-The first important tool that we can get is Alembert's ratio criterion.
+The first important tool that we can get is d'Alembert's ratio criterion.
 It is rather useful to prove that a particular power series has a given
-convergence radius (this result is for example used to prove that $\exp$
-has an infinite convergence radius which implies automatically that this
-is also the case for $\cos$ and $\sin$).
+convergence radius; this result is for example used to prove that $\exp$
+has an infinite convergence radius from which we can trivially deduce
+that both $\cos$ and $\sin$ also do.
 
 \begin{lemma}[Rpser\_cv\_facts] A weak version of Alembert's ratio
 criterion given that for all $n$, $a_n \neq 0$:
@@ -152,12 +159,39 @@ disk}\\
 
 \subsection{Derivative of a power series}
 
-%TODO: add the description of the derivative of the power series
+The formalization of the derivative of a power series is done in two steps.
+First of all, we define the formal derivative of a power series and prove
+that this definition makes sense (eg. that the sum exists):
 
-As the derivative of a power series is a power series, it is therefore trivial
-to show that the function defined as the sum belongs to the $C^{\infty} class$.
-As a consequence, we can get an explicit description of the $n^{th}$ derivative
-of the sum by a simple induction:
+\begin{definition}[Rpser\_derivative] The formal derivative of the power
+series defined by $(a_n)$ is the one defined by:
+$$\D{}(a_n) = (n + 1) * a_{n+1}$$
+\end{definition}
+
+\begin{lemma}[Rpser\_radius\_facts] An its convergence radius is exactly
+the same as the one of the original series: $$\fcvr{}(a_n,r) \Leftrightarrow
+\fcvr{}(\D{}(a_n),r)$$\end{lemma}
+
+We now know that the formal derivative is summable but we still have to
+somehow explicit the relation that exists between these two power series.
+This is maybe the most complex part of the library; it uses a theorem on
+sequences of functions plus the fact that the sequence of the partial
+sums of a power series converges normally (thus uniformly) inside the
+convergence radius.
+
+\begin{theorem}[RFsequence\_facts] If a sequence $(f_n)_{n \in \N}$ of
+derivable functions converges to the limit function $f$ on a ball $B(c,r)$
+and if the sequence of the derivatives $(f_n')_{n \in \N}$ converges
+uniformly to $g$ on this same ball, then $f$ is derivable on $B(c,r)$ and
+its derivative is $g$.\end{theorem}
+
+This allows us to conclude that the power series are derivable and that
+their derivative is precisely the sum of the formal derivative.
+As the derivative of a power series is another power series, it is
+trivial to show that the function defined as the sum belongs to the
+$C^{\infty}$ class\footnote{See the C\_n\_* files for results on
+function classes.}. As a consequence, we can get an explicit description
+of the $n^{th}$ derivative of the sum by a simple induction:
 
 \begin{lemma}[\texttt{Rpser\_derivative\_facts}] Explicit description of the
 $k^{th}$ derivative of the power series defined by $(a_n)_{n\in \N}$:
@@ -165,7 +199,7 @@ $$(\sum_{n=0}^{+\infty} a_n x^n)^{(k)} = \sum_{n=0}^{+\infty}
 \frac{(n + k)!}{n!} a_{n+k} x^n$$
 \end{lemma}
 
-\section{Uses}
+\section{Applications}
 
 \subsection{Defining usual functions}
 
@@ -174,23 +208,20 @@ functions in a few lines. We begin by defining the exponential using
 d'Alembert's ratio test to prove that its convergence radius is infinite
 (which is rather easy).
 
-Then the compatibility of \cvrw{} with the pointwise order on the
-sequences:
+Then we can get for free the fact that cosine and sine also have an
+infinite convergence radius by using one of the basic lemmas:
+
+\begin{lemma}[Rpser\_base\_facts] \cvrw{} is compatible with the
+pointwise order on the sequences over reals:
 
 $$\left(\left|b_n\right| \le_{pointwise} \left|a_n\right|\right)
   \Rightarrow \forall r, \cvrw{}(a_n,r) \Rightarrow \cvrw{}(b_n,r)$$
+\end{lemma}
 
-gives us for free the fact that cosine and sine also have an infinite
-convergence radius.
-
-%TODO: add description of exp, cos, sin
-
-\subsection{Comparison to the standard library}
-
-We have therefore been able to define $\exp$, $\sin$ and $\cos$ in less
-than 80 lines of Coq source code. It has to be compared to the hundreds
-of lines and the ad-hoc arguments (convergence of alternating series)
-that the standard library dedicates to the definition of these exact
+We have been able to define $\exp$, $\sin$ and $\cos$ in less than 80
+lines of Coq source code. It has to be compared to the hundreds
+of lines and the ad-hoc arguments (eg. convergence of alternating series)
+that Coq's standard library dedicates to the definition of these exact
 same functions.
 
 Not only defining these functions is much more easier, but we get for
@@ -200,10 +231,51 @@ prove the relation that exists between them.
 
 \subsection{Finding solutions of linear differential equations}
 
-%TODO: cf. Dequa_examples
+On top of the power series formalization, we constructed a small library
+that uses reflection to describe linear differential equations of
+arbitrary shape. It is based on two things:
+
+\begin{itemize}
+ \item A datatype \texttt{side\_equa} that is a descriptor of linear 
+   differential equations\footnote{A differential equation is a pair
+   $(se_1,se_2)$ of side equations (usually written $se_1 :=: se_2$).} and whose grammar is:
+	$$se ::= cst c ~|~ y_{i}^{(k)} ~|~ - se ~|~ se + se$$
+
+ \item A (set of) semantics that given an inhabitant of this datatype
+	and an environment outputs a proposition.
+\end{itemize}
+
+This representation and the attached semantics allows us to state general
+theorems about linear differential equations. Our main result states that
+given power series that have infinite convergence radiuses, one only has
+to prove that there is a relation between the sequences in order to show
+that the sums of the power series are in relation\footnote{See the
+Dequa\_* files for more details.}.
+
+%TODO: expand this if possible (less than 5 pages!)
+
+By using this theorem, one can prove in less than 20 lines each that the
+exponential, cosine and sine are respectively solutions of
+$y^{(n+1)} = y^{(n)}$ and $y^{(2)} = - y$.
 
 \section{Extensions}
 
-%TODO: Cpser & add multiplication to the differential equations
+\subsection{Power series on other carriers}
 
+Coqtail already has a basic library on the power series over the complex
+numbers (definitions, differentiability, derivability). A future work
+could be to adapt the work done on the real numbers to the complex numbers.
+A better idea might be to formalize the power series on a more general
+structure (eg. a ring equipped with a norm).
+
+\subsection{Improving the library on differential equations}
+
+Even if the work on the differential equations is already quite
+convenient, it is still rather limited: one can only derive variables
+and not composed expressions, there is not built-in minus function and it
+is impossible to talk about the product of power series.
+
+Describing the explicit shape of the product of two power series (the
+power series which is defined with the cauchy product of the sequences
+defining the two others) is a possible future work.
 \end{document}
