@@ -9,7 +9,10 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Rbar}{\overline{\mathbb{R}}}
 
+\DeclareMathOperator{\C}{\mathtt{An\_cst}}
 \DeclareMathOperator{\D}{\mathtt{An\_deriv}}
+\DeclareMathOperator{\Dn}{\mathtt{An\_nth\_deriv}}
+\DeclareMathOperator{\IN}{\mathtt{interp\_N}}
 \DeclareMathOperator{\cvrw}{\mathtt{Cv\_radius\_weak}}
 \DeclareMathOperator{\fcvr}{\mathtt{finite\_cv\_radius}}
 \DeclareMathOperator{\icvr}{\mathtt{infinite\_cv\_radius}}
@@ -30,12 +33,12 @@ Ens Lyon - France\\}
 \maketitle
 
 \begin{abstract}
-In the interactive theorem prover \coq{}, trigonometric functions are
-defined in the standard library. However there are not directly described
-as power series  due to a lack of formalization of this concept.
-We present a strategy to describe the power series over $\R$ and then
-advocate for the broad use of abstract concepts in the standard
-library by showing the immediate benefits that one can get.
+In the interactive theorem prover \coq{}\cite{coq}, trigonometric
+functions are defined in the standard library. However there are not
+directly described as power series  due to a lack of formalization of
+this concept. We present a strategy to describe the power series over
+$\R$ and then advocate for the broad use of abstract concepts in the
+standard library by showing the immediate benefits that one can get.
 
 Thanks to the power series framework we are able to redefine the usual
 functions (e.g. $\sin$, $\cos$, $\exp$) in less than 80 lines,
@@ -192,11 +195,15 @@ $C^{\infty}$ class\footnote{See the C\_n\_* files for results on
 function classes.}. A simple induction can even give us the explicit
 description of the $n^{th}$ derivative of a sum:
 
-\begin{lemma}[\texttt{Rpser\_derivative\_facts}] Explicit description of
+\begin{definition}[Rpser\_def] The formal $k^{th}$ derivative of the power
+series defined by $(a_n)$ is the one defined by:
+$$\Dn{}(a_n,k)  = \frac{(n + k)!}{n!} a_{n+k}$$
+\end{definition}
+
+\begin{lemma}[Rpser\_derivative\_facts] Explicit description of
 the $k^{th}$ derivative of the power series defined by $(a_n)_{n\in \N}$:
 $$(\sum_{n=0}^{+\infty} a_n x^n)^{(k)} = \sum_{n=0}^{+\infty}
-\frac{(n + k)!}{n!} a_{n+k} x^n$$
-\end{lemma}
+\Dn{}(a_n,k) x^n$$\end{lemma}
 
 \section{Applications}
 
@@ -236,23 +243,46 @@ reflection. It is based on two components:
 
 \begin{itemize}
  \item A datatype \texttt{side\_equa} that is a descriptor of linear 
-   differential equations and whose grammar is:
-   $E ::= c ~|~ y_i^{(k)} ~|~ - E ~|~ E + E$  (where $c$ is a real constant).
-   A differential equation is a pair $(E_1,E_2)$ of side equations
-   (usually written $E_1 :=: E_2$).
+   differential equations. A differential equation is a pair $(E_1,E_2)$
+	of side equations (usually written $E_1 :=: E_2$).
  
  \item A (set of) semantics that given an inhabitant of this datatype
 	and an environment outputs a proposition.
 \end{itemize}
 
-This representation and the attached semantics allows us to state general
-theorems about linear differential equations. Our main result states that
-given power series that have infinite convergence radiuses, one only has
-to prove that there is a relation between the sequences in order to show
-that the sums of the power series are in relation\footnote{See the
-Dequa\_* files for more details.}.
+\begin{definition}[Dequa\_def] The grammar of the \texttt{side\_equa}
+datatype is (where $c$ is a real constant):
+$$E ::= c ~|~ y_i^{(k)} ~|~ - E ~|~ E + E$$\end{definition}
 
-%TODO: expand this if possible (less than 5 pages!)
+
+\begin{definition}[Dequa\_def] The semantics that translates differential
+equations into propositions on sequences over $\R$ is define in two steps.
+First of all we define recursively the interpretation of the side
+of an equation:$$\begin{array}{lclcl}
+\IN{}& & & : & \texttt{side\_equa} \rightarrow Rseq~list \rightarrow Rseq \\
+\IN{}(& c &, \rho) & = & \C{}(c)\\
+\IN{}(& y_i^{(k)} &, \rho) & = & \Dn{}(\rho(i),k) \\
+\IN{}(& - E &, \rho) & = & - \IN{}(E,\rho)\\
+\IN{}(& E_1 + E_2 &, \rho) & = & \IN{}(E_1,\rho) + \IN{}(E_2,\rho)\\
+\end{array}$$
+and then we can construct the interpretation function:
+$$\left[\left| E_1 :=: E_2 \right|\right]_\N \rho = \forall n,
+\IN{}(E_1,rho) = \IN{}(E_2,\rho)$$\end{definition}
+
+We can define similarly the semantics $\left[\left| \_ \right|\right]_\R$
+that translates differential equations into propositions on power series
+which allows us to state general theorems about linear differential
+equations.
+
+\begin{lemma}[Dequa\_facts] Our main result states that given a context
+$\rho$ of sequences of coefficients, we have (provided that the involved
+power series have an infinite radius of convergence):
+$$\left[\left| E_1 :=: E_2 \right|\right]_\N \rho \Rightarrow
+\left[\left| E_1 :=: E_2 \right|\right]_\R \rho$$
+
+ie. we can prove that some functions (sums of power series) are solutions
+of a given differential equation by proving results on their coefficients.
+\end{lemma}
 
 By using this theorem, one can prove in less than 20 lines that the
 exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Without
@@ -281,7 +311,13 @@ Describing the explicit shape of the product of two power series (the
 power series which is defined with the cauchy product of the sequences
 defining the two others) is a possible future work.
 
-%\bibliography
+\nocite{*}
+\bibliographystyle{eptcs}
+\bibliography{biblio}
 
+\section{Acknowledgements}
+
+Special thanks to Sylvain and Marc for their useful comments and
+suggestions.
 
 \end{document}
