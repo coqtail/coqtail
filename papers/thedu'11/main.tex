@@ -44,7 +44,7 @@ Thanks to the power series framework we are able to redefine the usual
 functions (e.g. $\sin$, $\cos$, $\exp$) in less than 80 lines,
 to get some of their properties for free (e.g. being in the $C^{\infty}$
 class) and to prove that they are solutions of particular differential
-equations just by studying sequences over the reals.
+equations just by studying sequences over the $\R$.
 
 \textbf{Files:} All the implementation mentioned in this paper are
 available for download via \coqtail{}'s svn repository\footnote{see
@@ -81,12 +81,12 @@ $\R \cup \left\lbrace +\infty \right\rbrace$):
    \text{the sequence } \left|a_n r^n\right| \text{ is bounded}
    \right\rbrace$$
 
-As being bounded is obviously not decidable, knowing that $r$ is the
-convergence radius of $\sum_{n \in \N} a_n x^n$ is not sufficient to
-show without using EM that the sequence $(\left| a_n x^n \right|)
-_{n \in \N}$ is bounded for all $x$ in $B_r(0)$. That is why
-we use a more verbose definition which describes exactly the same
-idea (being the lowest upper bound) and is easier to use.
+As being bounded is not decidable, knowing that $r$ is the convergence
+radius of $\sum_{n \in \N} a_n x^n$ is not sufficient to show without
+using EM that the sequence $(\left| a_n x^n \right|)_{n \in \N}$ is
+bounded for all $x$ in $B_r(0)$. That is why we use a more verbose
+definition which describes exactly the same idea (being the lowest upper
+bound) and is easier to use.
 
 \begin{definition}[Rpser\_def] We say that $r$ is a weak convergence
 radius if it is a lower bound for the convergence radius (ie. $r$ belongs
@@ -111,7 +111,7 @@ $$\fcvr{}(a_n,r) =
 \end{definition}
 
 The classical equivalence between this definition and the usual one is proved
-throught the two following lemmas. Unsurprisingly, the first implication does
+through the two following lemmas. Unsurprisingly, the first implication does
 not need the excluded middle axiom: our definition is stronger in an EM-free
 setting than the usual one.
 
@@ -192,7 +192,7 @@ and that their derivative is precisely the sum of the formal derivative.
 As the derivative of a power series is another power series, it is
 trivial to show that the function defined as the sum belongs to the
 $C^{\infty}$ class\footnote{See the C\_n\_* files for results on
-function classes.}. A simple induction can even give us the explicit
+classes of functions.}. A simple induction can even give us the explicit
 description of the $n^{th}$ derivative of a sum:
 
 \begin{definition}[Rpser\_def] The formal $k^{th}$ derivative of the power
@@ -214,20 +214,19 @@ functions in a few lines. We begin by defining the exponential using
 d'Alembert's ratio test to prove that its convergence radius is infinite
 (which is rather easy).
 
-Then we can get for free the fact that cosine and sine also have an
-infinite convergence radius by using one of the basic lemmas:
+Then we can show easily that cosine and sine also have an infinite
+convergence radius by using one of the basic lemmas:
 
 \begin{lemma}[Rpser\_base\_facts] $\cvrw{}$ is compatible with the
 pointwise order on the sequences over reals:
-
 $$\left(\left|b_n\right| \le_{pointwise} \left|a_n\right|\right)
   \Rightarrow \forall r, \cvrw{}(a_n,r) \Rightarrow \cvrw{}(b_n,r)$$
 \end{lemma}
 
 We have been able to define $\exp$, $\sin$ and $\cos$ in less than 80
-lines of Coq source code. It has to be compared to the hundreds
+lines of \coq{} source code. It has to be compared to the hundreds
 of lines and the ad-hoc arguments (e.g. convergence of alternating series)
-that Coq's standard library dedicates to the definition of these exact
+that \coq{}'s standard library dedicates to the definition of these exact
 same functions.
 
 Not only defining these functions is much more easier, but we get for
@@ -267,12 +266,13 @@ of an equation:$$\begin{array}{lclcl}
 \end{array}$$
 and then we can construct the interpretation function:
 $$\left[\left| E_1 :=: E_2 \right|\right]_\N \rho = \forall n,
-\IN{}(E_1,rho) = \IN{}(E_2,\rho)$$\end{definition}
+\IN{}(E_1,\rho)(n) = \IN{}(E_2,\rho)(n)$$\end{definition}
 
 We can define similarly the semantics $\left[\left| \_ \right|\right]_\R$
-that translates differential equations into propositions on power series
-which allows us to state general theorems about linear differential
-equations.
+that translates differential equations into propositions on power series.
+Having this generic representation of differential equations and this
+different semantics allows us to state general theorems about linear
+differential equations.
 
 \begin{lemma}[Dequa\_facts] Our main result states that given a context
 $\rho$ of sequences of coefficients, we have (provided that the involved
@@ -308,7 +308,7 @@ function or multiplication by a constant and it is impossible to talk
 about the product of power series.
 
 Describing the explicit shape of the product of two power series (the
-power series which is defined with the cauchy product of the sequences
+power series which is defined with the Cauchy product of the sequences
 defining the two others) is a possible future work.
 
 \nocite{*}
