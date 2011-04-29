@@ -74,7 +74,7 @@ The convergence radius $\rho$ of a power series whose general term is
 $(a_n)_{n \in \N}$ is usually defined as a lowest upper bound (in
 $\R \cup \left\lbrace +\infty \right\rbrace$):
 
- $$\rho(\sum_{n \in \N} a_n x^n) = sup \left\lbrace r \in \R ~|~
+ $$\rho(\sum_{n \in \N} a_n x^n) = \sup \left\lbrace r \in \R ~|~
    \text{the sequence } \left|a_n r^n\right| \text{ is bounded}
    \right\rbrace$$
 
@@ -113,10 +113,10 @@ throught the two following lemmas. Unsurprisingly, the first implication does
 not need the excluded middle axiom: our definition is stronger in an EM-free
 setting than the usual one.
 
-\begin{lemma}[Rpser\_base\_facts] $\fcvr{}(a_n,r) \Rightarrow r = sup \left\lbrace x |
+\begin{lemma}[Rpser\_base\_facts] $\fcvr{}(a_n,r) \Rightarrow r = \sup \left\lbrace x |
 \cvrw{}(a_n, x) \right\rbrace$ \end{lemma}
 
-\begin{lemma}[Rpser\_base\_facts] $EM + r = sup \left\lbrace x |
+\begin{lemma}[Rpser\_base\_facts] $EM + r = \sup \left\lbrace x |
 \cvrw{}(a_n, x) \right\rbrace \Rightarrow \fcvr{}(a_n,r)$ \end{lemma}
 
 Once that we have these definitions and that we know that they are
