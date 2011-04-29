@@ -7,11 +7,12 @@
 \newcommand{\coqtail}{\textsc{coqtail}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\D}{\texttt{An\_deriv}}
 \newcommand{\Rbar}{\overline{\mathbb{R}}}
-\newcommand{\cvrw}{\texttt{Cv\_radius\_weak}}
-\newcommand{\fcvr}{\texttt{finite\_cv\_radius}}
-\newcommand{\icvr}{\texttt{infinite\_cv\_radius}}
+
+\DeclareMathOperator{\D}{\mathtt{An\_deriv}}
+\DeclareMathOperator{\cvrw}{\mathtt{Cv\_radius\_weak}}
+\DeclareMathOperator{\fcvr}{\mathtt{finite\_cv\_radius}}
+\DeclareMathOperator{\icvr}{\mathtt{infinite\_cv\_radius}}
 
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -211,7 +212,7 @@ d'Alembert's ratio test to prove that its convergence radius is infinite
 Then we can get for free the fact that cosine and sine also have an
 infinite convergence radius by using one of the basic lemmas:
 
-\begin{lemma}[Rpser\_base\_facts] \cvrw{} is compatible with the
+\begin{lemma}[Rpser\_base\_facts] $\cvrw{}$ is compatible with the
 pointwise order on the sequences over reals:
 
 $$\left(\left|b_n\right| \le_{pointwise} \left|a_n\right|\right)
