@@ -16,6 +16,9 @@
 \DeclareMathOperator{\cvrw}{\mathtt{Cv\_radius\_weak}}
 \DeclareMathOperator{\fcvr}{\mathtt{finite\_cv\_radius}}
 \DeclareMathOperator{\icvr}{\mathtt{infinite\_cv\_radius}}
+\DeclareMathOperator{\Pwsr}{\mathtt{weaksum\_r}}
+\DeclareMathOperator{\Psumr}{\mathtt{sum\_r}}
+\DeclareMathOperator{\Psum}{\mathtt{sum}}
 
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -34,17 +37,17 @@ Ens Lyon - France\\}
 
 \begin{abstract}
 In the interactive theorem prover \coq{}\cite{coq}, trigonometric
-functions are defined in the standard library. However there are not
+functions are defined in the standard library. However they are not
 directly described as power series  due to a lack of formalization of
 this concept. We present a strategy to describe the power series over
 $\R$ and then advocate for the broad use of abstract concepts in the
-standard library by showing the immediate benefits that one can get.
+standard library by showing the immediate benefits it brings.
 
 Thanks to the power series framework we are able to redefine the usual
 functions (e.g. $\sin$, $\cos$, $\exp$) in less than 80 lines,
 to get some of their properties for free (e.g. being in the $C^{\infty}$
 class) and to prove that they are solutions of particular differential
-equations just by studying sequences over the $\R$.
+equations just by studying sequences over $\R$.
 
 \textbf{Files:} All the implementation mentioned in this paper are
 available for download via \coqtail{}'s svn repository\footnote{see
@@ -62,22 +65,22 @@ convergence radius.
 
 In an intuitionistic setting, our definition of the radius of convergence
 is much more informative than the standard one.  This is however not
-harmful given that our definition has been proved classically equivalent
+harmful given that it has been proved classically equivalent
 to the standard one. This design choice allows us to get rid of the
-excluded-middle (henceforth EM) axiom in most proofs that usually use
-it. As a drawback, one could expect the lemmas whose conclusion is the
-existence of a radius of convergence not to be provable anymore. It is
+excluded-middle (henceforth EM) axiom in most proofs that traditionally use
+it. One could expect as a drawback that the lemmas with the existence of
+a radius of convergence as a conclusion not to be provable anymore. It is
 fortunately not the case\footnote{At least for d'Alembert's ratio criterion
 which is one of the key lemmas that have this shape.}.
 
 
 \subsection{The convergence radius}
 
-The convergence radius $\rho$ of a power series whose coefficients is
+The convergence radius $\rho$ of a power series whose coefficients are
 $(a_n)_{n \in \N}$ is usually defined as a lowest upper bound (in
 $\R \cup \left\lbrace +\infty \right\rbrace$):
 
- $$\rho(\sum_{n \in \N} a_n x^n) = \sup \left\lbrace r \in \R ~|~
+ $$\rho\left(\sum_{n \in \N} a_n x^n\right) = \sup \left\lbrace r \in \R ~|~
    \text{the sequence } \left|a_n r^n\right| \text{ is bounded}
    \right\rbrace$$
 
@@ -85,8 +88,8 @@ As being bounded is not decidable, knowing that $r$ is the convergence
 radius of $\sum_{n \in \N} a_n x^n$ is not sufficient to show without
 using EM that the sequence $(\left| a_n x^n \right|)_{n \in \N}$ is
 bounded for all $x$ in $B_r(0)$. That is why we use a more verbose
-definition which describes exactly the same idea (being the lowest upper
-bound) and is easier to use.
+definition which describes exactly the same idea of being the lowest upper
+bound and is easier to use.
 
 \begin{definition}[Rpser\_def] We say that $r$ is a weak convergence
 radius if it is a lower bound for the convergence radius (ie. $r$ belongs
@@ -118,27 +121,27 @@ setting than the usual one.
 \begin{lemma}[Rpser\_base\_facts] $\fcvr{}(a_n,r) \Rightarrow r = \sup
 \left\lbrace x | \cvrw{}(a_n, x) \right\rbrace$ \end{lemma}
 
-\begin{lemma}[Rpser\_base\_facts] $EM + r = \sup \left\lbrace x |
+\begin{lemma}[Rpser\_base\_facts] $EM \wedge r = \sup \left\lbrace x |
 \cvrw{}(a_n, x) \right\rbrace \Rightarrow \fcvr{}(a_n,r)$ \end{lemma}
 
 The first important tool that we can get is d'Alembert's ratio criterion.
 It can be used to prove that a particular power series has a given
 convergence radius; this result is for example used to prove that $\exp$
 has an infinite convergence radius from which we can easily deduce
-that both $\cos$ and $\sin$ also do.
+that so do $\cos$ and $\sin$.
 
-\begin{lemma}[Rpser\_cv\_facts] A weak version of d'Alembert's ratio
-criterion given that for all $n$, $a_n \neq 0$:
+\begin{lemma}[Rpser\_cv\_facts] D'Alembert's ratio criterion states that,
+given a sequence $(a_n)_{n \in \N}$ which ultimately contains only
+nonzero elements:
 
-$$\lim\limits_{n \to + \infty}\frac{a_{n+1}}{a_n} = \lambda \neq 0
-  \Rightarrow \forall \left| r \right| < \frac{1}{\left| \lambda \right|
-  }, \cvrw{}(a_n,r)$$
+$$\lim\limits_{n \to + \infty}\left|\frac{a_{n+1}}{a_n}\right| = \lambda \neq 0
+  \Rightarrow \fcvr{}(a_n,\frac{1}{\lambda})$$
 \end{lemma}
 
 \subsection{Sum of a power series}
 
 When we know what is the power series' convergence radius, we can start
-summing it on the appropriate domain. Our beloved tool to define the sum
+summing it on the appropriate domain. Our cherished tool to define the sum
 of a power series is obviously Abel's lemma which states that given a
 convergence radius, we can sum the power series inside the corresponding
 ball.
@@ -148,7 +151,7 @@ ball.
 \end{lemma}
 
 \begin{definition}[Rpser\_sums] From this lemma we can construct the functions
-(namely \texttt{weaksum\_r}, \texttt{sum\_r} and \texttt{sum}) that given either
+(namely $\Pwsr{}$, $\Psumr{}$ and $\Psum{}$) that given either
 $\cvrw{}(a_n,r)$, $\fcvr{}(a_n,r)$ or $\icvr{}(a_n)$ output the piecewise-defined
 function: $$x \mapsto \left\lbrace
 \begin{array}{ll}
@@ -173,7 +176,7 @@ $$\D{}(a_n) = (n + 1) * a_{n+1}$$
 the same as the one of the original series: $$\fcvr{}(a_n,r) \Leftrightarrow
 \fcvr{}(\D{}(a_n),r)$$\end{lemma}
 
-We now know that the formal derivative is summable but we still have to
+Now we know that the formal derivative is summable but we still have to
 somehow explicit the relation that exists between these two power series.
 This is maybe the most complex part of the library; it uses a theorem on
 sequences of functions (see infra) plus the fact that the sequence of
@@ -202,7 +205,7 @@ $$\Dn{}(a_n,k)  = \frac{(n + k)!}{n!} a_{n+k}$$
 
 \begin{lemma}[Rpser\_derivative\_facts] Explicit description of
 the $k^{th}$ derivative of the power series defined by $(a_n)_{n\in \N}$:
-$$(\sum_{n=0}^{+\infty} a_n x^n)^{(k)} = \sum_{n=0}^{+\infty}
+$$\left(\sum_{n=0}^{+\infty} a_n x^n\right)^{(k)} = \sum_{n=0}^{+\infty}
 \Dn{}(a_n,k) x^n$$\end{lemma}
 
 \section{Applications}
@@ -229,10 +232,10 @@ of lines and the ad-hoc arguments (e.g. convergence of alternating series)
 that \coq{}'s standard library dedicates to the definition of these exact
 same functions.
 
-Not only defining these functions is much more easier, but we get for
+Not only defining these functions is way easier, but we get for
 free their derivability (and even their being in the $C^{\infty}$ class),
 the exact shape of their $n^{th}$ derivative and therefore we can easily
-prove the relation that exists between them.
+prove the relations that exist between them.
 
 \subsection{Finding solutions of linear differential equations}
 
@@ -246,7 +249,7 @@ reflection. It is based on two components:
 	of side equations (usually written $E_1 :=: E_2$).
  
  \item A (set of) semantics that given an inhabitant of this datatype
-	and an environment outputs a proposition.
+	and an environment, outputs a proposition.
 \end{itemize}
 
 \begin{definition}[Dequa\_def] The grammar of the \texttt{side\_equa}
@@ -255,10 +258,11 @@ $$E ::= c ~|~ y_i^{(k)} ~|~ - E ~|~ E + E$$\end{definition}
 
 
 \begin{definition}[Dequa\_def] The semantics that translates differential
-equations into propositions on sequences over $\R$ is define in two steps.
+equations into propositions on sequences over $\R$ is defined in two steps.
 First of all we define recursively the interpretation of the side
 of an equation:$$\begin{array}{lclcl}
-\IN{}& & & : & \texttt{side\_equa} \rightarrow Rseq~list \rightarrow Rseq \\
+\IN{}& & & : & \texttt{side\_equa} \rightarrow \texttt{Rseq list}
+ \rightarrow \texttt{Rseq} \\
 \IN{}(& c &, \rho) & = & \C{}(c)\\
 \IN{}(& y_i^{(k)} &, \rho) & = & \Dn{}(\rho(i),k) \\
 \IN{}(& - E &, \rho) & = & - \IN{}(E,\rho)\\
@@ -307,9 +311,9 @@ and not composed expressions, there is currently no built-in minus
 function or multiplication by a constant and it is impossible to talk
 about the product of power series.
 
-Describing the explicit shape of the product of two power series (the
-power series which is defined with the Cauchy product of the sequences
-defining the two others) is a possible future work.
+In the future, a description of the explicit shape of the product of two
+power series (the power series which is defined with the Cauchy product
+of the coefficients' sequences) could be a valuable addition.
 
 \nocite{*}
 \bibliographystyle{eptcs}
@@ -317,7 +321,8 @@ defining the two others) is a possible future work.
 
 \section{Acknowledgements}
 
-Special thanks to Sylvain and Marc for their useful comments and
-suggestions.
+Thanks to all the \coqtail{} project's members who helped proofreading the
+drafts. Special thanks to Sylvain Dailler and Marc Lasson for their useful
+comments and suggestions.
 
 \end{document}
