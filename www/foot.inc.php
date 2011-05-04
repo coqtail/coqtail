@@ -1,13 +1,16 @@
   </div>
 
   <div id="footer">
-    <?php
+   <p id="mentions">
+   <br /><a href="http://sourceforge.net/projects/coqtail"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=298939&amp;type=9" width="80" height="15" alt="Get Coqtail at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a><br />
+   <?php
       if($lang=="fr") {
         echo "Dernières modifications : avril 2011";
       } else {
         echo "last modified: April 2011";
       }
     ?>
+    </p>
     <p id="w3c">
        <a href="http://validator.w3.org/check?uri=referer"><img
           style="border:0;width:88px;height:31px"
@@ -22,9 +25,6 @@
           alt="<?=$css?>"
           title="<?=$css?>"
           /></a>
-    </p>
-    <p id="sourceforge">
-    <a href="http://sourceforge.net/projects/coqtail"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=298939&amp;type=9" width="80" height="15" alt="Get Coqtail at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
     </p>
   </div>
 
