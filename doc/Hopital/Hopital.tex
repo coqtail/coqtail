@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{csquotes}
+\usepackage[french]{babel}
+\usepackage{biblatex}
+\usepackage{eurosym}
+\usepackage{fullpage}
+\usepackage{palatino}
+
+%TODO aliais pour Hopital rule 
+
+\begin{document}
+
+
+
+\section{Presentation of the rule of l'Hopital}
+
+L'Hôpital's rule is generally used to find the limit of fraction of undetermined form.
+For example, given $lim_{x \rightarrow +\infty} f(x) = 0$ and $lim_{x \rightarrow +\infty} g(x) = 0$, l'hopital is used to determine $lim_{x \rightarrow +\infty} (f /g) (x)$ by successive derivations of f and g.
+This theorem can be generalized to a lot of cases:  $f(x) \rightarrow +\infty$, $g(x) \rightarrow +\infty$, etc
+
+A general statement of this rule is the following:\\
+Given $(b1, b2) \in \{(+\infty, +\infty), (+\infty, - \infty), (- \infty, +\infty), (- \infty, -\infty) (0, 0)\}$ and $L \in \mathbb{R} \cup \{+\infty, -\infty\}$, 
+$\forall a \in \mathbb{R} \cup {+\infty, -\infty}$, f and g are 2 continuous and derivable functions on a neighbourood of $a$ (g is not 0 on this neighborood, g' as well), 
+if $lim_{x \rightarrow a} f (x) = b1$, $lim_{x \rightarrow a} g (x) = b2$ and $lim_{x \rightarrow a} (f'/g') (x) = L$  then  $lim_{x \rightarrow a} (f/g) (x) = L$.\\
+
+
+
+
+
+\section{Implementation of the rule}
+
+The general statement is not directy implementable in Coq as we want to use it in the Coq standard library of Reals. This library does not support using $+\infty$ and $-\infty$
+as other Reals in what could be an extension of the $\mathbb{R}$ with new axioms for the infinities. So, we are obligated to define divergences in
+$-\infty$ and $+\infty$.
+As if it was not sufficient, we also need to distinguish $lim_{x \rightarrow a+}$ and $lim_{x \rightarrow a-}$ as these 2 limits can be sligthly different. For example, the inverse function
+on 0.
+We are also obligated to explicitly define the "neighborood".
+
+So we need new definitions limits in $+\infty$ and $-\infty$. These definitions are exactly the one that can be found in a manual of maths. %TODO 
+
+Definition: $lim_{x \rightarrow a+} f (x) =  +\infty$\\
+$\forall a, b, m\in \mathbb{R}, a < b$, $m > 0 \rightarrow$ \\
+$\exists \alpha \in \mathbb{R}, \alpha > 0 $ and \\
+$\forall x, x \in ]a; b[ \rightarrow |x - a| < \alpha \rightarrow m < f(x)$
+\\
+Definition: $lim_{x \rightarrow b-} f (x) =  +\infty$\\
+$\forall a, b, m\in \mathbb{R}, a < b$, $m > 0 \rightarrow$ \\
+$\exists \alpha \in \mathbb{R}, \alpha > 0 $ and \\
+$\forall x, x \in ]a; b[ \rightarrow |x - b| < \alpha \rightarrow m < f(x)$
+\\
+Definition: $lim_{x \rightarrow a+} f (x) =  -\infty$\\
+$\forall a, b, m\in \mathbb{R}, a < b$, $m > 0 \rightarrow$ \\
+$\exists \alpha \in \mathbb{R}, \alpha > 0 $ and \\
+$\forall x, x \in ]a; b[ \rightarrow |x - a| < \alpha \rightarrow -m > f(x)$
+\\
+Definition: $lim_{x \rightarrow b-} f (x) =  -\infty$\\
+$\forall a, b, m\in \mathbb{R}, a < b$, $m > 0 \rightarrow$ \\
+$\exists \alpha \in \mathbb{R}, \alpha > 0 $ and \\
+$\forall x, x \in ]a; b[ \rightarrow |x - b| < \alpha \rightarrow -m > f(x)$
+\\
+
+
+\section{Unnecessary hypotheses}
+
+While proving this rule, we found out that some hypotheses were useless: 
+In the case of $g \rightarrow +\infty$, we did not need the hypotheses $f \rightarrow +\infty$. The l'Hopital rule would be true even if 
+the limit of f is finite which seems to be natural. But in Coq, this would avoid to the user to prove this statement. \\%TODO reverifier partout dans le code
+The hypotheses "g' is not 0 on a neighborood" is sometimes as well not needed. For example when $g \rightarrow +\infty$, it is clear that there exists a region near infinity
+where g is not going to be 0. We tried to avoid the user some work and avoid this hypothesis when possible.\\
+
+\section{Cases implemented}
+
+The file Hopital.v contains a proof of l'Hôpital's rule. 
+
+These tables shows all the cases implemented yet:\\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  when $x \rightarrow a+$ & L is finite & $L = +\infty$ & $L = -\infty$ \\
+  \hline
+  $g(x) \rightarrow 0$ & Hopital\_g0\_Lfin\_right & Hopital\_g0\_Lpinf\_right & Hopital\_g0\_Lninf\_right\\
+  $g(x) \rightarrow +\infty$ & Hopital\_gpinf\_Lfin\_right & Hopital\_gpinf\_Lpinf\_right & Hopital\_gpinf\_Lninf\_right\\
+  $g(x) \rightarrow -\infty$ & Hopital\_gninf\_Lfin\_right & Hopital\_gninf\_Lpinf\_right & Hopital\_gninf\_Lninf\_right\\
+  \hline
+\end{tabular}
+
+
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  when $x \rightarrow a-$ & L is finite & $L = +\infty$ & $L = -\infty$ \\
+  \hline
+  $g(x) \rightarrow 0$ & Hopital\_g0\_Lfin\_left & Hopital\_g0\_Lpinf\_left & Hopital\_g0\_Lninf\_left\\
+  $g(x) \rightarrow +\infty$ & Hopital\_gpinf\_Lfin\_left & Hopital\_gpinf\_Lpinf\_left & Hopital\_gpinf\_Lninf\_left\\
+  $g(x) \rightarrow -\infty$ & Hopital\_gninf\_Lfin\_left & Hopital\_gninf\_Lpinf\_left & Hopital\_gninf\_Lninf\_left\\
+  \hline
+\end{tabular}
+
+
+
+
+
+
+\end{document}
