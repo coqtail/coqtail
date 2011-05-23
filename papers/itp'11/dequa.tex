@@ -1,0 +1,269 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage{amssymb, amsmath}
+
+\newcommand{\Prop}{\texttt{Prop}}
+\newcommand{\coq}{Coq}
+\newcommand{\coqtail}{\textsc{coqtail}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rbar}{\overline{\mathbb{R}}}
+\newcommand{\dequa}{\texttt{Dequa}}
+\newcommand{\Rpser}{\texttt{Rpser}}
+
+\DeclareMathOperator{\None}{\mathtt{None}}
+\DeclareMathOperator{\Some}{\mathtt{Some}}
+\DeclareMathOperator{\return}{\mathtt{return}}
+\DeclareMathOperator{\bind}{~\mathtt{>>=}~}
+\DeclareMathOperator{\Rseq}{\mathtt{Rseq}}
+\DeclareMathOperator{\ntherr}{\mathtt{nth\_error}}
+\DeclareMathOperator{\option}{\mathtt{option}}
+\DeclareMathOperator{\alist}{\mathtt{list}}
+\DeclareMathOperator{\de}{\mathtt{diff\_equa}}
+\DeclareMathOperator{\se}{\mathtt{side\_equa}}
+\DeclareMathOperator{\Interp}{\mathtt{interp}}
+\DeclareMathOperator{\Sem}{\left[\left| E_1 :=: E_2 \right|\right]}
+\DeclareMathOperator{\SemR}{\Sem_{\R} \rho}
+\DeclareMathOperator{\SemN}{\Sem_{\N} \rho}
+\DeclareMathOperator{\IR}{\Interp_{\R}}
+\DeclareMathOperator{\IN}{\Interp_{\N}}
+\DeclareMathOperator{\Psum}{\mathtt{sum}}
+\DeclareMathOperator{\C}{\mathtt{An\_cst}}
+\DeclareMathOperator{\Dn}{\mathtt{An\_nth\_deriv}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\title{Using reflection to solve some differential equations.}
+\author{Guillaume Allais\\
+\coqtail{} - ENS Lyon}
+
+\begin{document}
+\maketitle{}
+
+On top of \coqtail{}'s libraries that provide a formalization of power series
+comes a small development that aims at simplifying the proof that given power
+series are solutions of specific differential equations. The use of reflection
+allows to prove general facts about differential equations which can then be
+used to simplify the proofs.
+
+\section{Definitions}
+
+Even if the \dequa{} library relies heavily on \coqtail{}'s \Rpser{} definitions
+and developments, one does not need to know much about these in order to
+understand the idea.
+We recall here the basic definitions that are used afterwards.
+
+The sequence of coefficients of the power series defining the constant function
+$\lambda\_. C$ is given by the $\C{}$ function.
+
+$$\C{}(C) := n \mapsto \left\lbrace
+\begin{array}{ll}
+C & \text{if } n = 0\\
+0 & \text{otherwise}
+\end{array}
+\right.$$
+
+The coefficients of the formal $k^{th}$ derivative of a power series defined by
+$A_n$ is given by the $\Dn{}$ function:
+
+$$\Dn{}(A_n, k) := n \mapsto \frac{(n + k)!}{n!}A_{n+k}$$
+
+Given a sequence of coefficients $A_n$ and a proof $\rho$ that the convergence
+radius of $\sum_n A_n x^n$ is infinite, the sum of the power series is given by
+$\Psum{}$:
+
+$$\Psum{}(A_n, \rho) := x \mapsto \sum_{k=0}^{+ \infty} A_k x^k$$
+
+\section{Reflection of differential equations}
+
+In order to represent the differential equations, we need two components: a
+datatype which can describe the structure of a differential equation and a
+semantics which, given a structure and a context, yields a statement in
+\Prop{}.
+
+\subsection{Reification}
+
+A differential equation $\forall x. e1(x) = e2(x)$ is represented as a pair
+$(E_1, E_2)$ of side equations (usually written $E_1 :=: E_2$) where $E_1$ (resp.
+$E_2$) represents $e_1$ (resp. $e_2$). A side equation is either a constant,
+a function's $n^{th}$ derivative or a linear combination of side equations. The
+corresponding datatype is:
+
+\begin{verbatim}
+Inductive side_equa : Set :=
+    | cst  : forall (r : R), side_equa
+    | scal : forall (r : R) (s : side_equa), side_equa
+    | y    : forall (p : nat) (k : nat), side_equa
+    | opp  : forall (s1 : side_equa), side_equa
+    | plus : forall (s1 s2 : side_equa), side_equa.
+\end{verbatim}
+
+This representation can be rather easily extended with new data constructors if
+the corresponding theory has been formalized in \coq{}: adding the multiplication
+by a scalar (which was not present in our first toy example) was a matter of twenty
+minutes as soon as all the appropriate lemmas where available in
+\Rpser{}\footnote{We hope to modify the data structure to be able to talk about
+the product of two functions in a near future.}.
+
+\subsection{Interpretation}
+
+Unlike other procedure using reflection, \dequa{} provides various semantics for
+these side equations: the straightforward one (\`a la Tarski) but also a semantics
+that yields equations on sequences over $\R$.
+
+These semantics are defined in two steps: given an environment,
+$\Interp{}_{\mathbb{K}}$ translates side equations and
+$\left[\left| \_ \right|\right]_{\mathbb{K}}$ uses it to interpret equations.
+
+For the sake of simplicity, instead of enforcing the well-formedness of the
+environment by a dependent type (e.g. a dependent vector),
+the defined functions are partial and use the $option{}$ monad.
+
+We assume in the following developments that the lookup function
+$\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
+\alpha$ defined in the standard library is known by the reader. $\mathtt{Rseq\_
+infty}$ is the subset of sequences over $\R$ such that the corresponding power
+series has an infinite convergence radius.
+
+\subsubsection{Equations on power series}
+
+Our first concern is to defined the semantics \`a la Tarski that translates
+differential equations as differential equations on sums of power series.
+$\IR : \se \rightarrow \alist{} \mathtt{Rseq\_infty} \rightarrow \option{}
+(\texttt{R} \rightarrow \texttt{R})$ translates constants as the constant function,
+variables as derivatives of sums of power series of the corresponding $\Rseq$
+available in the environment and linear combinations as linear combinations of
+functions\footnote{See ~\ref{interpR} for technical details.}.
+
+$\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$ is the corresponding interpretation
+function: given the interpretation of two side equations, it states that the
+obtained functions are extensionally equal.
+
+
+\subsubsection{Equations on sequences over $\R$}
+
+The second semantics translate differential equations as equations on sequences
+over $\R$. $\IN : \se \rightarrow \alist{} \Rseq \rightarrow
+\option{} \Rseq$ translates constants as $\C{}$, variables as $\Dn{}$ and linear
+combinations as linear combinations of sequences\footnote{See ~\ref{interpN} for
+technical details.}.
+
+$\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$ is the corresponding interpretation
+function:  given the interpretation of two side equations, it states that the
+obtained sequences are extensionally equal.
+
+\subsection{Relation between these semantics}
+
+We assume the existence of a projection $proj_1$ that given a sequence $A_n$ of
+type $\mathtt{Rseq\_infty}$ forgets the proof that $\sum_n A_n x^n$ has an
+infinite convergence radius: $proj_1 A_n$ is of type $Rseq$.
+
+\begin{theorem}Our main result states that given a context
+$\rho$ of type $\alist{} \mathtt{Rseq\_infty}$:
+$$\left[\left| e_1 :=: e_2 \right|\right]_\N (map ~ proj_1 ~ \rho) \Rightarrow
+\left[\left| e_1 :=: e_2 \right|\right]_\R \rho$$
+
+ie. we can prove that some functions (sums of power series) are solutions
+of a given differential equation by proving results on their coefficients.
+\end{theorem}
+
+\begin{proof} The proof uses the following intermediate lemma:
+$$\IN(e, map ~ proj_1 ~ \rho) = \Some U_n \wedge \IR(e, \rho) = \Some f$$
+$$\Rightarrow \exists \rho. \forall x. f(x) = \Psum{}(U_n, \rho)(x)$$
+which is proved by induction on $e$.
+
+\end{proof}
+
+\section{Applications}
+
+By using this theorem, one can prove in less than 20 lines that the
+exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Without
+much more work, one can also prove that cosine and sine are solutions
+of $y^{(2)} = - y$.
+
+\section{Appendix}
+
+\subsection{Equations on power series}
+
+\label{interpR}
+
+$$\begin{array}{lllcl}
+\IR & & & : & \se \rightarrow \alist{} \mathtt{Rseq\_infty} \\
+    & & &   & \rightarrow \option{} (\texttt{R} \rightarrow \texttt{R}) \\
+\IR & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\lambda \_.C)\\
+\IR & (\mathtt{scal}~ C ~ E &, \rho) & = & \IR(E, \rho) \bind (\lambda f. \return (C * f))\\
+\IR & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \return (\Psum{}(u_n)^{(k)})) \\
+\IR & (\mathtt{opp} ~E &, \rho) & = & \IR(E,\rho) \bind (\lambda f. \return (- f))\\
+\IR & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IR(E_1,\rho) \bind (\lambda f_1.\\
+    & & &   & \IR(E_2,\rho) \bind (\lambda f_2. \return (f_1 + f_2)))\\
+\end{array}$$
+
+
+$$\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$$
+\begin{tabular}{l|l}
+
+\begin{minipage}{0.42\textwidth}
+$$\SemR{} = \bot$$
+$$ \text{if } \left\lbrace
+\begin{array}{ll}
+& \IR(E_1, \rho) = \None\\
+\text{or} & \IR(E_2, \rho) = \None
+\end{array}\right.$$
+\end{minipage}
+
+& \begin{minipage}{0.58\textwidth}
+$$\SemR{} = \forall x \in \R. e_1(x) = e_2(x)$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IR(E_1, \rho) = \Some e_1\\
+\text{and} & \IR(E_2, \rho) = \Some e_2
+\end{array}\right.$$
+\end{minipage}
+
+\end{tabular}
+
+\subsection{Equations on sequences over $\R$}
+
+\label{interpN}
+$$\begin{array}{lllcl}
+\IN & & & : & \se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq \\
+\IN & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\C{}(C))\\
+\IN & (\mathtt{scal}~ C ~ E &, \rho) & = & \IN(E, \rho) \bind (\lambda u_n. \return (C * u_n))\\
+\IN & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \\
+    & & &   & \return (\Dn{}(un,k)) \\
+\IN & (\mathtt{opp} ~E &, \rho) & = & \IN(E,\rho) \bind (\lambda u_n. \return (- u_n))\\
+\IN & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IN(E_1,\rho) \bind (\lambda u_n.\\
+    & & &   & \IN(E_2,\rho) \bind (\lambda v_n. \return (u_n + v_n)))\\
+\end{array}$$
+
+
+$$\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$$
+\begin{tabular}{l|l}
+\begin{minipage}{0.42\textwidth}
+$$\SemN{} = \bot$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IN(E_1, \rho) = \None\\
+\text{or} & \IN(E_2, \rho) = \None
+\end{array}\right.$$
+\end{minipage}
+
+& \begin{minipage}{0.58\textwidth}
+$$\SemN{} = \forall n \in \N. u_n(n) = v_n(n)$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IN(E_1, \rho) = \Some u_n\\
+\text{and} & \IN(E_2, \rho) = \Some v_n
+\end{array}\right.$$
+\end{minipage}
+
+\end{tabular}
+
+\end{document}
