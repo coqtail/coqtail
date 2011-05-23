@@ -45,7 +45,7 @@ The axiomatic is in form of a module, so that it can be implemented, either with
 
 The first set of axioms describes the ring operators. $\R$ is a parameter of sort $\Type$, 0 and 1 are two objects of $\R$ and +, *, - are operators on $\R$ respectively of arities 2, 2, 1.
 
-We also need an equality predicate, but we will define the strict order relation first and the other one will be defined thanks to this one. Indeed [x<y] will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$ so that building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq’Art book to constructively extract such a $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $<$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
+We also need an equality predicate, but we will define the strict order relation first and the other one will be defined thanks to this one. Indeed a proof of $x<y$ will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$ so that building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq’Art book to constructively extract such a $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $<$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
 
 
 \subsection{Constructive field}
@@ -78,7 +78,7 @@ Moreover we have to say that $+$, $*$, $^{-1}$ and even $≡$ behave well with r
 
 We also demand that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms)
 
-We lack the fact that $\R$ is archimedean. However this is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ the representation of a real number $x$ and return some integer $z$ such that $| x-\underline z | < 1$\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$}. We cannot have the property of $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$ because this would make $\llcorner \cdot \lrcorner$ a non continuous function.
+We lack the fact that $\R$ is archimedean. However this is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that $| x-\underline z | < 1$\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$}. We cannot have the property of $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$ because this would make $\llcorner \cdot \lrcorner$ a non continuous function.
 
   Finally we complete $\R$ by adding all the limits of the Cauchy sequences of elements of $\R$.
   
@@ -114,9 +114,9 @@ In order to have a axiom-free implementation of the axiomatic, we implement in C
 
 \section{Constructive/classical distinction}
 
-Dealing with real mathematics often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to know whether a statement is constructively proven and also to potentially be able to extract code from constructive proofs.
+Dealing with real mathematics often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to know whether the proof of a statement is constructive and to be able to extract code from such proofs.
 
-Therefore if we want to reason constructively we need to have predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$ To reason classically we need predicates to be in $\Prop$. One solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad to embed constructive predicates into a world where the statements are weaker.
+Therefore, if we want to reason constructively we need to have predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$. To reason classically we need predicates to be in $\Prop$. One solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad to embed constructive predicates into a world where the statements are weaker.
 
 %Coq provides the system of sorts which allows us to distinguish statements containing some computational information from other that depend on non realized axioms. For example if we use the axiom of excluded middle in $\Prop$ in the proof of a theorem which computes something, like a function from $\N$ to $\N$ then it won’t result in a computational dependency on the unrealized axiom.
 
@@ -154,10 +154,10 @@ Using the axiom monad on epsilon gives us back the static discrimination between
 \subsection{$\mathtt{Prop}$-$\mathtt{Type}$ distinction}
 
 A weaker way to encode epsilon is to embed every type in $\mathtt{Prop}$. This is done through the inhabited monad.
-
-$\mathtt{Inductive\ inhabited\ (A : Type) : Prop :=  inhabits : A \rightarrow inhabited\ A}$
+$$\mathtt{Inductive\ inhabited\ (A : Type) : Prop :=  inhabits : A \rightarrow inhabited\ A}$$
 
 We can recover an ersatz of the axiom monad using the choice axiom.
 
+One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenever proof-irrelevance is assumed, there is at most one proof of $\mathtt{inhabited}\ A$ for any $A$. This implies in particular that the programmer must fully specify the content of the lift thru $\mathtt{sig}$-like dependent pairs.
 
 \end{document}
