@@ -1,6 +1,8 @@
 \documentclass{article}
 \usepackage[english]{babel}
 \usepackage{amssymb, amsmath}
+\usepackage{fullpage, url}
+\usepackage{biblatex, csquotes}
 
 \newcommand{\Prop}{\texttt{Prop}}
 \newcommand{\coq}{Coq}
@@ -33,31 +35,43 @@
 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
 \newenvironment{proof}[1][Proof]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
-\title{Using reflection to solve some differential equations.}
+\title{Using reflection to solve some differential equations}
 \author{Guillaume Allais\\
-\coqtail{} - ENS Lyon}
+Junior Laboratory \coqtail{}\\
+ENS Lyon - France}
+
+\bibliography{biblio}
 
 \begin{document}
 \maketitle{}
 
+\begin{abstract}
 On top of \coqtail{}'s libraries that provide a formalization of power series
-comes a small development that aims at simplifying the proof that given power
+comes a small development that aims at simplifying proofs that given power
 series are solutions of specific differential equations. The use of reflection
 allows to prove general facts about differential equations which can then be
 used to simplify the proofs.
 
+\textbf{Files:} All the implementation mentioned in this paper are
+available for download via \coqtail{}'s svn repository\footnote{see
+\url{http://sourceforge.net/projects/coqtail/develop}
+and in particular \texttt{src/Reals/Dequa\_*.v}.}.
+\end{abstract}
+
 \section{Definitions}
 
-Even if the \dequa{} library relies heavily on \coqtail{}'s \Rpser{} definitions
-and developments, one does not need to know much about these in order to
-understand the idea.
-We recall here the basic definitions that are used afterwards.
+Even if the \dequa{} library relies heavily on \coqtail{}'s \Rpser{}
+definitions and developments, one does not need to know much about these in
+order to read this presentation. We recall here the basic definitions that
+are used afterwards.
 
 The sequence of coefficients of the power series defining the constant function
-$\lambda\_. C$ is given by the $\C{}$ function.
+$\lambda\_. C$ is given by the $\C{}$ function. The infiniteness of its radius
+of convergence is obviously part of the library.
 
 $$\C{}(C) := n \mapsto \left\lbrace
 \begin{array}{ll}
@@ -67,13 +81,14 @@ C & \text{if } n = 0\\
 \right.$$
 
 The coefficients of the formal $k^{th}$ derivative of a power series defined by
-$A_n$ is given by the $\Dn{}$ function:
+$A_n$ is given by the $\Dn{}$ function. The link between the formal derivative
+and the actual one is also stated and proved in the available libraries.
 
 $$\Dn{}(A_n, k) := n \mapsto \frac{(n + k)!}{n!}A_{n+k}$$
 
 Given a sequence of coefficients $A_n$ and a proof $\rho$ that the convergence
 radius of $\sum_n A_n x^n$ is infinite, the sum of the power series is given by
-$\Psum{}$:
+the function $\Psum{}$:
 
 $$\Psum{}(A_n, \rho) := x \mapsto \sum_{k=0}^{+ \infty} A_k x^k$$
 
@@ -81,16 +96,18 @@ $$\Psum{}(A_n, \rho) := x \mapsto \sum_{k=0}^{+ \infty} A_k x^k$$
 
 In order to represent the differential equations, we need two components: a
 datatype which can describe the structure of a differential equation and a
-semantics which, given a structure and a context, yields a statement in
-\Prop{}.
+semantics which, given a structure and a context, yields a formula in
+\Prop{} stating that the functions in the context are solutions of the
+described differential equation.
 
 \subsection{Reification}
 
 A differential equation $\forall x. e1(x) = e2(x)$ is represented as a pair
 $(E_1, E_2)$ of side equations (usually written $E_1 :=: E_2$) where $E_1$ (resp.
 $E_2$) represents $e_1$ (resp. $e_2$). A side equation is either a constant,
-a function's $n^{th}$ derivative or a linear combination of side equations. The
-corresponding datatype is:
+a function's $n^{th}$ derivative or a linear combination of side equations. We
+use the following datatype to describe such side equations:
+
 
 \begin{verbatim}
 Inductive side_equa : Set :=
@@ -102,9 +119,9 @@ Inductive side_equa : Set :=
 \end{verbatim}
 
 This representation can be rather easily extended with new data constructors if
-the corresponding theory has been formalized in \coq{}: adding the multiplication
-by a scalar (which was not present in our first toy example) was a matter of twenty
-minutes as soon as all the appropriate lemmas where available in
+the corresponding theory has been formalized in \coq{}~\cite{coq}: adding the multiplication
+by a scalar (which was not present in our first toy example) was a matter of less
+than twenty minutes as soon as all the appropriate lemmas where available in
 \Rpser{}\footnote{We hope to modify the data structure to be able to talk about
 the product of two functions in a near future.}.
 
@@ -117,16 +134,13 @@ that yields equations on sequences over $\R$.
 These semantics are defined in two steps: given an environment,
 $\Interp{}_{\mathbb{K}}$ translates side equations and
 $\left[\left| \_ \right|\right]_{\mathbb{K}}$ uses it to interpret equations.
-
 For the sake of simplicity, instead of enforcing the well-formedness of the
 environment by a dependent type (e.g. a dependent vector),
-the defined functions are partial and use the $option{}$ monad.
+the defined functions are partial and use the $\option{}$ monad.
 
-We assume in the following developments that the lookup function
-$\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
-\alpha$ defined in the standard library is known by the reader. $\mathtt{Rseq\_
-infty}$ is the subset of sequences over $\R$ such that the corresponding power
-series has an infinite convergence radius.
+$\mathtt{Rseq\_infty}$ is the subset of sequences over $\R$ such that the
+corresponding power series has an infinite convergence radius (a dependent
+pair in \coq{}).
 
 \subsubsection{Equations on power series}
 
@@ -136,7 +150,7 @@ $\IR : \se \rightarrow \alist{} \mathtt{Rseq\_infty} \rightarrow \option{}
 (\texttt{R} \rightarrow \texttt{R})$ translates constants as the constant function,
 variables as derivatives of sums of power series of the corresponding $\Rseq$
 available in the environment and linear combinations as linear combinations of
-functions\footnote{See ~\ref{interpR} for technical details.}.
+functions\footnote{See \ref{interpR} for technical details.}.
 
 $\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
 \mathtt{Rseq\_infty} \rightarrow \Prop$ is the corresponding interpretation
@@ -146,11 +160,11 @@ obtained functions are extensionally equal.
 
 \subsubsection{Equations on sequences over $\R$}
 
-The second semantics translate differential equations as equations on sequences
-over $\R$. $\IN : \se \rightarrow \alist{} \Rseq \rightarrow
-\option{} \Rseq$ translates constants as $\C{}$, variables as $\Dn{}$ and linear
-combinations as linear combinations of sequences\footnote{See ~\ref{interpN} for
-technical details.}.
+The second semantics translates differential equations as equations on
+sequences over $\R$.  The function $\IN :
+\se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq$ translates
+constants as $\C{}$, variables as $\Dn{}$ and linear combinations as linear
+combinations of sequences\footnote{See \ref{interpN} for technical details.}.
 
 $\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
 \mathtt{Rseq\_infty} \rightarrow \Prop$ is the corresponding interpretation
@@ -159,9 +173,19 @@ obtained sequences are extensionally equal.
 
 \subsection{Relation between these semantics}
 
+The relation between these semantics comes from two simple facts: given two
+sequences of coefficients extensionally equal, the corresponding power
+series are equal and sums of power series are compatible with sum (the sum
+of the power series is the power series of the sum), opposite, etc.
+Therefore it is sufficient to prove that some coefficients are solutions of
+the equation on sequences in order to prove that the sums of the corresponding
+power series are solutions of the differential equations.
+
+
 We assume the existence of a projection $proj_1$ that given a sequence $A_n$ of
 type $\mathtt{Rseq\_infty}$ forgets the proof that $\sum_n A_n x^n$ has an
-infinite convergence radius: $proj_1 A_n$ is of type $Rseq$.
+infinite convergence radius: $proj_1 A_n$ is of type $\Rseq{}$ (in \coq{} we
+simply use $\mathtt{projT1}$).
 
 \begin{theorem}Our main result states that given a context
 $\rho$ of type $\alist{} \mathtt{Rseq\_infty}$:
@@ -181,12 +205,24 @@ which is proved by induction on $e$.
 
 \section{Applications}
 
-By using this theorem, one can prove in less than 20 lines that the
-exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Without
-much more work, one can also prove that cosine and sine are solutions
-of $y^{(2)} = - y$.
+Thanks to this theorem, one can prove in less than 20 lines that the
+exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Instead
+of having to deal with limits and derivatives, one just has to prove that:
+
+$$\forall k \in \N, \frac{((n+1) + k)!}{k!} * \frac{1}{((n+1)+k)!}
+= \frac{(n+k)!}{k!} * \frac{1}{(n+k)!}$$
+
+Without much more work, one can also prove that cosine and sine are
+both solutions of $y^{(2)} = - y$.
+
+\printbibliography{}
+\newpage{}
 
 \section{Appendix}
+
+We assume in the following developments that the lookup function
+$\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
+\alpha$ defined in the standard library is known by the reader.
 
 \subsection{Equations on power series}
 
@@ -206,9 +242,10 @@ $$\begin{array}{lllcl}
 
 $$\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
 \mathtt{Rseq\_infty} \rightarrow \Prop$$
-\begin{tabular}{l|l}
 
-\begin{minipage}{0.42\textwidth}
+\begin{center}
+\begin{tabular}{c|c}
+\begin{minipage}{0.45\textwidth}
 $$\SemR{} = \bot$$
 $$ \text{if } \left\lbrace
 \begin{array}{ll}
@@ -217,7 +254,7 @@ $$ \text{if } \left\lbrace
 \end{array}\right.$$
 \end{minipage}
 
-& \begin{minipage}{0.58\textwidth}
+& \begin{minipage}{0.45\textwidth}
 $$\SemR{} = \forall x \in \R. e_1(x) = e_2(x)$$
 $$\text{if } \left\lbrace
 \begin{array}{ll}
@@ -227,7 +264,7 @@ $$\text{if } \left\lbrace
 \end{minipage}
 
 \end{tabular}
-
+\end{center}
 \subsection{Equations on sequences over $\R$}
 
 \label{interpN}
@@ -242,11 +279,12 @@ $$\begin{array}{lllcl}
     & & &   & \IN(E_2,\rho) \bind (\lambda v_n. \return (u_n + v_n)))\\
 \end{array}$$
 
-
 $$\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
 \mathtt{Rseq\_infty} \rightarrow \Prop$$
-\begin{tabular}{l|l}
-\begin{minipage}{0.42\textwidth}
+
+\begin{center}
+\begin{tabular}{c|c}
+\begin{minipage}{0.45\textwidth}
 $$\SemN{} = \bot$$
 $$\text{if } \left\lbrace
 \begin{array}{ll}
@@ -255,7 +293,7 @@ $$\text{if } \left\lbrace
 \end{array}\right.$$
 \end{minipage}
 
-& \begin{minipage}{0.58\textwidth}
+& \begin{minipage}{0.45\textwidth}
 $$\SemN{} = \forall n \in \N. u_n(n) = v_n(n)$$
 $$\text{if } \left\lbrace
 \begin{array}{ll}
@@ -265,5 +303,5 @@ $$\text{if } \left\lbrace
 \end{minipage}
 
 \end{tabular}
-
+\end{center}
 \end{document}
