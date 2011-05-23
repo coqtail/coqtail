@@ -1,5 +1,7 @@
+%an epsilon
+%require§/demand
 \documentclass[a4paper,11pt]{article}
-\usepackage{amsmath, amssymb, amsthm, verbatim}
+\usepackage{amsmath, amssymb, amsthm, verbatim, fullpage}
 \usepackage[utf8x]{inputenc}
 
 
@@ -24,14 +26,16 @@
 \begin{document}
 
 \title{Constructive axiomatic for the real numbers}
-\author{Junior Laboratory \coqtail{}\\
+\author{
+Jean-Marie Madiot\\
+Pierre-Marie Pédrot\\
+Junior Laboratory \coqtail{}\\
 Ens Lyon - France\\}
 %\email{jean-marie.madiot@ens-lyon.org}}
 
 \maketitle 
-\abstract{
+
   Reasoning about real numbers in Coq can be very tedious. The standard library of Coq is classical and using it means forgetting about constructive proofs. C-CoRN is constructive in every way and forbids classical statements. Moreover its hierarchical structure is not lightweight enough. We propose a short axiomatic that can handle both constructive and classical mathematical statements.
-}
 
 \section{Constructive axiomatic}
 
@@ -62,19 +66,19 @@ Moreover we have to say that $+$, $*$, $^{-1}$ and even $≡$ behave well with r
 
   \[
   \begin{array}{rcl}
-  x \equiv x' \;,\; x < y   &  \Rightarrow  & x' < y \\
-  x \equiv x' \;,\; y < x   &  \Rightarrow  & y < x' \\
-  y \equiv y'               &  \Rightarrow  & x + y \equiv x + y' \\
+  x ≡ x' \;,\; x < y   &  \Rightarrow  & x' < y \\
+  x ≡ x' \;,\; y < x   &  \Rightarrow  & y < x' \\
+  y ≡ y'               &  \Rightarrow  & x + y ≡ x + y' \\
   y < y'                    &  \Rightarrow  & x + y < x + y' \\
   0 < x \;,\; y < y'        &  \Rightarrow  & x \cdot y < x \cdot y' \\
-  0 < x \;,\; y \equiv y'   &  \Rightarrow  & x \cdot y \equiv x \cdot y' \\
+  0 < x \;,\; y ≡ y'   &  \Rightarrow  & x \cdot y ≡ x \cdot y' \\
   p:0<x \;,\;  p':0\#x      &  \Rightarrow  & 0 < x^{-1}_{[p']} \\
   \end{array}
   \]
 
-We also demand that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms)
+We also require that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms)
 
-We lack the fact that $\R$ is archimedean. However this is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that $| x-\underline z | < 1$\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$}. We cannot have the property of $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$ because this would make $\llcorner \cdot \lrcorner$ a non continuous function.
+We lack the fact that $\R$ is archimedean. However this is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$} $| x-\underline z | < 1$. We cannot have the property of $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$ because this would make $\llcorner \cdot \lrcorner$ a non continuous function.
 
   Finally we complete $\R$ by adding all the limits of the Cauchy sequences of elements of $\R$.
   
@@ -141,7 +145,7 @@ Sometimes, additional axioms are not that terrible, and one can argue about the 
 
 Following Castéran's work, non-constructivism can provide an interesting use of the axiom monad. We recall the \emph{epsilon} axiom:
 
-$$\varepsilon \equiv \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt{exists}\ x, P x) \rightarrow \{x\mid P\  x\}$$
+$$\varepsilon ≡ \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt{exists}\ x, P x) \rightarrow \{x\mid P\  x\}$$
 
 The epsilon axiom is problematic because once it has been admitted, one cannot differenciate between proofs that are extractible and those which are not. Indeed, it allows informative content flow between $\mathtt{Prop}$ and $\mathtt{Type}$.
 
@@ -155,5 +159,8 @@ $$\mathtt{Inductive\ inhabited\ (A : Type) : Prop :=  inhabits : A \rightarrow i
 We can recover an ersatz of the axiom monad using the choice axiom.
 
 One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenever proof-irrelevance is assumed, there is at most one proof of $\mathtt{inhabited}\ A$ for any $A$. This implies in particular that the programmer must fully specify the content of the lift thru $\mathtt{sig}$-like dependent pairs.
+
+For example we can specify the partial function inverse on real numbers, like that:
+$$\mathtt{inhabited}\ \{f\ :\ \R → \R\ |\ \forall x\ x \# 0 → f x * x ≡ 1\}$$
 
 \end{document}
