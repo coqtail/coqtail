@@ -1,7 +1,9 @@
 all: main.pdf
 
-%.pdf : %.tex
-	pdflatex $<
+%.pdf : %.tex ref.bib Makefile
+	pdflatex $(<:.tex=)
+	bibtex $(<:.tex=)
+	pdflatex $(<:.tex=)
 
 clean:
 	rm -f *.aux *.log *.pdf

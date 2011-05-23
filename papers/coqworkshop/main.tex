@@ -1,7 +1,5 @@
-%an epsilon
-%require§/demand
 \documentclass[a4paper,11pt]{article}
-\usepackage{amsmath, amssymb, amsthm, verbatim, fullpage}
+\usepackage{amsmath, amssymb, amsthm, verbatim, fullpage, hyperref}
 \usepackage[utf8x]{inputenc}
 
 
@@ -31,11 +29,14 @@ Jean-Marie Madiot\\
 Pierre-Marie Pédrot\\
 Junior Laboratory \coqtail{}\\
 Ens Lyon - France\\}
+\date{May 23, 2011}
 %\email{jean-marie.madiot@ens-lyon.org}}
 
 \maketitle 
 
   Reasoning about real numbers in Coq can be very tedious. The standard library of Coq is classical and using it means forgetting about constructive proofs. C-CoRN is constructive in every way and forbids classical statements. Moreover its hierarchical structure is not lightweight enough. We propose a short axiomatic that can handle both constructive and classical mathematical statements.
+  
+  The implementation in Coq is available at \coqtail's repository\footnote{\url{https://sourceforge.net/projects/coqtail/develop} in {\tt src/Fresh/Reals}}
 
 \section{Constructive axiomatic}
 
@@ -45,7 +46,7 @@ The axiomatic is in form of a module, so that it can be implemented, either with
 
 The first set of axioms describes the ring operators. $\R$ is a parameter of sort $\Type$, 0 and 1 are two objects of $\R$ and +, *, - are operators on $\R$ respectively of arities 2, 2, 1.
 
-We also need an equality predicate, but we will define the strict order relation first and the other one will be defined thanks to this one. Indeed a proof of $x<y$ will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$ so that building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq’Art book to constructively extract such a $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $<$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
+We also need an equality predicate, but we will define the strict order relation first and the other one will be defined thanks to this one. Indeed a proof of $x<y$ will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$ so that building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq'Art\cite{coqart}\footnote{This trick is also in the standard library of Coq in \href{http://coq.inria.fr/stdlib/Coq.Logic.ConstructiveEpsilon.html}{Logic/ConstructiveEpsilon}} book to constructively extract such an $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $<$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
 
 
 \subsection{Constructive field}
@@ -72,7 +73,7 @@ Moreover we have to say that $+$, $*$, $^{-1}$ and even $≡$ behave well with r
   y < y'                    &  \Rightarrow  & x + y < x + y' \\
   0 < x \;,\; y < y'        &  \Rightarrow  & x \cdot y < x \cdot y' \\
   0 < x \;,\; y ≡ y'   &  \Rightarrow  & x \cdot y ≡ x \cdot y' \\
-  p:0<x \;,\;  p':0\#x      &  \Rightarrow  & 0 < x^{-1}_{[p']} \\
+  0<x \;,\;  p':0\#x      &  \Rightarrow  & 0 < x^{-1}_{[p']} \\
   \end{array}
   \]
 
@@ -114,7 +115,7 @@ In order to have a axiom-free implementation of the axiomatic, we implement in C
 
 \section{Constructive/classical distinction}
 
-Dealing with real mathematics often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to know whether the proof of a statement is constructive and to be able to extract code from such proofs.
+Dealing with real mathematics often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to know whether the proof of a statement is constructive and also to be able to extract code from such proofs.
 
 Therefore, if we want to reason constructively we need to have predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$. To reason classically we need predicates to be in $\Prop$. One solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad to embed constructive predicates into a world where the statements are weaker.
 
@@ -162,5 +163,8 @@ One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenev
 
 For example we can specify the partial function inverse on real numbers, like that:
 $$\mathtt{inhabited}\ \{f\ :\ \R → \R\ |\ \forall x\ x \# 0 → f x * x ≡ 1\}$$
+
+  \bibliographystyle{alpha}
+  \bibliography{ref}
 
 \end{document}
