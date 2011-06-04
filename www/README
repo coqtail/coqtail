@@ -1,0 +1,54 @@
+
+= MAINTENANCE DU SITE =
+
+== Dossier /www/files ==
+
+Dans ce dossier il y a des liens symboliques avec adresses relatives.
+Les clients FTP (enfin le mien, i.e. FileZilla) n'uploadent pas les 
+liens mais les fichiers pointés, comme prévu. Par contre Subversion 
+voit bien que c'est des liens relatifs, donc ça marche comme voulu.
+Les adresses relatives sont du genre
+
+  ../../papers/thedu'11/main.pdf
+
+et vous pouvez y acceder en exécutant la commande "file *" dans le 
+dossier, par exemple.
+
+
+== Onglets ==
+
+IL faut faire attention à la rétro-compatibilité. Pour l'instant le 
+fichier index.php accepte encore les arguments du genre :
+
+  ?doc/fr
+  ?en/doc
+  ?fr&page=3
+
+et il faut toujours accepter au moins autant qu'avant. Par contre, il
+faut éviter d'afficher des liens avec "page=3" et pour l'instant il 
+faut changer les fichiers de la doc.
+
+
+== À propos de ce fichier ==
+
+Modifiez-le, notez tout ce que vous pensez utile pour quelqu'un qui 
+maintiendrait cette page.
+
+
+== Liste des fichiers ==
+
+alter_doc.sh      script qui gère la doc
+README            (ce fichier)
+
+foot_en.inc.php   fichiers d'en-têtes et autres, pour ne pas
+foot.inc.php      polluer index.php
+top.inc.php       
+
+handleurl.php     script qui gère les urls jolies (respo par défaut: jm)
+index.php         script par défaut avec tout le contenu
+main.css          css
+
+main_en.php       fichier qui appelle juste index.php
+main.php          fichier qui appelle juste index.php
+void.html         fichier vide. (il sert à quoi ?)
+

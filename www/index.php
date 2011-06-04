@@ -149,7 +149,18 @@
       <?php
     }
   }
-
+  
+  elseif($pagename == "publi") {
+    if ($lang == "en" || $lang == "fr") {
+      ?>
+      <h2>Publications</h2>
+      <ul>
+        <li><a href="files/thedu11.pdf">thedu'11</a></li>
+      </ul>
+      <?php
+    }
+  }
+  
   elseif($pagename == "doc")
   {
     if ($doc) {

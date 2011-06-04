@@ -1,6 +1,6 @@
 <?php
   /** Managing pages */
-  $codepages = array("home", "team", "results", "doc");
+  $codepages = array("home", "team", "results", "doc", "publi");
   $defaultpage = $codepages[0];
     
   /** Get a page by it's number */
@@ -34,14 +34,16 @@
       'home' => 'Accueil',
       'team' => 'Équipe',
       'results' => 'Résultats',
-      'doc' => 'Documentation'
+      'doc' => 'Documentation',
+      'publi' => "Publications"
     );
   } else {
     $aliases = array(
       'home' => 'Home',
       'team' => 'Team',
       'results' => 'Results',
-      'doc' => 'Documentation'
+      'doc' => 'Documentation',
+      'publi' => "Publications"
     );
   }
   
