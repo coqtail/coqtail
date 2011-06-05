@@ -35,6 +35,13 @@ Modifiez-le, notez tout ce que vous pensez utile pour quelqu'un qui
 maintiendrait cette page.
 
 
+== Pensez à mettre à jour la date de dernière modification ==
+
+Dans
+- foot.inc.php
+- foot_en.inc.php
+
+
 == Liste des fichiers ==
 
 alter_doc.sh      script qui gère la doc

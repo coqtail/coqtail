@@ -45,7 +45,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
       </div>
       <div id="menu">
         <ul><?php echo "\n";
-        foreach($codepages as $code)
+        foreach($tabs as $code)
         {
           if ($code == $pagename) {
             $ext = ' id="current"';

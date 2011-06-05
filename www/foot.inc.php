@@ -5,7 +5,7 @@
    <br /><a href="http://sourceforge.net/projects/coqtail"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=298939&amp;type=9" width="80" height="15" alt="Get Coqtail at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a><br />
    <?php
       if($lang=="fr") {
-        echo "Dernières modifications : avril 2011";
+        echo "Dernières modifications : juin 2011";
       } else {
         echo "last modified: April 2011";
       }

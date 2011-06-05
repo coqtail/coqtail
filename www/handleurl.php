@@ -55,4 +55,7 @@
       $page = $i;
     }
   }
+  
+  // ORDER OF TABS (onglets)
+  $tabs = array('home', 'team', 'results', 'publi', 'doc');
 ?>
