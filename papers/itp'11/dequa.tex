@@ -17,8 +17,8 @@ ENS Lyon - France}
 \maketitle{}
 
 \begin{abstract}
-On top of \coqtail{}'s libraries that provide a formalization of power series
-comes a small development that aims at simplifying proofs that given power
+On top of \coqtail{}'s libraries that provide a formalization of power series, we
+added a small development that aims at simplifying proofs that given power
 series are solutions of specific differential equations. The use of reflection
 allows to prove general facts about differential equations which can then be
 used to simplify the proofs thanks to an \texttt{Ltac} machinery that performs
@@ -95,16 +95,16 @@ the product of two functions in a near future.}.
 
 \subsection{Interpretation}
 
-Unlike other procedure using reflection, \dequa{} provides various semantics for
+Unlike other procedures using reflection, \dequa{} provides various semantics for
 these side equations: the straightforward one (\`a la Tarski) but also a semantics
-that yields equations on sequences over $\R$.
+that yields equations on sequences of coefficients over $\R$.
 
-These semantics are defined in two steps: given an environment,
-$\Interp{}_{\mathbb{K}}$ translates side equations and
-$\left[\left| \_ \right|\right]_{\mathbb{K}}$ uses it to interpret equations.
-For the sake of simplicity, instead of enforcing the well-formedness of the
-environment by a dependent type (e.g. a dependent vector),
-the defined functions are partial and use the $\option{}$ monad.
+These semantics ($\K$ is either $\R$ or $\N$) are defined in two steps:
+given an environment, $\IK$ translates side equations and
+$\left[\left| \_ \right|\right]_{\K}$ uses it to interpret equations. For the
+sake of simplicity, instead of enforcing the well-formedness of the environment
+by a dependent type (e.g. a dependent vector), the defined functions are partial
+and use the $\option$ monad.
 
 $\mathtt{Rseq\_infty}$ is the subset of sequences over $\R$ such that the
 corresponding power series has an infinite convergence radius (a dependent
@@ -112,7 +112,7 @@ pair in \coq{}).
 
 \subsubsection{Equations on power series}
 
-Our first concern is to defined the semantics \`a la Tarski that translates
+Our first concern is to define the semantics \`a la Tarski that translates
 differential equations as differential equations on sums of power series.
 $\IR : \se \rightarrow \alist{} \mathtt{Rseq\_infty} \rightarrow \option{}
 (\texttt{R} \rightarrow \texttt{R})$ translates constants as the constant function,
@@ -148,13 +148,12 @@ Therefore it is sufficient to prove that some coefficients are solutions of
 the equation on sequences in order to prove that the sums of the corresponding
 power series are solutions of the differential equations.
 
-
-We assume the existence of a projection $proj_1$ that given a sequence $A_n$ of
-type $\mathtt{Rseq\_infty}$ forgets the proof that $\sum_n A_n x^n$ has an
+We define $proj_1$, the projection which, given a sequence $A_n$ of type
+$\mathtt{Rseq\_infty}$, forgets the proof that $\sum_n A_n x^n$ has an
 infinite convergence radius: $proj_1 A_n$ is of type $\Rseq{}$ (in \coq{} we
 simply use $\mathtt{projT1}$).
 
-\begin{theorem}Our main result states that given a context
+\begin{theorem} Our main result states that given a context
 $\rho$ of type $\alist{} \mathtt{Rseq\_infty}$:
 $$\left[\left| e_1 :=: e_2 \right|\right]_\N (map ~ proj_1 ~ \rho) \Rightarrow
 \left[\left| e_1 :=: e_2 \right|\right]_\R \rho$$
@@ -187,21 +186,21 @@ main steps: quoting and normalizing.
 
 There are different ways of quoting the same differential equation depending on
 whether you care about the proofs (that the radius of convergence is infinite,
-that the power series can be derived, etc.) used or not and whether a constant
-has to be a value or not.
+that you can take the derivative of the power series, etc.) used or not and
+whether a constant has to be a value or not.
 
 We chose not to care about the proofs because none of the values computed by the
 operations we consider are influenced by the proof used. Therefore
 $\forall x. \Psum(an, r1)(x) = \Psum(an, r2)(x)$ will be represented as
-$y(0,0) = y(0,0)$.
+$\y(0,0) = \y(0,0)$.
 
 We also chose to allow constants to be complex expressions and not only values
 in order to guarantee that the $\de$ will be as simple as possible.
 We will therefore quote $\forall x. \Psum(an,  r1)(x) = 5 * (4 + 3)$ as
-$y(0,0) = cst (5 * (4 + 3))$ rather than $y(0,0) = scal (5, (plus ((cst(4)), (cst(3))))$.
+$y(0,0) = \cst (5 * (4 + 3))$ rather than $\y(0,0) = \scal (5, (\plus ((\cst(4)),
+(\cst(3))))$.
 
-Given this choices the design of the tactic machinery is quite simple. We only
-need to code:
+Given this choices, the tactic machinery should look like:
 \begin{itemize}
 \item{$\mathtt{isconst}(s, x)$} that checks whether the expression $s$ is a constant
   with respect to $x$.
@@ -209,22 +208,23 @@ need to code:
 \item{$\mathtt{add\_variables(a_n, pr, env)}$} that adds $(a_n, pr)$ to the
   environment $env$ if there is no $(a_n, pr')$ already declared\footnote{where
   $pr$, $pr'$ are proofs that $a_n$ has an infinite convergence radius.}
-  and returns an updated environment together with an integer representing $a_n$.
+  and returns an updated environment together with an integer representing
+  $(a_n, pr)$.
 
 \item{$\mathtt{quote\_side\_equa(env, s, x)}$} that proceeds as follow:
-  \subitem if $\mathtt{isconst}(s, x)$ then return $cst(s)$ and $env$
+  \subitem if $\mathtt{isconst}(s, x)$ then return $\cst(s)$ and $env$
   \subitem else if the head constructor of $s$ is in $\left\lbrace -\_; \_+\_;
    \_-\_\right\rbrace$ then translate it to the appropriate $\se$ constructor
-   (either $\mathtt{opp}$, $\mathtt{plus}$, $\mathtt{minus}$ and recursively
-   quote the subexpressions while propagating the environment
+   (either $\opp$, $\plus$, $\minus$) and recursively quote the subexpressions
+    while propagating the environment
   \subitem else if the head constructor of $s$ is $\_*\_$ then one of the
-   subexpressions has to be a constant\footnote{we do not yet support non linear
-   differential equations}; recursively quote the non-constant equation and
-   output a $\mathtt{scal}$ together with the updated environment
+   subexpressions has to be a constant\footnote{We do not support non linear
+   differential equations yet.}; recursively quote the non-constant equation and
+   output a $\scal$ together with the updated environment
   \subitem else if the expression is a sum or a derivative, add the corresponding
    sequence to the environment \textit{via} $\mathtt{add\_variables}$ that returns
    a $p \in \N$ and an updated environment and propagate the environment while
-   outputing $y(p,k)$ where $k$ is such that the quoted expression is a $k^{th}$
+   outputting $\y(p,k)$ where $k$ is such that the quoted expression is a $k^{th}$
    derivative.
 \end{itemize}
 
@@ -236,37 +236,61 @@ respectively the representation of the goal and the corresponding environment.
 If we look closely at $\left[\left| \_ \right|\right]_\R$'s code, we can remark
 that:
 \begin{itemize}
-\item $\mathtt{scal(k,s)}$ is always translated as $k * s'$ where $s'$ is the
+\item $\scal(k,s)$ is always translated as $k * s'$ where $s'$ is the
   translation of $s$. We must therefore use the commutativity of the addition
   to put all the constant expression on the left side of their non-constant
   counterpart
 
-\item $\mathtt{y(p,k)}$ is always translated as $\nthder(\Psum(\rho_p),k)$ and we must
+\item $\y(p,k)$ is always translated as $\nthder(\Psum(\rho_p),k)$ and we must
   therefore:
-  \subitem replace every occurence of $\Psum (\mathtt{fst} (\rho_p), pr')$ where
+  \subitem replace every occurrence of $\Psum (\mathtt{fst} (\rho_p), pr')$ where
   $pr' \neq \mathtt{snd}(\rho_p)$ by $\Psum(\rho_p)$
-  \subitem replace every occurence of $\Psum (\rho_p)(x)$ with $\nthder(\Psum(\rho_p),0)$
-  \subitem replace every occurence of $\mathtt{derive}(\Psum (\rho_p))(x)$ with
+  \subitem replace every occurrence of $\Psum (\rho_p)(x)$ with $\nthder(\Psum(\rho_p),0)$
+  \subitem replace every occurrence of $\mathtt{derive}(\Psum (\rho_p))(x)$ with
   $\nthder(\Psum(\rho_p),1)$
 \end{itemize}
 
-This normalization is possible thanks to the lemma stating that all these
+This normalization is possible thanks to lemmas stating that all these
 substitutions are sound. Here are two examples of such lemmas:
 
 \begin{verbatim}
-Lemma nth_derive_sum_PI_O : forall an (r1 r2 : infinite_cv_radius an),
-  nth_derive (sum an r1) (D_infty_Rpser an r1 O) == sum an r2.
+  Lemma nth_derive_sum_PI_O : forall an (r1 r2 : infinite_cv_radius an),
+    nth_derive (sum an r1) (D_infty_Rpser an r1 O) == sum an r2.
 
-Lemma nth_derive_sum_PI_1 : forall an (r1 r2 : infinite_cv_radius an)
-  (pr : derivable (sum an r2)),
-  nth_derive (sum an r1) (D_infty_Rpser an r1 1) == derive (sum an r2) pr.
+  Lemma nth_derive_sum_PI_1 : forall an (r1 r2 : infinite_cv_radius an)
+    (pr : derivable (sum an r2)),
+    nth_derive (sum an r1) (D_infty_Rpser an r1 1) == derive (sum an r2) pr.
 \end{verbatim}
+
+\subsubsection{End-user tactics}
+
+The end-user of our libraries is obviously not supposed to call these tactics
+that deal with environment, sub-expressions, variable names, etc. We provide two
+friendlier tactics (namely \texttt{solve\_diff\_equa\_on} and
+\texttt{solve\_diff\_equa}) that hide away all these details:
+
+\begin{itemize}
+\item $\mathtt{solve\_diff\_equa\_on}(x)$ inspects the goal. If the goal is an
+equality statement,
+  \subitem It quotes both sides by using $\mathtt{quote\_side\_equa}$ with an
+  appropriate environment (the empty one first and the one returned by the first
+  call then) and $x$; As a result, it gets two $\se$ $E_1$ and $E_2$ and an
+  environment $env$
+  \subitem It then normalizes the equation by calling $\mathtt{normalize}$ on
+  both sides with $env'$
+  \subitem The last step is to assume $\SemN$ (the user will be asked to prove
+  this fact later) \textit{via} \texttt{cut} and use it together with our
+  theorem to prov the current goal
+\item $\mathtt{solve\_diff\_equa\_on}$  is simply
+  $\mathtt{solve\_diff\_equa\_on}(x)$  where $x$ is introduced by the tactic.
+\end{itemize}
 
 \section{Applications}
 
-Thanks to this theorem, one can prove in less than 20 lines that the
-exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Instead
-of having to deal with limits and derivatives, one just has to prove that:
+Thanks to this theorem and these tactics, one can prove in less than 20 lines
+\footnote{See \texttt{Dequa\_examples} for more details on these proofs.} that
+the exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Instead of
+having to deal with limits and derivatives, one just has to prove that:
 
 $$\forall k \in \N, \frac{((n+1) + k)!}{k!} * \frac{1}{((n+1)+k)!}
 = \frac{(n+k)!}{k!} * \frac{1}{(n+k)!}$$
