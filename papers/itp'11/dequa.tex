@@ -4,40 +4,7 @@
 \usepackage{fullpage, url}
 \usepackage{biblatex, csquotes}
 
-\newcommand{\Prop}{\texttt{Prop}}
-\newcommand{\coq}{Coq}
-\newcommand{\coqtail}{\textsc{coqtail}}
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\Rbar}{\overline{\mathbb{R}}}
-\newcommand{\dequa}{\texttt{Dequa}}
-\newcommand{\Rpser}{\texttt{Rpser}}
-
-\DeclareMathOperator{\None}{\mathtt{None}}
-\DeclareMathOperator{\Some}{\mathtt{Some}}
-\DeclareMathOperator{\return}{\mathtt{return}}
-\DeclareMathOperator{\bind}{~\mathtt{>>=}~}
-\DeclareMathOperator{\Rseq}{\mathtt{Rseq}}
-\DeclareMathOperator{\ntherr}{\mathtt{nth\_error}}
-\DeclareMathOperator{\option}{\mathtt{option}}
-\DeclareMathOperator{\alist}{\mathtt{list}}
-\DeclareMathOperator{\de}{\mathtt{diff\_equa}}
-\DeclareMathOperator{\se}{\mathtt{side\_equa}}
-\DeclareMathOperator{\Interp}{\mathtt{interp}}
-\DeclareMathOperator{\Sem}{\left[\left| E_1 :=: E_2 \right|\right]}
-\DeclareMathOperator{\SemR}{\Sem_{\R} \rho}
-\DeclareMathOperator{\SemN}{\Sem_{\N} \rho}
-\DeclareMathOperator{\IR}{\Interp_{\R}}
-\DeclareMathOperator{\IN}{\Interp_{\N}}
-\DeclareMathOperator{\Psum}{\mathtt{sum}}
-\DeclareMathOperator{\C}{\mathtt{An\_cst}}
-\DeclareMathOperator{\Dn}{\mathtt{An\_nth\_deriv}}
-
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newenvironment{proof}[1][Proof]{\begin{trivlist}
-\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\include{definitions}
 
 \title{Using reflection to solve some differential equations}
 \author{Guillaume Allais\\
@@ -54,7 +21,8 @@ On top of \coqtail{}'s libraries that provide a formalization of power series
 comes a small development that aims at simplifying proofs that given power
 series are solutions of specific differential equations. The use of reflection
 allows to prove general facts about differential equations which can then be
-used to simplify the proofs.
+used to simplify the proofs thanks to an \texttt{Ltac} machinery that performs
+the tedious conversions.
 
 \textbf{Files:} All the implementation mentioned in this paper are
 available for download via \coqtail{}'s svn repository\footnote{see
@@ -157,7 +125,6 @@ $\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
 function: given the interpretation of two side equations, it states that the
 obtained functions are extensionally equal.
 
-
 \subsubsection{Equations on sequences over $\R$}
 
 The second semantics translates differential equations as equations on
@@ -200,8 +167,100 @@ of a given differential equation by proving results on their coefficients.
 $$\IN(e, map ~ proj_1 ~ \rho) = \Some U_n \wedge \IR(e, \rho) = \Some f$$
 $$\Rightarrow \exists \rho. \forall x. f(x) = \Psum{}(U_n, \rho)(x)$$
 which is proved by induction on $e$.
-
 \end{proof}
+
+\subsection{Going back to actual problems}
+
+We just proved a theorem that gives us the opportunity to show that some functions
+are solutions of differential equations just by looking at the coefficients of
+their power series. This theorem is however quite useless without tactics on top
+of it: one has to feed it with a $\de$ and an environment and it will output a
+statement that has a very specific shape (given by the function $\left[\left|
+ \_ \right|\right]_\R$) which is highly unlikely to match the current goal.
+
+Because quoting differential equations and normalizing goals is tedious enough
+for us to want to avoid doing it by hand, we wrote a couple of tactics that do
+all the hard work for us. We have two main tactics corresponding to the two
+main steps: quoting and normalizing.
+
+\subsubsection{Quoting differential equations}
+
+There are different ways of quoting the same differential equation depending on
+whether you care about the proofs (that the radius of convergence is infinite,
+that the power series can be derived, etc.) used or not and whether a constant
+has to be a value or not.
+
+We chose not to care about the proofs because none of the values computed by the
+operations we consider are influenced by the proof used. Therefore
+$\forall x. \Psum(an, r1)(x) = \Psum(an, r2)(x)$ will be represented as
+$y(0,0) = y(0,0)$.
+
+We also chose to allow constants to be complex expressions and not only values
+in order to guarantee that the $\de$ will be as simple as possible.
+We will therefore quote $\forall x. \Psum(an,  r1)(x) = 5 * (4 + 3)$ as
+$y(0,0) = cst (5 * (4 + 3))$ rather than $y(0,0) = scal (5, (plus ((cst(4)), (cst(3))))$.
+
+Given this choices the design of the tactic machinery is quite simple. We only
+need to code:
+\begin{itemize}
+\item{$\mathtt{isconst}(s, x)$} that checks whether the expression $s$ is a constant
+  with respect to $x$.
+
+\item{$\mathtt{add\_variables(a_n, pr, env)}$} that adds $(a_n, pr)$ to the
+  environment $env$ if there is no $(a_n, pr')$ already declared\footnote{where
+  $pr$, $pr'$ are proofs that $a_n$ has an infinite convergence radius.}
+  and returns an updated environment together with an integer representing $a_n$.
+
+\item{$\mathtt{quote\_side\_equa(env, s, x)}$} that proceeds as follow:
+  \subitem if $\mathtt{isconst}(s, x)$ then return $cst(s)$ and $env$
+  \subitem else if the head constructor of $s$ is in $\left\lbrace -\_; \_+\_;
+   \_-\_\right\rbrace$ then translate it to the appropriate $\se$ constructor
+   (either $\mathtt{opp}$, $\mathtt{plus}$, $\mathtt{minus}$ and recursively
+   quote the subexpressions while propagating the environment
+  \subitem else if the head constructor of $s$ is $\_*\_$ then one of the
+   subexpressions has to be a constant\footnote{we do not yet support non linear
+   differential equations}; recursively quote the non-constant equation and
+   output a $\mathtt{scal}$ together with the updated environment
+  \subitem else if the expression is a sum or a derivative, add the corresponding
+   sequence to the environment \textit{via} $\mathtt{add\_variables}$ that returns
+   a $p \in \N$ and an updated environment and propagate the environment while
+   outputing $y(p,k)$ where $k$ is such that the quoted expression is a $k^{th}$
+   derivative.
+\end{itemize}
+
+\subsubsection{Normalizing goals}
+
+The aim of the goal's normalization procedure is to modify the goal so that it
+matches $\left[\left| E \right|\right]_\R \rho$ where $E$ and $\rho$ are
+respectively the representation of the goal and the corresponding environment.
+If we look closely at $\left[\left| \_ \right|\right]_\R$'s code, we can remark
+that:
+\begin{itemize}
+\item $\mathtt{scal(k,s)}$ is always translated as $k * s'$ where $s'$ is the
+  translation of $s$. We must therefore use the commutativity of the addition
+  to put all the constant expression on the left side of their non-constant
+  counterpart
+
+\item $\mathtt{y(p,k)}$ is always translated as $\nthder(\Psum(\rho_p),k)$ and we must
+  therefore:
+  \subitem replace every occurence of $\Psum (\mathtt{fst} (\rho_p), pr')$ where
+  $pr' \neq \mathtt{snd}(\rho_p)$ by $\Psum(\rho_p)$
+  \subitem replace every occurence of $\Psum (\rho_p)(x)$ with $\nthder(\Psum(\rho_p),0)$
+  \subitem replace every occurence of $\mathtt{derive}(\Psum (\rho_p))(x)$ with
+  $\nthder(\Psum(\rho_p),1)$
+\end{itemize}
+
+This normalization is possible thanks to the lemma stating that all these
+substitutions are sound. Here are two examples of such lemmas:
+
+\begin{verbatim}
+Lemma nth_derive_sum_PI_O : forall an (r1 r2 : infinite_cv_radius an),
+  nth_derive (sum an r1) (D_infty_Rpser an r1 O) == sum an r2.
+
+Lemma nth_derive_sum_PI_1 : forall an (r1 r2 : infinite_cv_radius an)
+  (pr : derivable (sum an r2)),
+  nth_derive (sum an r1) (D_infty_Rpser an r1 1) == derive (sum an r2) pr.
+\end{verbatim}
 
 \section{Applications}
 
@@ -216,92 +275,7 @@ Without much more work, one can also prove that cosine and sine are
 both solutions of $y^{(2)} = - y$.
 
 \printbibliography{}
-\newpage{}
 
-\section{Appendix}
+\include{appendix}
 
-We assume in the following developments that the lookup function
-$\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
-\alpha$ defined in the standard library is known by the reader.
-
-\subsection{Equations on power series}
-
-\label{interpR}
-
-$$\begin{array}{lllcl}
-\IR & & & : & \se \rightarrow \alist{} \mathtt{Rseq\_infty} \\
-    & & &   & \rightarrow \option{} (\texttt{R} \rightarrow \texttt{R}) \\
-\IR & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\lambda \_.C)\\
-\IR & (\mathtt{scal}~ C ~ E &, \rho) & = & \IR(E, \rho) \bind (\lambda f. \return (C * f))\\
-\IR & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \return (\Psum{}(u_n)^{(k)})) \\
-\IR & (\mathtt{opp} ~E &, \rho) & = & \IR(E,\rho) \bind (\lambda f. \return (- f))\\
-\IR & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IR(E_1,\rho) \bind (\lambda f_1.\\
-    & & &   & \IR(E_2,\rho) \bind (\lambda f_2. \return (f_1 + f_2)))\\
-\end{array}$$
-
-
-$$\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
-\mathtt{Rseq\_infty} \rightarrow \Prop$$
-
-\begin{center}
-\begin{tabular}{c|c}
-\begin{minipage}{0.45\textwidth}
-$$\SemR{} = \bot$$
-$$ \text{if } \left\lbrace
-\begin{array}{ll}
-& \IR(E_1, \rho) = \None\\
-\text{or} & \IR(E_2, \rho) = \None
-\end{array}\right.$$
-\end{minipage}
-
-& \begin{minipage}{0.45\textwidth}
-$$\SemR{} = \forall x \in \R. e_1(x) = e_2(x)$$
-$$\text{if } \left\lbrace
-\begin{array}{ll}
-& \IR(E_1, \rho) = \Some e_1\\
-\text{and} & \IR(E_2, \rho) = \Some e_2
-\end{array}\right.$$
-\end{minipage}
-
-\end{tabular}
-\end{center}
-\subsection{Equations on sequences over $\R$}
-
-\label{interpN}
-$$\begin{array}{lllcl}
-\IN & & & : & \se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq \\
-\IN & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\C{}(C))\\
-\IN & (\mathtt{scal}~ C ~ E &, \rho) & = & \IN(E, \rho) \bind (\lambda u_n. \return (C * u_n))\\
-\IN & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \\
-    & & &   & \return (\Dn{}(un,k)) \\
-\IN & (\mathtt{opp} ~E &, \rho) & = & \IN(E,\rho) \bind (\lambda u_n. \return (- u_n))\\
-\IN & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IN(E_1,\rho) \bind (\lambda u_n.\\
-    & & &   & \IN(E_2,\rho) \bind (\lambda v_n. \return (u_n + v_n)))\\
-\end{array}$$
-
-$$\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
-\mathtt{Rseq\_infty} \rightarrow \Prop$$
-
-\begin{center}
-\begin{tabular}{c|c}
-\begin{minipage}{0.45\textwidth}
-$$\SemN{} = \bot$$
-$$\text{if } \left\lbrace
-\begin{array}{ll}
-& \IN(E_1, \rho) = \None\\
-\text{or} & \IN(E_2, \rho) = \None
-\end{array}\right.$$
-\end{minipage}
-
-& \begin{minipage}{0.45\textwidth}
-$$\SemN{} = \forall n \in \N. u_n(n) = v_n(n)$$
-$$\text{if } \left\lbrace
-\begin{array}{ll}
-& \IN(E_1, \rho) = \Some u_n\\
-\text{and} & \IN(E_2, \rho) = \Some v_n
-\end{array}\right.$$
-\end{minipage}
-
-\end{tabular}
-\end{center}
 \end{document}

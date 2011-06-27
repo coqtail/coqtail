@@ -1,0 +1,87 @@
+\newpage{}
+\section{Appendix}
+
+We assume in the following developments that the lookup function
+$\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
+\alpha$ defined in the standard library is known by the reader.
+
+\subsection{Equations on power series}
+
+\label{interpR}
+
+$$\begin{array}{lllcl}
+\IR & & & : & \se \rightarrow \alist{} \mathtt{Rseq\_infty} \\
+    & & &   & \rightarrow \option{} (\texttt{R} \rightarrow \texttt{R}) \\
+\IR & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\lambda \_.C)\\
+\IR & (\mathtt{scal}~ C ~ E &, \rho) & = & \IR(E, \rho) \bind (\lambda f. \return (C * f))\\
+\IR & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \return (\Psum{}(u_n)^{(k)})) \\
+\IR & (\mathtt{opp} ~E &, \rho) & = & \IR(E,\rho) \bind (\lambda f. \return (- f))\\
+\IR & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IR(E_1,\rho) \bind (\lambda f_1.\\
+    & & &   & \IR(E_2,\rho) \bind (\lambda f_2. \return (f_1 + f_2)))\\
+\end{array}$$
+
+
+$$\left[\left| \_ \right|\right]_{\R} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$$
+
+\begin{center}
+\begin{tabular}{c|c}
+\begin{minipage}{0.45\textwidth}
+$$\SemR{} = \bot$$
+$$ \text{if } \left\lbrace
+\begin{array}{ll}
+& \IR(E_1, \rho) = \None\\
+\text{or} & \IR(E_2, \rho) = \None
+\end{array}\right.$$
+\end{minipage}
+
+& \begin{minipage}{0.45\textwidth}
+$$\SemR{} = \forall x \in \R. e_1(x) = e_2(x)$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IR(E_1, \rho) = \Some e_1\\
+\text{and} & \IR(E_2, \rho) = \Some e_2
+\end{array}\right.$$
+\end{minipage}
+
+\end{tabular}
+\end{center}
+\subsection{Equations on sequences over $\R$}
+
+\label{interpN}
+$$\begin{array}{lllcl}
+\IN & & & : & \se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq \\
+\IN & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\C{}(C))\\
+\IN & (\mathtt{scal}~ C ~ E &, \rho) & = & \IN(E, \rho) \bind (\lambda u_n. \return (C * u_n))\\
+\IN & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \\
+    & & &   & \return (\Dn{}(un,k)) \\
+\IN & (\mathtt{opp} ~E &, \rho) & = & \IN(E,\rho) \bind (\lambda u_n. \return (- u_n))\\
+\IN & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IN(E_1,\rho) \bind (\lambda u_n.\\
+    & & &   & \IN(E_2,\rho) \bind (\lambda v_n. \return (u_n + v_n)))\\
+\end{array}$$
+
+$$\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
+\mathtt{Rseq\_infty} \rightarrow \Prop$$
+
+\begin{center}
+\begin{tabular}{c|c}
+\begin{minipage}{0.45\textwidth}
+$$\SemN{} = \bot$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IN(E_1, \rho) = \None\\
+\text{or} & \IN(E_2, \rho) = \None
+\end{array}\right.$$
+\end{minipage}
+
+& \begin{minipage}{0.45\textwidth}
+$$\SemN{} = \forall n \in \N. u_n(n) = v_n(n)$$
+$$\text{if } \left\lbrace
+\begin{array}{ll}
+& \IN(E_1, \rho) = \Some u_n\\
+\text{and} & \IN(E_2, \rho) = \Some v_n
+\end{array}\right.$$
+\end{minipage}
+
+\end{tabular}
+\end{center}

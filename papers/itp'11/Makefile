@@ -1,12 +1,12 @@
-all: dequa todos
+all: dequa
 
 dequa:
 	pdflatex dequa.tex
-	bibtex dequa
+	bibtex dequa.aux
 	pdflatex dequa.tex
 todos:
 	grep "TODO" *.tex > TODO
 	cat TODO
 
 clean:
-	rm -f *.aux *.log *.pdf
+	rm -f *.aux *.log *.bak *.pdf
