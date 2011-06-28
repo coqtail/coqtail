@@ -86,12 +86,12 @@ Inductive side_equa : Set :=
     | plus : forall (s1 s2 : side_equa), side_equa.
 \end{verbatim}
 
-This representation can be rather easily extended with new data constructors if
-the corresponding theory has been formalized in \coq{}~\cite{coq}: adding the multiplication
-by a scalar (which was not present in our first toy example) was a matter of less
-than twenty minutes as soon as all the appropriate lemmas where available in
-\Rpser{}\footnote{We hope to modify the data structure to be able to talk about
-the product of two functions in a near future.}.
+This representation can be rather easily extended with new data constructors
+when the corresponding theory has been formalized in \coq{}~\cite{coq}: adding
+the multiplication by a scalar (which was not present in our first toy example)
+was a matter of less than twenty minutes as soon as all the appropriate lemmas
+were available in \Rpser{}\footnote{We hope to modify the data structure to be
+able to talk about the product of two functions in a near future.}.
 
 \subsection{Interpretation}
 
@@ -113,7 +113,7 @@ pair in \coq{}).
 \subsubsection{Equations on power series}
 
 Our first concern is to define the semantics \`a la Tarski that translates
-differential equations as differential equations on sums of power series.
+$\de$ as differential equations on sums of power series.
 $\IR : \se \rightarrow \alist{} \mathtt{Rseq\_infty} \rightarrow \option{}
 (\texttt{R} \rightarrow \texttt{R})$ translates constants as the constant function,
 variables as derivatives of sums of power series of the corresponding $\Rseq$
@@ -127,14 +127,14 @@ obtained functions are extensionally equal.
 
 \subsubsection{Equations on sequences over $\R$}
 
-The second semantics translates differential equations as equations on
+The second semantics translates $\de$ as equations on
 sequences over $\R$.  The function $\IN :
 \se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq$ translates
 constants as $\C{}$, variables as $\Dn{}$ and linear combinations as linear
 combinations of sequences\footnote{See \ref{interpN} for technical details.}.
 
 $\left[\left| \_ \right|\right]_{\N} : \de \rightarrow \alist{}
-\mathtt{Rseq\_infty} \rightarrow \Prop$ is the corresponding interpretation
+\mathtt{Rseq} \rightarrow \Prop$ is the corresponding interpretation
 function:  given the interpretation of two side equations, it states that the
 obtained sequences are extensionally equal.
 
@@ -148,7 +148,7 @@ Therefore it is sufficient to prove that some coefficients are solutions of
 the equation on sequences in order to prove that the sums of the corresponding
 power series are solutions of the differential equations.
 
-We define $proj_1$, the projection which, given a sequence $A_n$ of type
+We define $proj_1$ the projection which, given a sequence $A_n$ of type
 $\mathtt{Rseq\_infty}$, forgets the proof that $\sum_n A_n x^n$ has an
 infinite convergence radius: $proj_1 A_n$ is of type $\Rseq{}$ (in \coq{} we
 simply use $\mathtt{projT1}$).
@@ -179,8 +179,8 @@ statement that has a very specific shape (given by the function $\left[\left|
 
 Because quoting differential equations and normalizing goals is tedious enough
 for us to want to avoid doing it by hand, we wrote a couple of tactics that do
-all the hard work for us. We have two main tactics corresponding to the two
-main steps: quoting and normalizing.
+all the hard work for us. We have two main kinds of tactics corresponding to the
+two main steps: quoting and normalizing.
 
 \subsubsection{Quoting differential equations}
 
@@ -191,13 +191,13 @@ whether a constant has to be a value or not.
 
 We chose not to care about the proofs because none of the values computed by the
 operations we consider are influenced by the proof used. Therefore
-$\forall x. \Psum(an, r1)(x) = \Psum(an, r2)(x)$ will be represented as
+$\forall x. \Psum(a_n, pr_1)(x) = \Psum(a_n, pr_2)(x)$ will be represented as
 $\y(0,0) = \y(0,0)$.
 
 We also chose to allow constants to be complex expressions and not only values
-in order to guarantee that the $\de$ will be as simple as possible.
-We will therefore quote $\forall x. \Psum(an,  r1)(x) = 5 * (4 + 3)$ as
-$y(0,0) = \cst (5 * (4 + 3))$ rather than $\y(0,0) = \scal (5, (\plus ((\cst(4)),
+in order to guarantee that the generated $\de$ will be as simple as possible.
+We will therefore quote $\forall x. \Psum(a_n, pr_1)(x) = 5 * (4 + 3)$ as
+$\y(0,0) = \cst (5 * (4 + 3))$ rather than $\y(0,0) = \scal (5, (\plus ((\cst(4)),
 (\cst(3))))$.
 
 Given this choices, the tactic machinery should look like:
@@ -215,7 +215,7 @@ Given this choices, the tactic machinery should look like:
   \subitem if $\mathtt{isconst}(s, x)$ then return $\cst(s)$ and $env$
   \subitem else if the head constructor of $s$ is in $\left\lbrace -\_; \_+\_;
    \_-\_\right\rbrace$ then translate it to the appropriate $\se$ constructor
-   (either $\opp$, $\plus$, $\minus$) and recursively quote the subexpressions
+   (either $\opp$, $\plus$ or $\minus$) and recursively quote the subexpressions
     while propagating the environment
   \subitem else if the head constructor of $s$ is $\_*\_$ then one of the
    subexpressions has to be a constant\footnote{We do not support non linear
@@ -274,23 +274,24 @@ friendlier tactics (namely \texttt{solve\_diff\_equa\_on} and
 equality statement,
   \subitem It quotes both sides by using $\mathtt{quote\_side\_equa}$ with an
   appropriate environment (the empty one first and the one returned by the first
-  call then) and $x$; As a result, it gets two $\se$ $E_1$ and $E_2$ and an
+  call then) and $x$; as a result, it gets two $\se$ $E_1$ and $E_2$ and an
   environment $env$
   \subitem It then normalizes the equation by calling $\mathtt{normalize}$ on
-  both sides with $env'$
+  both sides with $env$
   \subitem The last step is to assume $\SemN$ (the user will be asked to prove
   this fact later) \textit{via} \texttt{cut} and use it together with our
   theorem to prov the current goal
 \item $\mathtt{solve\_diff\_equa\_on}$  is simply
-  $\mathtt{solve\_diff\_equa\_on}(x)$  where $x$ is introduced by the tactic.
+  $\mathtt{solve\_diff\_equa\_on}(x)$  where $x$ is a fresh variable introduced
+  by the tactic.
 \end{itemize}
 
 \section{Applications}
 
-Thanks to this theorem and these tactics, one can prove in less than 20 lines
-\footnote{See \texttt{Dequa\_examples} for more details on these proofs.} that
-the exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Instead of
-having to deal with limits and derivatives, one just has to prove that:
+Thanks to this theorem and these tactics, one can prove in less than 20
+lines\footnote{See \texttt{Dequa\_examples} for more details on these proofs.}
+that the exponential is a solution of the equation $y^{(n+1)} = y^{(n)}$. Instead
+of having to deal with limits and derivatives, one just has to prove that:
 
 $$\forall k \in \N, \frac{((n+1) + k)!}{k!} * \frac{1}{((n+1)+k)!}
 = \frac{(n+k)!}{k!} * \frac{1}{(n+k)!}$$

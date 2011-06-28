@@ -1,22 +1,22 @@
 \newpage{}
-\section{Appendix}
+\section*{Appendix}
 
 We assume in the following developments that the lookup function
 $\ntherr : \forall \alpha. \alist{} \alpha \rightarrow \N \rightarrow \option{}
 \alpha$ defined in the standard library is known by the reader.
 
-\subsection{Equations on power series}
+\subsection*{Equations on power series}
 
 \label{interpR}
 
 $$\begin{array}{lllcl}
 \IR & & & : & \se \rightarrow \alist{} \mathtt{Rseq\_infty} \\
     & & &   & \rightarrow \option{} (\texttt{R} \rightarrow \texttt{R}) \\
-\IR & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\lambda \_.C)\\
-\IR & (\mathtt{scal}~ C ~ E &, \rho) & = & \IR(E, \rho) \bind (\lambda f. \return (C * f))\\
-\IR & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \return (\Psum{}(u_n)^{(k)})) \\
-\IR & (\mathtt{opp} ~E &, \rho) & = & \IR(E,\rho) \bind (\lambda f. \return (- f))\\
-\IR & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IR(E_1,\rho) \bind (\lambda f_1.\\
+\IR & (\cst~ C & , \rho) & = & \return~ (\lambda \_.C)\\
+\IR & (\scal~ C ~ E &, \rho) & = & \IR(E, \rho) \bind (\lambda f. \return (C * f))\\
+\IR & (\y ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \return (\Psum{}(u_n)^{(k)})) \\
+\IR & (\opp ~E &, \rho) & = & \IR(E,\rho) \bind (\lambda f. \return (- f))\\
+\IR & (\plus ~ E_1 ~ E_2 &, \rho) & = & \IR(E_1,\rho) \bind (\lambda f_1.\\
     & & &   & \IR(E_2,\rho) \bind (\lambda f_2. \return (f_1 + f_2)))\\
 \end{array}$$
 
@@ -46,17 +46,17 @@ $$\text{if } \left\lbrace
 
 \end{tabular}
 \end{center}
-\subsection{Equations on sequences over $\R$}
+\subsection*{Equations on sequences over $\R$}
 
 \label{interpN}
 $$\begin{array}{lllcl}
 \IN & & & : & \se \rightarrow \alist{} \Rseq \rightarrow \option{} \Rseq \\
-\IN & (\mathtt{cnst}~ C & , \rho) & = & \return~ (\C{}(C))\\
-\IN & (\mathtt{scal}~ C ~ E &, \rho) & = & \IN(E, \rho) \bind (\lambda u_n. \return (C * u_n))\\
-\IN & (\mathtt{y} ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \\
+\IN & (\cst~ C & , \rho) & = & \return~ (\C{}(C))\\
+\IN & (\scal~ C ~ E &, \rho) & = & \IN(E, \rho) \bind (\lambda u_n. \return (C * u_n))\\
+\IN & (\y ~ i ~ k &, \rho) & = & \ntherr(\rho, i) \bind (\lambda u_n. \\
     & & &   & \return (\Dn{}(un,k)) \\
-\IN & (\mathtt{opp} ~E &, \rho) & = & \IN(E,\rho) \bind (\lambda u_n. \return (- u_n))\\
-\IN & (\mathtt{plus} ~ E_1 ~ E_2 &, \rho) & = & \IN(E_1,\rho) \bind (\lambda u_n.\\
+\IN & (\opp ~E &, \rho) & = & \IN(E,\rho) \bind (\lambda u_n. \return (- u_n))\\
+\IN & (\plus ~ E_1 ~ E_2 &, \rho) & = & \IN(E_1,\rho) \bind (\lambda u_n.\\
     & & &   & \IN(E_2,\rho) \bind (\lambda v_n. \return (u_n + v_n)))\\
 \end{array}$$
 
