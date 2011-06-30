@@ -30,7 +30,7 @@
 
 \maketitle 
 
-  Reasoning about real numbers in Coq can be very tedious. The standard library of Coq is classical and using it means forgetting about constructive proofs. C-CoRN is constructive in every way and forbids classical statements. Moreover its hierarchical structure is not lightweight enough. We propose a short axiomatic that can handle both constructive and classical mathematical statements.
+  Reasoning about real numbers in Coq can be very tedious. The standard library of Coq is classical and using it means giving up constructive proofs. C-CoRN is constructive in every way and forbids classical statements. Moreover its hierarchical structure is a bit cumbersome. We propose a short axiomatic that can handle both constructive and classical mathematical statements.
 
   The implementation in Coq is available at \coqtail's repository\footnote{\url{https://sourceforge.net/projects/coqtail/develop} in {\tt src/Fresh/Reals}}
 
@@ -42,13 +42,13 @@
 
   The first set of axioms describes the ring operators. $\R$ is a parameter of sort $\Type$, 0 and 1 are two objects of $\R$ and +, *, - are operators on $\R$ respectively of arities 2, 2, 1.
 
-  We also need an equality predicate, but we will define the strict order relation first and the other one will be defined thanks to this one. Indeed a proof of $x<y$ will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$ so that building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq'Art\cite{coqart}\footnote{This trick is also in the standard library of Coq in \href{http://coq.inria.fr/stdlib/Coq.Logic.ConstructiveEpsilon.html}{Logic/ConstructiveEpsilon}} book to constructively extract such an $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $<$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
+  We also need an equality predicate, but first we define the strict order relation and all the other order relations will be defined thanks to this one. Indeed a proof of $x<y$ will contain a computational witness of an $\varepsilon$ such that $x+\varepsilon≤y$. That way, building an inverse of $x$ knowing that $x\neq 0$ will be easier. The sort of the predicate $<$ is not important, as you can use an argument like ``constructive epsilon'' of the Coq'Art\cite{coqart}\footnote{This trick is also in the standard library of Coq in \href{http://coq.inria.fr/stdlib/Coq.Logic.ConstructiveEpsilon.html}{Logic/ConstructiveEpsilon}} book to constructively extract such an $\varepsilon$. The axioms on $<$ are asymmetry and transitivity. We then define the relation of discriminability $\#$ as the constructive sum of $<$ and $>$, the inverse relation of $<$. $≡$ is the negation of $\#$ and $≤$ is the constructive sum of $<$ and $≡$.
 
 
 
 \subsection{Constructive field}
 
-  Now we can define an operator for the inverse, which expect a real number and the
+  Now we can define an operator for the inverse, which expects a real number and the
   proof that this number is discriminable from 0:
 
   \[
@@ -56,7 +56,7 @@
   \]
 
   We then add the axioms of commutativity, associativity, distributivity of multiplication and/over
-  addition with respect to $≡$, and the axioms specifying 0 and 1 as the unit for $+$ and $*$. We also specify the inverse operators $-$, $^{-1}$ for $+$, $*$, the latter requiring a proof of $x\#0$.
+  addition with respect to $≡$, and the axioms specifying 0 and 1 as the units for $+$ and $*$. We also specify the inverse operators $-$, $^{-1}$ for $+$, $*$, the latter requiring a proof of $x\#0$.
 
   Moreover we have to say that $+$, $*$, $^{-1}$ and even $≡$ behave well with respect to $<$ and $≡$:
 
@@ -72,7 +72,7 @@
     \end{array}
   \]
 
-  We also require that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms)
+  We also require that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms).
 
   Then we need the fact that $\R$ is archimedean. This is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$} $| x-\underline z | < 1$. We cannot constructively make $\llcorner \cdot \lrcorner$ total and extensional (i.e. $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$) because this would make it discontinuous.
 
@@ -96,14 +96,14 @@
 
 \section{Constructive/classical distinction}
 
-  Dealing with real analysis often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to use extraction of constructive proofs and to know whether the proof of a statement is constructive.
+  Dealing with real analysis often requires non constructive axioms like the excluded middle or the axiom of choice. However we would like to use extraction of constructive proofs and to know whether the proof of a statement is constructive.
 
-  Therefore, if we want to reason constructively we need to have predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$. To reason classically we need predicates to be in $\Prop$. One solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad to embed constructive predicates into a world where the statements are weaker.
+  Therefore, if we want to reason constructively we need predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$. To reason classically the predicates must be in $\Prop$. A solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad in order to embed constructive predicates into a world where the statements are weaker.
 
 
 \subsection{Dealing with axioms}
 
-  Monads permits to keep track of the external hypothesis used in a proof, through the so-called \emph{axiom} monad.
+  Monads allows us to keep track of the external hypothesis used in a proof, through the so-called \emph{axiom} monad
 
   \begin{definition}
     The axiom monad on $X$ is $T A = X \rightarrow A$ with weakening as $\mathtt{return}$ and contraction as $\mathtt{bind}$.
@@ -111,10 +111,10 @@
 
   Interesting instantiations for $X$ include excluded-middle, choice, epsilon and virtually any axiom independent from pCIC.
 
-  This monad permits to have a statically checked analysis of the requirements of a proof. One can also imagine to use a \emph{generic} axiom monad, under the form $T X A$ where $X$ is the list of axioms used.
+  This monad makes it possible to have a statically checked analysis of the requirements of a proof. One can also imagine to use a \emph{generic} axiom monad, under the form $T X A$ where $X$ is the list of axioms used.
 
   \begin{remark}
-    The easy use of the axiom monads requires to assume the functional extensionality, as most of the time we want to prove properties such as $\mathtt{lift}\ x = \mathtt{lift}\ y$.
+    In order to make the use of the axiom monads easier, the functional extensionality has to be assumed as most of the time we want to prove properties such as $\mathtt{lift}\ x = \mathtt{lift}\ y$.
   \end{remark} %% WTF?
 
   Sometimes, additional axioms are not that terrible, and one can argue about the burden of the axiom monad. For instance, excluded middle or propositional extensionality are not havoc-wreaking enough to justify embedding them in a monad.
@@ -134,11 +134,11 @@ $$\varepsilon ≡ \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt
 
   %We can recover an ersatz of the axiom monad using the choice axiom. REWRITTEN INTO:
   
-  If we consider using the choice axiom\footnote{The choice axiom, which is purely non-informative:\\$\forall (A:\Type)\ (B:A→\Type), (\forall x:A,\ \mbox{inhabited}(B x)) \Rightarrow \mbox{inhabited}(\forall x:A, B~x)$}, we can recover a equivalent system than through the use of epsilon axiom monad.
+  If we consider using the choice axiom\footnote{The choice axiom, which is purely non-informative:\\$\forall (A:\Type)\ (B:A→\Type), (\forall x:A,\ \mbox{inhabited}(B x)) \Rightarrow \mbox{inhabited}(\forall x:A, B~x)$}, we can recover a equivalent system through the use of epsilon axiom monad.
   
   %%TODO: voir si c'est équivalent
 
-  One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenever proof-irrelevance is assumed, there is at most one proof of $\mathtt{inhabited}\ A$ for any $A$. This implies in particular that the programmer must fully specify the content of the lift thru $\mathtt{sig}$-like dependent pairs.
+  One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenever proof-irrelevance is assumed, there is at most one proof of $\mathtt{inhabited}\ A$ for any $A$. This implies in particular that the programmer must fully specify the content of the lift through $\mathtt{sig}$-like dependent pairs.
 
   For example with the choice axiom, we can specify the partial function inverse on real numbers as follows:
   $$\mathtt{inhabited}\ \{f\ :\ \R → \R\ |\ \forall x\ x \# 0 → f x * x ≡ 1\}$$
