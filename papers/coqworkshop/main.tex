@@ -74,7 +74,7 @@
 
   We also require that $0<1$ (it is equivalent to $0\#1$, assuming the other axioms)
 
-  We lack the fact that $\R$ is archimedean. However this is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$} $| x-\underline z | < 1$. We cannot have the property of $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$ because this would make $\llcorner \cdot \lrcorner$ a non continuous function.
+  Then we need the fact that $\R$ is archimedean. This is not constructively equivalent to having powerful tools like the integer part function, as it is not continuous thus not constructively definable. But we can get back from the infinity of $\R$ to finitely representable objects as elements of $\Z$. In fact we can constructively have a function $\llcorner \cdot \lrcorner$ taking the representation of a real number $x$ and returning some integer $z$ such that\footnote{This condition can be replaced by any condition of the form $| x-\underline {\llcorner x \lrcorner} | < 1/2+\varepsilon$ where $\varepsilon>0$} $| x-\underline z | < 1$. We cannot constructively make $\llcorner \cdot \lrcorner$ total and extensional (i.e. $x≡y → \llcorner x \lrcorner=\llcorner y \lrcorner$) because this would make it discontinuous.
 
   Finally we complete $\R$ by adding all the limits of the Cauchy sequences of elements of $\R$.
 
@@ -91,12 +91,12 @@
   \]
 
 
-  With these axioms we hope to capture the constructive real numbers. For instance they do not allow to prove the Markov's principle\footnote{Markov's principle: if $P$ is decidable then $¬¬ (\exists n\ P n) \Rightarrow \exists n\ P n$} -- which is a classical property -- or the decidability of equality on real numbers -- which is only co-semidecidable -- both implied by the axioms of the standard library.
+  With these axioms we hope to capture the constructive real numbers. For instance they do not allow to prove the Markov's principle\footnote{Markov's principle: if $P$ is decidable then $¬¬ (\exists n\ P n) \Rightarrow \exists n\ P n$} (semi-constructive \cite{Herbelin10}), the countable principle of omniscience\footnote{Countable principle of omniscience: if $P$ is decidable then the property $(\forall n\ P n)$ is decidable} (classical) or the decidability of equality on real numbers (co-semidecidable) all implied by the axioms of the standard library.
 
 
 \section{Constructive/classical distinction}
 
-  Dealing with real mathematics often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to use extraction of constructive proofs and to know whether the proof of a statement is constructive.
+  Dealing with real analysis often needs using non constructive axioms like the excluded middle or the axiom of choice. However we would like to use extraction of constructive proofs and to know whether the proof of a statement is constructive.
 
   Therefore, if we want to reason constructively we need to have predicates -- like the convergence of a sequence or the differentiability of a function -- defined in $\Type$. To reason classically we need predicates to be in $\Prop$. One solution to this problem is to duplicate the definitions of the predicates: one for computational content in $\Type$ and another for non-constructive statements in $\Prop$. Another is the use of a monad to embed constructive predicates into a world where the statements are weaker.
 
@@ -119,7 +119,7 @@
 
   Sometimes, additional axioms are not that terrible, and one can argue about the burden of the axiom monad. For instance, excluded middle or propositional extensionality are not havoc-wreaking enough to justify embedding them in a monad.
 
-  Following Castéran's work, non-constructivism can provide an interesting use of the axiom monad. We recall the \emph{epsilon} axiom:
+  Following Castéran's work \cite{casteranepsilon}, non-constructivism can provide an interesting use of the axiom monad. We recall the \emph{epsilon} axiom:
 
 $$\varepsilon ≡ \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt{exists}\ x, P x) \rightarrow \{x\mid P\  x\}$$
 
@@ -132,11 +132,15 @@ $$\varepsilon ≡ \forall A.\forall (P : A\rightarrow  \mathtt{Prop}).\ (\mathtt
   A weaker way to encode epsilon is to embed every type in $\mathtt{Prop}$. This is done through the inhabited monad.
   $$\mathtt{Inductive\ inhabited\ (A : Type) : Prop :=  inhabits : A \rightarrow inhabited\ A}$$
 
-  We can recover an ersatz of the axiom monad using the choice axiom.
+  %We can recover an ersatz of the axiom monad using the choice axiom. REWRITTEN INTO:
+  
+  If we consider using the choice axiom\footnote{The choice axiom, which is purely non-informative:\\$\forall (A:\Type)\ (B:A→\Type), (\forall x:A,\ \mbox{inhabited}(B x)) \Rightarrow \mbox{inhabited}(\forall x:A, B~x)$}, we can recover a equivalent system than through the use of epsilon axiom monad.
+  
+  %%TODO: voir si c'est équivalent
 
   One needs to take care of this $\mathtt{inhabited}$ construction. Indeed, whenever proof-irrelevance is assumed, there is at most one proof of $\mathtt{inhabited}\ A$ for any $A$. This implies in particular that the programmer must fully specify the content of the lift thru $\mathtt{sig}$-like dependent pairs.
 
-  For example we can specify the partial function inverse on real numbers, like that:
+  For example with the choice axiom, we can specify the partial function inverse on real numbers as follows:
   $$\mathtt{inhabited}\ \{f\ :\ \R → \R\ |\ \forall x\ x \# 0 → f x * x ≡ 1\}$$
 
   \bibliographystyle{alpha}
