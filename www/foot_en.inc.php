@@ -2,7 +2,7 @@
   </div>
 
   <div id="footer">
-    last modified : June 2010
+    last modified : July 2011
     <p>
        <a href="http://validator.w3.org/check?uri=referer"><img
           style="border:0;width:88px;height:31px"

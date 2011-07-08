@@ -7,9 +7,10 @@
       ?>
 
       <div id="news"><h3>News</h3>
-
-	  <p>[2010-11] COQTAIL is now a junior lab funded by the <a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
-      <p>[07 april 2010] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
+      <p>[08/26] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq workshop</a> on a constructive axiomatics for &#x211d; and resolution of differential equations using reflection</p>
+      <p>[07/31] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> on Coq with power series.
+      <p>[2010-11] COQTAIL is now a junior lab funded by the <a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
+      <p>[03/07] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
       </div>
 
       <h2>Origin &amp; Objectives</h2>
@@ -35,8 +36,9 @@
     } elseif ($lang == "fr") {
       ?>
       <div id="news"><h3>News</h3>
-
-	  <p>[2010-11] COQTAIL est maintenant un laboratoire junior de l'<a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
+      <p>[26 août] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq workshop</a> sur une axiomatique constructive pour &#x211d; et la résolution d'équations différentielles par reflection</p>
+      <p>[31 juillet] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> sur les séries entières en Coq.<p>
+      <p>[2010-11] COQTAIL est maintenant un laboratoire junior de l'<a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
       <p>[07 avril] La première révision est maintenant disponible ! Vous pouvez la télécharger <a href="http://sourceforge.net/projects/coqtail/files/">ici</a>.</p>
       </div>
 
@@ -155,7 +157,8 @@
       ?>
       <h2>Publications</h2>
       <ul>
-        <li>G. Allais. <b>Coq with power series</b> (<a href="http://www.uc.pt/en/congressos/thedu/goalstopics/">THedu'11</a>) [<a href="files/thedu11.pdf">pdf</a> | slides]</li>
+        <li>G. Allais. <b>Coq with power series</b> (<a href="http://www.uc.pt/en/congressos/thedu/goalstopics/">THedu'11</a>)
+	    <span style="float: right">[<a href="files/thedu11.pdf">pdf</a> | slides]</span></li>
 	<li>J-M Madiot, P-M. Pédrot. <b>Constructive axiomatic for the real numbers</b> (<a href="http://www.cs.ru.nl/~spitters/coqw.html">3rd Coq workshop</a>) [<a href="files/coqws11.pdf">pdf</a> | slides]</li>
 	<li>G. Allais. <b>Using reflection to solve some differential equations</b> (<a href="http://www.cs.ru.nl/~spitters/coqw.html">3rd Coq workshop</a>) [<a href="files/itp11.pdf">pdf</a> | slides]</li>
       </ul>
