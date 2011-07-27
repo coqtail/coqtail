@@ -40,7 +40,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
           <span class="highlight">T</span>heorems, 
           <span class="highlight">A</span>bstractions and
           <span class="highlight">I</span>mplementations
-          (<span class="highlight">L</span>icence-level)
+          (Bachelor-<span class="highlight">L</span>evel)
         </h2>
       </div>
       <div id="menu">

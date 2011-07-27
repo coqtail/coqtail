@@ -1,0 +1,198 @@
+\documentclass{beamer}
+\usepackage[utf8x]{inputenc}
+\usepackage{fancyvrb}
+\usepackage{amsmath, amssymb}
+\usetheme[titlepagelogo=coqtail_big,
+          alternativetitlepage=true,% Use the fancy title page.
+          ]{Torino}
+\usecolortheme{coqtail}
+
+\include{definitions}
+
+\author{Guillaume Allais}
+\title{Coq with power series}
+\institute{\coqtail{} Junior Laboratory\\
+	ENS Lyon}
+\date{July, 31st}
+
+\begin{document}
+
+\begin{frame}[t,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}{Why? - \coqtail{}}
+\begin{itemize}
+ \item We wanted to:
+   \begin{itemize}
+     \item Tackle undergraduate programs
+     \item Prove nice results
+     \item Produce clean and reusable libraries
+   \end{itemize}
+   \bigskip
+ \item We needed:
+   \begin{itemize}
+     \item Good libraries \uncover<2->{$\Rightarrow$ \rsequence{} (Pédrot)}
+     \item Good tactics
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,t]{Why? - \rpser{}}
+\begin{verbatim}
+  Definition cos_in (x l:R) : Prop :=
+    infinite_sum (fun i:nat => cos_n i * x ^ i) l.
+\end{verbatim}
+
+\begin{SaveVerbatim}{ecos}
+  Lemma exist_cos : forall x:R, { l:R | cos_in x l }.
+\end{SaveVerbatim}
+
+\begin{SaveVerbatim}{cos}
+  Definition cos (x:R) : R := let (a,_) :=
+    exist_cos (Rsqr x) in a.
+\end{SaveVerbatim}
+
+\uncover<2->{\UseVerbatim{ecos}}
+\uncover<3->{\UseVerbatim{cos}}
+\uncover<4->
+{
+\bigskip
+\color{red}{But $\cos$ is much more than just a series!}
+}
+\end{frame}
+
+\begin{frame}{Defining power series}
+\begin{itemize}
+\item Convergence
+  \begin{itemize}
+    \item Convergence disc
+    \item Criterion
+  \end{itemize}
+\item Sums
+  \begin{itemize}
+    \item Abel's lemma
+    \item Compatibility with common operations
+    \item Formal derivatives
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Convergence radius}
+\begin{itemize}
+  \item The usual definition
+    $$\rho\left(\sum_{n \in \N} a_n x^n\right) = \only<1>{\sup}
+    \only<2->{{\color{red} \sup }} \left\lbrace
+     r \in \R ~|~\text{the sequence } \left|a_n r^n\right|
+     \text{ is bounded}\right\rbrace$$
+  \item<2-> But being a lub is not really informative!
+  \begin{itemize}
+    \item<3-> The convergence disk is convex
+    \begin{itemize}
+      \item<4-> But being bounded is not decidable
+      \only<4>{$$o_{i,j} (n)= \left\lbrace
+        \begin{array}{ll}
+          0 & \text{if } \T_i(j) \text{ stops in less than } n \text{ steps}\\
+          n & \text{otherwise}
+         \end{array}\right.$$}
+      \item<5-> Hence not provable without EM
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Our definition}
+\begin{itemize}
+  \item Being inside the convergence radius:
+  $$\cvrw{}(a_n,r) = \left| a_n r^n \right| \text{ is bounded}$$
+  \item Having a finite radius of convergence:
+  $$\fcvr{}(a_n,r) =$$
+  $$\begin{array}{clcl}
+    & \forall r', & 0 \le r' < r & \Rightarrow \cvrw{}(a_n,r') \\
+    \wedge & \forall r', & r < r' & \Rightarrow \neg \cvrw{}(a_n,r')
+    \end{array}$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Applications}
+\begin{itemize}
+ \item Usual functions defined in a couple of lines.
+  \begin{itemize}
+     \item $\exp$
+     \item $\cos$, $\sin$
+  \end{itemize}
+ \item Properties for free
+  \begin{itemize}
+    \item derivability
+    \item shape of the n$^{th}$ derivative
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Build tactics on top of this}
+\begin{itemize}
+  \item What is annoying when proving lemmas?
+  \begin{itemize}
+    \item Proving obvious equalities
+    \item Compatibility with common operations
+    \item Formal derivatives
+  \end{itemize}
+  \item How to avoid proving everything by hand?
+  \begin{itemize}
+    \item \ring{}, \field{}
+    \item \solve{}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why using reflection?}
+\begin{itemize}
+ \item Add more guarantees to your tactic
+ \item Avoid the manipulation of huge terms
+ \item Replace proofs by computations
+ \item Easy to extend
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simple remarks}
+\begin{itemize}
+  \item Sums of power series are extentional:
+    $$a_n \equiv b_n \Rightarrow
+   \sum_n a_n x^ n \equiv \sum_n b_n x ^ n$$
+  \item Sums of power series are compatible with addition:
+    $$\sum_n (a_n + b_n) x^ n \equiv \sum_n a_n x ^ n + \sum_n b_n x ^ n$$
+  \item We know the exact shape of the n$^th$ derivative:
+    $$(\sum_n a_n x^ n)^{(k)} \equiv \sum_n \Dn a_n x ^ n$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\solve{} - A very basic version}
+\begin{itemize}
+ \item Side equations: $E ::= y_i^{(k)} ~|~ E + E$
+ \item<2-> Equations: $E1 :=: E2$
+ \item<3-> Two semantics: talking about power series or sequences over $\R$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{$\SemR = ?$}
+\begin{itemize}
+\item $\IR$ is the trivial semantics à la Tarski that one could expect:
+\only<1>{
+$$\IR (y^{k}_i, \rho) = \left(\sum_n \rho(i)_n x ^ n\right)^{(k)}$$
+$$\IR (E_1 + E_2, \rho) = \IR(E_1, \rho) + \IR(E_2, \rho)$$}
+\item<2-> $\SemR$ is just the use $\IR$ on both sides of the equation:
+
+$$\SemR = (\IR(E_1, \rho) \equiv \IR(E_2, \rho))$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks for your attention!}
+
+\begin{block}{More information available online:}
+\url{http://coqtail.sf.net}
+\end{block}
+
+\end{frame}
+
+\end{document}
+
