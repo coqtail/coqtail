@@ -1,6 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8x]{inputenc}
-\usepackage{fancyvrb}
+\usepackage{fancyvrb, microtype}
 \usepackage{amsmath, amssymb}
 \usetheme[titlepagelogo=coqtail_big,
           alternativetitlepage=true,% Use the fancy title page.
@@ -21,6 +21,12 @@
 \titlepage
 \end{frame}
 
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+\section{Motivations}
+
 \begin{frame}{Why? - \coqtail{}}
 \begin{itemize}
  \item We wanted to:
@@ -40,9 +46,13 @@
 
 \begin{frame}[fragile,t]{Why? - \rpser{}}
 \begin{verbatim}
+  Definition cos_n (n:nat) : R :=
+    (-1) ^ n / INR (fact (2 * n)).
+\end{verbatim}
+\begin{SaveVerbatim}{cosin}
   Definition cos_in (x l:R) : Prop :=
     infinite_sum (fun i:nat => cos_n i * x ^ i) l.
-\end{verbatim}
+\end{SaveVerbatim}
 
 \begin{SaveVerbatim}{ecos}
   Lemma exist_cos : forall x:R, { l:R | cos_in x l }.
@@ -53,9 +63,10 @@
     exist_cos (Rsqr x) in a.
 \end{SaveVerbatim}
 
-\uncover<2->{\UseVerbatim{ecos}}
-\uncover<3->{\UseVerbatim{cos}}
-\uncover<4->
+\uncover<2->{\UseVerbatim{cosin}}
+\uncover<3->{\UseVerbatim{ecos}}
+\uncover<4->{\UseVerbatim{cos}}
+\uncover<5->
 {
 \bigskip
 \color{red}{But $\cos$ is much more than just a series!}
@@ -77,6 +88,10 @@
   \end{itemize}
 \end{itemize}
 \end{frame}
+
+\section{Defining power series}
+
+\subsection{Convergence radius}
 
 \begin{frame}{Convergence radius}
 \begin{itemize}
@@ -105,7 +120,7 @@
 \begin{itemize}
   \item Being inside the convergence radius:
   $$\cvrw{}(a_n,r) = \left| a_n r^n \right| \text{ is bounded}$$
-  \item Having a finite radius of convergence:
+  \item<2-> Having a finite radius of convergence:
   $$\fcvr{}(a_n,r) =$$
   $$\begin{array}{clcl}
     & \forall r', & 0 \le r' < r & \Rightarrow \cvrw{}(a_n,r') \\
@@ -113,6 +128,32 @@
     \end{array}$$
 \end{itemize}
 \end{frame}
+
+\begin{frame}{But... Do we have the right to do this?}
+\begin{itemize}
+  \item This definition is more informative:
+    $$\fcvr{}(a_n,r) \Rightarrow r = \sup \left\lbrace \dots \right\rbrace$$
+  \item<2-> But given EM, it is equivalent:
+    $$EM \Rightarrow r = \sup \left\lbrace \dots \right\rbrace \Rightarrow
+    \fcvr{}(a_n,r) $$
+  \begin{itemize}
+    \item<3> Idea of the proof:
+      $$\forall r', 0 \le r' < r \Rightarrow \cvrw{}(a_n,r')$$
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{D'Alembert's criteria}
+\end{frame}
+
+\subsection{Sums}
+
+\begin{frame}{Abel's lemma}
+\end{frame}
+
+\section{Using power series}
+
+\subsection{Usual functions}
 
 \begin{frame}{Applications}
 \begin{itemize}
@@ -128,6 +169,8 @@
   \end{itemize}
 \end{itemize}
 \end{frame}
+
+\subsection{Tactics}
 
 \begin{frame}{Build tactics on top of this}
 \begin{itemize}
@@ -177,14 +220,41 @@
 \begin{frame}{$\SemR = ?$}
 \begin{itemize}
 \item $\IR$ is the trivial semantics à la Tarski that one could expect:
-\only<1>{
 $$\IR (y^{k}_i, \rho) = \left(\sum_n \rho(i)_n x ^ n\right)^{(k)}$$
-$$\IR (E_1 + E_2, \rho) = \IR(E_1, \rho) + \IR(E_2, \rho)$$}
-\item<2-> $\SemR$ is just the use $\IR$ on both sides of the equation:
+$$\IR (E_1 + E_2, \rho) = \IR(E_1, \rho) + \IR(E_2, \rho)$$
 
+\bigskip
+
+\item<2-> It is used to define the semantics of equations:
 $$\SemR = (\IR(E_1, \rho) \equiv \IR(E_2, \rho))$$
 \end{itemize}
 \end{frame}
+
+\begin{frame}{$\SemN = ?$}
+\begin{itemize}
+\item $\IN$ is a bit more subtle:
+$$\IN (y^{k}_i, \rho) = \Dn{}(\rho(i), k)$$
+$$\IN (E_1 + E_2, \rho) = \IN(E_1, \rho) + \IN(E_2, \rho)$$
+
+\bigskip
+
+\item<2-> It is used to define the semantics of equations:
+$$\SemN = (\IN(E_1, \rho) \equiv \IN(E_2, \rho))$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Main theorem}
+
+$$\SemN \Rightarrow \SemR$$
+
+\bigskip
+
+\begin{exampleblock}{$\forall n. \exp^{(n +1)} = \exp^{(n)}$}
+$$\forall k \in \N, \frac{((n+1) + k)!}{k!} * \frac{1}{((n+1)+k)!}
+= \frac{(n+k)!}{k!} * \frac{1}{(n+k)!}$$
+\end{exampleblock}
+\end{frame}
+
 
 \begin{frame}{Thanks for your attention!}
 
