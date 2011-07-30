@@ -75,9 +75,9 @@
 
 \begin{frame}{Defining power series}
 \begin{itemize}
-\item Convergence
+\item Convergence disk
   \begin{itemize}
-    \item Convergence disc
+    \item Convergence radius
     \item Criterion
   \end{itemize}
 \item Sums
@@ -143,12 +143,48 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{D'Alembert's criteria}
+\begin{frame}{Convergence criterion}
+
+\begin{alertblock}{Alembert criteria}
+$$\lim_{n \rightarrow + \infty}\frac{a_{n+1}}{a_n} = \lambda \Rightarrow
+\rho(\sum_n a_n x^n) = \frac{1}{\lambda}$$
+\end{alertblock}
+
+\begin{alertblock}{Another criteria}
+$$\sum_n a_n \lambda^n CV \wedge \sum_n a_n \lambda^n NCVN$$
+$$\Rightarrow \rho(\sum_n a_n x^n) = \left| \lambda \right|$$
+\end{alertblock}
+
+
 \end{frame}
 
 \subsection{Sums}
 
-\begin{frame}{Abel's lemma}
+\begin{frame}{Sums}
+\begin{alertblock}{Abel's lemma}
+$$\forall r. \left| r \right| < \rho \left( \sum_n a_n x^n \right)
+\Rightarrow \exists l. \sum_{n = 0}^{+ \infty} a_n r^n = l$$
+\end{alertblock}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+  \item Compatibility with common operations
+  \begin{itemize}
+	\item Most of it is trivial thanks to \rsequence{}
+	\item The compatibility with $\tt Rmult$ comes from $\tt Rseries$
+  \end{itemize}
+  \medskip
+  \item Formal derivatives
+  \begin{itemize}
+    \item $\D (a_n) (n) = (n+1)a_{n+1}$: the hard part
+    \begin{itemize}
+	  \item Convergence radius preservation
+	  \item The formal derivative \emph{is} the derivative
+    \end{itemize}
+    \item $\Dn (a_n,k)$: by reccurence
+  \end{itemize}
+\end{itemize}
 \end{frame}
 
 \section{Using power series}
@@ -220,7 +256,7 @@
 \begin{frame}{$\SemR = ?$}
 \begin{itemize}
 \item $\IR$ is the trivial semantics à la Tarski that one could expect:
-$$\IR (y^{k}_i, \rho) = \left(\sum_n \rho(i)_n x ^ n\right)^{(k)}$$
+$$\IR (y^{(k)}_i, \rho) = \left(\sum_n \rho(i)_n x ^ n\right)^{(k)}$$
 $$\IR (E_1 + E_2, \rho) = \IR(E_1, \rho) + \IR(E_2, \rho)$$
 
 \bigskip
@@ -233,7 +269,7 @@ $$\SemR = (\IR(E_1, \rho) \equiv \IR(E_2, \rho))$$
 \begin{frame}{$\SemN = ?$}
 \begin{itemize}
 \item $\IN$ is a bit more subtle:
-$$\IN (y^{k}_i, \rho) = \Dn{}(\rho(i), k)$$
+$$\IN (y^{(k)}_i, \rho) = \Dn{}(\rho(i), k)$$
 $$\IN (E_1 + E_2, \rho) = \IN(E_1, \rho) + \IN(E_2, \rho)$$
 
 \bigskip
