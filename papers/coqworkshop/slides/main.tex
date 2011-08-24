@@ -1,0 +1,59 @@
+\documentclass[draft]{beamer}
+\usepackage[utf8x]{inputenc}  %
+\usetheme[titlepagelogo=coqtail_big,
+          alternativetitlepage=true,% Use the fancy title page.
+          ]{Torino}
+\usecolortheme{coqtail}
+
+\author{Jean-Marie Madiot, Pierre-Marie Pèdrot}
+\title{Constructive axiomatic for the real numbers}
+\institute{Coqtail Junior Laboratory\\
+	ENS Lyon}
+\date{August, 26th}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Type}{\mbox{Type}}
+\newcommand{\Prop}{\mbox{Prop}}
+\newcommand{\coqtail}{\textsc{coqtail}}
+
+\begin{document}
+
+\begin{frame}[t,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}{Related works}
+  \begin{itemize}
+    \item Coq's stdlib: highly classical (WEM in Set), 1/0
+    \item C-CoRN: too complex, quite old, too intuitionistic
+  \end{itemize}
+  $→$ we need an interface!
+  % Canonical structures = vieilles typeclasses
+\end{frame}
+
+\begin{frame}{Axioms}
+  \begin{itemize}
+    \item Ordered ring
+      \begin{itemize}
+        \item $(\R, ≤)$ is a preorder
+        \item $(\R, +, 0, *, 1)$ is a ring
+      \end{itemize}
+    \item Constructive field
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Constructive/classical distinction}
+  \begin{itemize}
+    \item axiom monad (functional extensionality, Castéran's $\varepsilon$)
+    \item Prop-Type distinction (inhabited monad)
+  \end{itemize}
+\end{frame}
+
+
+
+\end{document}
+
