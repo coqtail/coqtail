@@ -2,13 +2,22 @@
 \usetheme[titlepagelogo=coqtail_big,
           alternativetitlepage=true,% Use the fancy title page.
           ]{Torino}
+\usepackage{stmaryrd}
+\usepackage{fancyvrb}
+
 \usecolortheme{coqtail}
+
+\newcommand{\coqtail}{\textsc{coqtail}}
+\newcommand{\B}{\mathbb{B}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
 
 \author{Guillaume Allais}
 \title{Using reflection to solve some differential equations}
-\institute{Coqtail Junior Laboratory\\
+\institute{\coqtail{} Junior Laboratory\\
 	ENS Lyon}
-\date{August, 27th}
+\date{August, 26th}
 
 \begin{document}
 
@@ -16,6 +25,206 @@
 \titlepage
 \end{frame}
 
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+\section{Motivations}
+
+\begin{frame}[fragile]{\coqtail{} defines new objects}
+\begin{itemize}
+  \item Power series
+
+  \begin{verbatim}
+      an  : Rseq
+      rho : infinite_cv_radius an
+      ===========================
+      sum an rho : R -> R
+  \end{verbatim}
+
+  \item N$^{th}$ derivative
+
+  \begin{verbatim}
+      n   : nat
+      f   : R -> R
+      Dnf : D n f
+      =========================
+      nth_derive f Dnf : R -> R
+  \end{verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{With specific properties}
+\begin{itemize}
+  \item Trivial identities
+  \begin{itemize}
+    \item \verb!      sum an rho1 == sum an rho2!
+    \item \verb!sum (an + bn) rab == sum an ra + sum bn rb!
+  \end{itemize}
+\bigskip
+  \item Interactions
+  \begin{itemize}
+    \item A power series can be differentiated infinitely many times
+    \item The shape of these derivatives is simple
+  \end{itemize}
+\end{itemize}
+
+\bigskip
+\uncover<2>{Do we really want to deal with this by hand?}
+\end{frame}
+
+\begin{frame}{Reflection}
+\begin{itemize}
+  \item A datatype representing formulas
+  \item A semantics connecting the datatype to the formulas
+\end{itemize}
+\end{frame}
+
+\section{A simple toy example}
+
+\begin{frame}[fragile]{A simple toy example}
+\begin{verbatim}
+  Inductive side_equa : Set :=
+    | y    : forall (p : nat) (k : nat), side_equa
+    | plus : forall (s1 s2 : side_equa), side_equa.
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{First semantics}
+
+\begin{itemize}
+  \item From ASTs to power series
+
+$$\begin{array}{lcrcl}
+\llbracket & y (p, k) & \rrbracket_\R & \rho = & \left(\sum_n \rho(p) x^n\right)^{(k)}\\
+\llbracket & plus(s_1,s_2) & \rrbracket_\R & \rho = & \llbracket s_1 \rrbracket_\R \rho + \llbracket s_2 \rrbracket_\R \rho
+\end{array}$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Second semantics}
+\begin{itemize}
+  \item From ASTs to coefficients' sequences
+
+$$\begin{array}{lcrcl}
+\llbracket & y (p, k) & \rrbracket_\N & \rho = & \left(\frac{(n + k)!}{n!} \rho(p)_{n+k}\right)\\
+\llbracket & plus(s_1,s_2) & \rrbracket_\N & \rho = & \llbracket s_1 \rrbracket_\N \rho + \llbracket s_2 \rrbracket_\N \rho
+\end{array}$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Main theorem}
+We can talk about coefficients' sequences to prove equalities on the corresponding
+power series.
+
+\bigskip
+
+$$\llbracket s_1 :=: s_2 \rrbracket_\N ({\tt map} ~ \pi_1 ~ \rho)$$
+$$\Downarrow$$
+$${\only<2>{\color{red}}\llbracket s_1 :=: s_2 \rrbracket_\R \rho}$$
+\end{frame}
+
+\begin{frame}[fragile]{Ltac}
+\begin{itemize}
+  \item Quoting
+  \begin{itemize}
+    \item<2-> $\verb!isconst s x! : \B$
+    \item<3-> $\verb!add_var an rho env! : \N \star \E$
+    \item<4-> $\verb!quote_side_equa env s x! : \E \star {\tt side\_equa}$
+  \end{itemize}
+\bigskip
+  \item Normalizing
+  \begin{itemize}
+     \item<5-> $\verb!normalize_rec p s x! : {\tt unit}$
+  \end{itemize}
+\bigskip
+  \item Solving
+  \begin{itemize}
+     \item<6> $\verb!solve_diff_equa! : {\tt unit}$
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+\begin{verbatim}
+  an : Rseq
+  ra : infinite_cv_radius an
+  rb : infinite_cv_radius an
+  ===========================
+  sum an ra == sum an rb
+\end{verbatim}
+\end{minipage}
+\end{center}
+
+\bigskip
+
+\begin{SaveVerbatim}{uncover2}
+([(an, ra)] , (y(0,0), y(0,0)))
+\end{SaveVerbatim}
+
+\begin{SaveVerbatim}{uncover3}
+  nth_derive (sum an ra) (D_infty_Rpser an ra 0) ==
+  nth_derive (sum an ra) (D_infty_Rpser an ra 0)
+\end{SaveVerbatim}
+
+\begin{SaveVerbatim}{uncover4}
+  an == an
+\end{SaveVerbatim}
+
+\uncover<2->{\UseVerbatim{uncover2}}
+
+\uncover<3->{\UseVerbatim{uncover3}}
+
+\uncover<4>{\UseVerbatim{uncover4}}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{verbatim}
+  an  : Rseq
+  bn  : Rseq
+  rab : infinite_cv_radius (an + bn + bn)
+  ra  : infinite_cv_radius an
+  rb  : infinite_cv_radius bn
+  rc  : infinite_cv_radius bn
+  =======================================
+  sum (an + bn + bn) rab ==
+  sum bn rb + sum an ra + sum bn rc
+\end{verbatim}
+\end{frame}
+
+\section{All the features}
+
+\begin{frame}
+\begin{itemize}
+  \item Just a toy example however...
+  \begin{itemize}
+    \item Fully automatic
+    \item Quite reflects the actual implementation
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{All the features}
+\begin{verbatim}
+  Inductive side_equa : Set :=
+    | cst  : forall (r : R), side_equa
+    | scal : forall (r : R) (s : side_equa), side_equa
+    | y    : forall (p : nat) (k : nat) (a : R), side_equa
+    | opp  : forall (s1 : side_equa), side_equa
+    | min  : forall (s1 s2 : side_equa), side_equa
+    | plus : forall (s1 s2 : side_equa), side_equa
+    | mult : forall (s1 s2 : side_equa), side_equa.
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Any questions?}
+
+Sources: \url{http://coqtail.sf.net}
+
+\end{frame}
 
 \end{document}
 
