@@ -1,11 +1,11 @@
-\documentclass[draft]{beamer}
+\documentclass{beamer}
 \usepackage[utf8x]{inputenc}  %
 \usetheme[titlepagelogo=coqtail_big,
           alternativetitlepage=true,% Use the fancy title page.
           ]{Torino}
 \usecolortheme{coqtail}
 
-\author{Jean-Marie Madiot, Pierre-Marie Pèdrot}
+\author{Jean-Marie Madiot, Pierre-Marie Pédrot}
 \title{Constructive axiomatic for the real numbers}
 \institute{Coqtail Junior Laboratory\\
 	ENS Lyon}
@@ -26,34 +26,270 @@
 \titlepage
 \end{frame}
 
-\begin{frame}{Related works}
+\begin{frame}{Real analysis in Coq}
+
+\begin{itemize}
+  \item Two major libraries of real analysis out there:
   \begin{itemize}
-    \item Coq's stdlib: highly classical (WEM in Set), 1/0
-    \item C-CoRN: too complex, quite old, too intuitionistic
+    \item Coq \texttt{stdlib}: highly classical
+    \item C-CoRN: designed to be constructive
   \end{itemize}
-  $→$ we need an interface!
-  % Canonical structures = vieilles typeclasses
+
+  \item Libraries to prove analysis theorems
+  \item There already have been attempts to mix both
+  \pause
+
+  \item Some other effective implementations, generally from the folks in computer arithmetic:
+  \begin{itemize}
+    \item In general, not libraries of theorems
+    \item More about proved computation on real numbers
+  \end{itemize}
+
+\end{itemize}
+
 \end{frame}
 
-\begin{frame}{Axioms}
+\begin{frame}{Coq \texttt{stdlib}}
+
+\begin{itemize}
+  \item \color{blue}{Pros}
   \begin{itemize}
-    \item Ordered ring
+    \item Simple and abstract formalism
+    \item Designed with speed of development on mind
+    \item Usual proofs are easy to write
+    \item Shipped with Coq $\rightsquigarrow$ important base of users
+  \end{itemize}\pause
+  \item \color{red}{Cons}
+  \begin{itemize}
+    \item lacks a lot of basic results (on sequences, etc.)
+    \item names quite messy: lemmas \texttt{Riemann\_tech24} and alike
+    \item globally badly designed library ($\mathtt{Ranalysis}_i$ for $0 \le i \le 4$)
+    \item worse than \alert{highly} classical:
+    $$\forall A : \mathtt{Prop}, \{\neg\neg A\} + \{\neg A\}$$
+    $$\{\forall n, P n\} + \{\exists n,\neg (P n)\}\quad \text{if $P : \mathtt{nat}\rightarrow\mathtt{Prop}$ decidable}$$
+  \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{C-CoRN}
+
+\begin{itemize}
+  \item \color{blue}{Pros}
+  \begin{itemize}
+    \item Constructive: compute with your proofs!
+    \item Huge database of intermediate structures
+    \item A lot of nice results
+  \end{itemize}\pause
+  \item \color{red}{Cons}
+  \begin{itemize}
+    \item Constructive: make mathematicians flee away!
+    \begin{itemize}
+      \item[$\hookrightarrow$] ``we want real maths!''
+    \end{itemize}
+    \item Too complicated to use (from compilation to dependency hell)
+    \item Oldish and overly module-relying Coq
+    \item Not really maintained anymore
+  \end{itemize}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Manifesto}
+
+We want to keep the best of both worlds:
+
+\begin{itemize}
+  \item From \texttt{stdlib}:
+  \begin{itemize}
+    \item Simplicity and abstraction
+    \begin{itemize}
+      \item[$\hookrightarrow$] that means fresh axiomatic construction
+    \end{itemize}
+    \item Ability to do classical proofs
+    \begin{itemize}
+      \item[$\hookrightarrow$] fancy axioms in \texttt{Prop} accepted
+      \item[$\hookrightarrow$] excluded middle, choice axiom...
+      \item[$\hookrightarrow$] may port classical tactics (\texttt{fourier}, \texttt{psatz}...)
+    \end{itemize}
+  \end{itemize}\pause
+  \item From C-CoRN:
+  \begin{itemize}
+    \item Constructive axiomatic
+    \begin{itemize}
+      \item[$\hookrightarrow$] results in \texttt{Type} extractible
+      \item[$\hookrightarrow$] plugging in C-CoRN?
+    \end{itemize}
+    \item \emph{Tabula rasa} $\rightsquigarrow$ lot of work
+  \end{itemize}
+\end{itemize}\pause
+
+Neither obvious nor easy!
+
+\end{frame}
+
+\begin{frame}{Caveats}
+
+A fundamental problem: \alert{equality}!
+
+\begin{itemize}
+  \item Leibniz equality on real numbers is a quotient
+  \begin{itemize}
+    \item $x \simeq y := \forall \varepsilon > 0, \delta(x, y) < \varepsilon $
+  \end{itemize}
+  \item Whenever we can approximate $\mathbb{R}$ this is not constructive
+    \begin{itemize}
+      \item ... as $\mathtt{eval}_\varepsilon : \mathbb{R}\rightarrow\mathbb{Q}$ is not continuous
+      \item while any field operation must be compatible with $\simeq$
+      \item $\mathtt{eval}_\varepsilon$ cannot be
       \begin{itemize}
-        \item $(\R, ≤)$ is a preorder
-        \item $(\R, +, 0, *, 1)$ is a ring
+	\item[$\hookrightarrow$] this would break extraction
       \end{itemize}
-    \item Constructive field
-  \end{itemize}
+    \end{itemize}\pause
+  \item Really need to use setoids
+\end{itemize}
+
+Other problems related to constructivity: \alert{partial} functions must take a proof, and other non-equivalences
+
 \end{frame}
 
-\begin{frame}{Constructive/classical distinction}
+\begin{frame}{Actual Axiomatic}
+
+\begin{itemize}
+  \item Structure and operations:
+\begin{itemize}
+  \item axiomatic: $\mathbb{R}:\mathtt{Type}$, $< : \mathbb{R}\rightarrow\mathbb{R}\rightarrow\mathtt{Prop}$ 
+  \item derived:
+  \begin{align*}
+  x\gtrless y &:= \{x < y\} + \{y < x\} & \text{in \texttt{Type}}\\
+  x \simeq y &:= \neg (x < y) \wedge \neg(y < x) &\text{in \texttt{Prop}}
+  \end{align*}
+
+  \item axiomatic: $+$, $-$, $\times$, $(\cdot)^{-1}$ (with a proof that $x\gtrless 0$)
+\end{itemize}
+
+  \item Usual well-behavedness axioms
+
+  \item Important issue: completeness!
   \begin{itemize}
-    \item axiom monad (functional extensionality, Castéran's $\varepsilon$)
-    \item Prop-Type distinction (inhabited monad)
+  \item As in C-CoRN
+  \item Constructive Cauchy sequences (\texttt{sig} in \texttt{Type})
+  \item Any such sequence converges
   \end{itemize}
+
+\end{itemize}
+
 \end{frame}
 
+\begin{frame}{EM and Markov's principle}
 
+Assuming EM in \texttt{Prop}, we get Markov's principle for free.
+
+  \begin{itemize}
+  \item Equivalent to $\neg\neg x > 0 \rightarrow x > 0$
+  \begin{itemize}
+    \item which already implied $\{n :\mathbb{N} \mid x > 2^{-n} \}$
+  \end{itemize}
+  \item Simplifies a lot of reasonings
+  \begin{itemize}
+    \item we could implement Fourier elimination
+  \end{itemize}
+  \item We can still kind of compute using tactic-based \texttt{Acc} trick
+  \end{itemize}
+
+EM is not harmful for constructivity: things in \texttt{Prop} were considered irrelevant from the beginning.
+
+\end{frame}
+
+\begin{frame}{Really Classical Maths}
+
+\begin{itemize}
+  \item Up to now, we're not a lot different from a slightly classical C-CoRN
+  \item Castéran proposal: a violent axiom that confuse \texttt{Prop} and \texttt{Type}
+  {\small $$\varepsilon:\forall A\ P, (\texttt{exists}\ x, P\,x) \rightarrow \{x\mid P\,x\} $$}
+  \item We do not want to mix non-constructive results with constructive ones
+  \begin{itemize}
+    \item ... there is \texttt{stdlib} for this!
+  \end{itemize}
+  \item We use a structure inherited from programming: \alert{monads}!
+  \begin{itemize}
+    \item A type constructor $T : \texttt{Type}\rightarrow\texttt{Type}$
+    \item A lift $A \rightarrow T A$ and a join $T^2 A \rightarrow A$
+    \item in general, no information flow $T A \rightarrow A$
+    \begin{itemize}
+      \item[$\rightsquigarrow$] that's what we wanted
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{The Inhabited Monad}
+
+The inhabited monad : a singleton constructor in \texttt{Prop}
+{\small$$\mathtt{Inductive\ inhabited}\ A : \mathtt{Prop} := \mathtt{inhabits} : A \rightarrow \mathtt{inhabited}\,A.$$}
+\pause
+\begin{itemize}
+  \item turn any constructive predicate in a non-constructive one in \texttt{Prop}
+  \item quite delicate to use
+  \begin{itemize}
+    \item need explicit specifications (proof-irrelevance!)
+  \end{itemize}
+  \item actually this is really useful together with the full axiom of choice
+{\small$$\forall A\ (B : A \rightarrow \mathtt{Type}), (\forall x, \mathtt{inhabited}\ (B\,x)) \rightarrow
+\mathtt{inhabited}\ (\forall x, B\,x)$$}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{The Axiom Monad}
+
+A very generic and useful monad.
+
+\begin{itemize}
+  \item The axiom monad : $T_X A = X \rightarrow A$
+  \item used with $X = \varepsilon$ provides the full power of choice axiom
+  \begin{itemize}
+    \item partial functions, elimination of dependence in proofs and much more!
+    \item easy to use in a mathematical fashion
+    \item equivalent to \texttt{inhabited} + AC
+  \end{itemize}
+    \item can be refined with any other powerful axiom at will
+
+\end{itemize}
+
+We can virtually tag any result with its degree of classicality (here we're just interessed in algorithmic realizability).
+
+\end{frame}
+
+\begin{frame}{Conclusion}
+
+\begin{itemize}
+  \item Writing a manageable real arithmetic library is difficult
+  \begin{itemize}
+    \item on a theoretical point of view: carefully choose your system!
+    \item on a practical point of view: naming conventions and usability
+  \end{itemize}
+  \item Rewriting a whole generic library from scratch is a tedious work
+  \item Actually we don't have any interesting result yet...
+  \begin{itemize}
+    \item just a bunch of basic lemmas wich are the most cumbersome to write
+    \item we badly lack tactics for now
+  \end{itemize}
+  \item Using monads to discriminate proof properties seems something new
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Scribitur ad narrandum, not ad probandum}
+
+\begin{center}
+{\Huge Thank you.}
+\end{center}
+
+\end{frame}
 
 \end{document}
 
