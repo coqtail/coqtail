@@ -158,11 +158,11 @@
       <h2>Publications</h2>
       <ul>
         <li>G. Allais. <b>Coq with power series</b> (<a href="http://www.uc.pt/en/congressos/thedu/goalstopics/">THedu'11</a>)
-	    <span class="publink">[<a href="files/thedu11.pdf">pdf</a> | slides]</span></li>
+	    <span class="publink">[<a href="files/thedu11.pdf">pdf</a> | <a href="files/thedu11_slides.pdf">slides</a>]</span></li>
 	<li>J-M Madiot, P-M. Pédrot. <b>Constructive axiomatic for the real numbers</b> (<a href="http://www.cs.ru.nl/~spitters/coqw.html">3rd Coq workshop</a>) 
-	    <span class="publink">[<a href="files/coqws11.pdf">pdf</a> | slides]</span></li>
+	    <span class="publink">[<a href="files/coqws11.pdf">pdf</a> | <a href="files/coqws11_slides.pdf">slides</a>]</span></li>
 	<li>G. Allais. <b>Using reflection to solve some differential equations</b> (<a href="http://www.cs.ru.nl/~spitters/coqw.html">3rd Coq workshop</a>)
-	    <span class="publink">[<a href="files/itp11.pdf">pdf</a> | slides]</span></li>
+	    <span class="publink">[<a href="files/itp11.pdf">pdf</a> | <a href="files/itp11_slides.pdf">slides</a>]</span></li>
       </ul>
       <?php
     }
