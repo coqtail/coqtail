@@ -20,6 +20,7 @@ let option_D = ref false
 let option_w = ref false
 let option_sort = ref false
 let option_dump = ref false
+let option_dumprec = ref true
 
 let rec warning_mult suf iter =
   let tab = Hashtbl.create 151 in
@@ -159,7 +160,7 @@ let declare_dependencies () =
 
 let usage () =
   eprintf
-  "[ usage: coqdep [-w] [-I dir] [-R dir coqdir] [-coqlib dir] [-c] [-i] [-D] [-dumpgraph] <filename>+ ]\n";
+  "[ usage: coqdep [-w] [-I dir] [-R dir coqdir] [-coqlib dir] [-c] [-i] [-D] [-dumpgraph [norec]] <filename>+ ]\n";
   flush stderr;
   exit 1
 
@@ -183,6 +184,7 @@ let rec parse = function
   | "-suffix" :: (s :: ll) -> suffixe := s ; parse ll
   | "-suffix" :: [] -> usage ()
   | "-slash" :: ll -> option_slash := true; parse ll
+  | "-dumpgraph" :: "norec" :: ll -> option_dump := true; option_dumprec := false; parse ll
   | "-dumpgraph" :: ll -> option_dump := true; parse ll
   | ("-h"|"--help"|"-help") :: _ -> usage ()
   | f :: ll -> treat_file None f; parse ll
@@ -212,8 +214,8 @@ let coqdep () =
   warning_mult ".ml" iter_ml_known;
   if !option_sort then begin sort (); exit 0 end;
   if !option_c && not !option_D then mL_dependencies ();
-  if not !option_D then coq_dependencies ();
+  if not !option_D && not !option_dump then coq_dependencies ();
   if !option_w || !option_D then declare_dependencies ();
-  if !option_dump then coq_dependencies_dump ()
+  if !option_dump then coq_dependencies_dump !option_dumprec
 
 let _ = Printexc.catch coqdep ()

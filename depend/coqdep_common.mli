@@ -37,7 +37,7 @@ val escape : string -> string
 val canonize : string -> string
 val mL_dependencies : unit -> unit
 val coq_dependencies : unit -> unit
-val coq_dependencies_dump : unit -> unit
+val coq_dependencies_dump : bool -> unit
 val suffixes : 'a list -> 'a list list
 val add_known : string -> string list -> string -> unit
 val add_directory :

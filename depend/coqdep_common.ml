@@ -473,16 +473,33 @@ let coq_dependencies () =
        flush stdout)
     (List.rev !vAccu)
 
-let coq_dependencies_dump () =
-  List.iter
-    (fun (name, _) ->
-      let ename = escape name in
+let coq_dependencies_dump dumprec =
+  printf "digraph dependencies {\n"; flush stdout;
+  let already_seen = ref (List.map fst !vAccu) in
+  let rec print_dependencies name =
+    let ename = basename_noext name in
+    let vdep  = treat_coq_file true (name ^ ".v") in
+      List.iter
+        (fun (dep, _) -> printf "%s -> %s\n" (basename_noext dep) ename;
+        if not (List.mem dep !already_seen) && dumprec
+        then (already_seen := dep :: !already_seen; print_dependencies dep)
+        else already_seen := dep :: !already_seen)
+      vdep; flush stdout
+  in
+  List.iter (fun (name, _) -> print_dependencies name) !vAccu;
+(*
+      let ename = basename_noext name in
       let vdep  = treat_coq_file true (name ^ ".v") in
       List.iter
-        (fun (dep, suf) -> printf "%s%s -> %s%s\n" dep suf ename !suffixe)
+        (fun (dep, suf) -> printf "%s -> %s\n" (basename_noext dep) ename;
+        (if not (List.mem dep !already_seen)
+        then vAccu := (dep, suf) :: !vAccu);
+        already_seen := dep :: !already_seen
+        )
         vdep;
       flush stdout)
-    (List.rev !vAccu)
+    !vAccu;
+*)  printf "}\n"; flush stdout
 
 let rec suffixes = function
   | [] -> assert false
