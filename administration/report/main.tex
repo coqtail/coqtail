@@ -16,6 +16,28 @@
 \maketitle
 
 \section{Rappel des buts}
+% TODO reprendre... pomper et de grosses omissions
+\subsection{Conjoncture}
+% TODO pomper de la proposal
+La correspondance de Curry-Howard établit le lien entre une preuve et un processus calculatoire : 
+démontrer un théorème et construire une fonction qui, à partir des hypothèses, renvoie la conclusion 
+sont un seul et même problème.\\
+
+Coq est un assistant de preuves formelles par ordinateur utilisant cette correspondance dans un sens comme dans l'autre. Il est ainsi possible :
+d'énoncer des théorèmes mathématiques et de les prouver ;
+de définir des spécifications et de fournir une fonction les vérifiant.\\
+
+Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatre couleurs ainsi que la création d'un compilateur certifié pour un important sous-ensemble de C.
+
+\subsection{Héritage de \coquille{}}
+
+Le projet \coqtail{} (Coq Theorems, Abstractions and Implementations, Licence-level) s'était, au début, attaché à fournir des outils (formalisations d'objets et résultats théoriques attachés) permettant d'aborder simplement des problèmes de niveau Licence en Coq. Il fait suite à \coquille{} développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
+
+\subsection{Objectifs}
+
+Notre objectif était de mettre à profit les outils développés et la maturité acquise lors du projet \coquille{} pour aborder des sujets plus fondamentaux et plus complexes. Dans ce cadre, nos efforts ont été orientés vers la formalisation et l'étude des équations différentielles d'une part et des graphes d'autre part. Ces formalisations, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).\\
+
+Nous voulions également refonder les réels en Coq. Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques. Cette construction devait servir de base aux développements d'analyse réelle mais être également reliée à l'axiomatique de la bibliothèque standard afin de faire en sorte que nos résultats soient réutilisables par le plus grand nombre.
 
 \section{Contributions}
 
@@ -51,6 +73,15 @@ sur les coefficients des séries entières en jeu.
 D'un terme complexe comprenant des dérivées d'ordres différents nous passons donc
 à une expression plus simple qui pourra à son tour être déchargée en utilisant nos
 bibliothèques sur les suites réelles.
+
+\subsection{Continuité des résultats de \coquille{}}
+
+Dans la continuité du travail réalisé dans le projet \coquille{}, nous avons continué 
+le travail de formalisations de théorèmes usuels en analyse réelle. En particulier, 
+nous avons prouvé la règle de l'Hopital dans de nombreux cas intéressants. Ce résultat 
+permet d'établir des limites de fonctions très simplement. Nous avons également  
+prouvé le théorème de Cauchy dans ces versions les plus simples. Cela devrait permettre 
+de faciliter le travail sur les équations différentielles. 
 
 \subsection{Graphes}
 
