@@ -16,28 +16,21 @@
 \maketitle
 
 \section{Rappel des buts}
-% TODO reprendre... pomper et de grosses omissions
-\subsection{Conjoncture}
-% TODO pomper de la proposal
-La correspondance de Curry-Howard établit le lien entre une preuve et un processus calculatoire : 
-démontrer un théorème et construire une fonction qui, à partir des hypothèses, renvoie la conclusion 
-sont un seul et même problème.\\
 
-Coq est un assistant de preuves formelles par ordinateur utilisant cette correspondance dans un sens comme dans l'autre. Il est ainsi possible :
-d'énoncer des théorèmes mathématiques et de les prouver ;
-de définir des spécifications et de fournir une fonction les vérifiant.\\
+Notre objectif était de mettre à profit les outils développés et la maturité acquise
+lors du projet \coquille{} pour aborder des sujets plus fondamentaux et plus
+complexes. Dans ce cadre, nos efforts ont été orientés vers la formalisation et
+l'étude des équations différentielles d'une part et des graphes d'autre part. Ces
+formalisations, bien entendu, accompagnées des outils nécessaires à leur manipulation,
+de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les
+théorèmes de résolution d'équations différentielles).\\
 
-Coq permet une construction interactive des preuves ainsi que la définition de tactiques permettant la résolution (totale ou partielle) de buts de manière automatique. Sa puissance n'est plus à démontrer étant donné qu'il a permis la formalisation de la preuve du théorème des quatre couleurs ainsi que la création d'un compilateur certifié pour un important sous-ensemble de C.
-
-\subsection{Héritage de \coquille{}}
-
-Le projet \coqtail{} (Coq Theorems, Abstractions and Implementations, Licence-level) s'était, au début, attaché à fournir des outils (formalisations d'objets et résultats théoriques attachés) permettant d'aborder simplement des problèmes de niveau Licence en Coq. Il fait suite à \coquille{} développé au sein du module Projet Intégré du M1 d'Informatique Fondamentale.
-
-\subsection{Objectifs}
-
-Notre objectif était de mettre à profit les outils développés et la maturité acquise lors du projet \coquille{} pour aborder des sujets plus fondamentaux et plus complexes. Dans ce cadre, nos efforts ont été orientés vers la formalisation et l'étude des équations différentielles d'une part et des graphes d'autre part. Ces formalisations, bien entendu, accompagnées des outils nécessaires à leur manipulation, de leurs propriétés les plus basiques et de théorèmes plus ardus (notamment les théorèmes de résolution d'équations différentielles).\\
-
-Nous voulions également refonder les réels en Coq. Nous proposons notre propre formalisation des réels qui nous permettra de calculer avec des réels tout en conservant la possibilité de prouver des théorèmes classiques. Cette construction devait servir de base aux développements d'analyse réelle mais être également reliée à l'axiomatique de la bibliothèque standard afin de faire en sorte que nos résultats soient réutilisables par le plus grand nombre.
+Nous voulions également refonder les réels en Coq. Nous proposons notre propre
+formalisation des réels qui nous permettra de calculer avec des réels tout en
+conservant la possibilité de prouver des théorèmes classiques. Cette construction
+devait servir de base aux développements d'analyse réelle mais être également
+reliée à l'axiomatique de la bibliothèque standard afin de faire en sorte que nos
+résultats soient réutilisables par le plus grand nombre.
 
 \section{Contributions}
 
@@ -45,21 +38,51 @@ Nous voulions également refonder les réels en Coq. Nous proposons notre propre
 
 \subsubsection{Des objets infinis}
 
-Les nombres réels posent un problème récurrent dans le domaine de l'informatique. Ce sont des objets mathématiques infinis et les représenter dans le monde fini de l'informatique, et \emph{a fortiori} de Coq, se révèle d'une grande difficulté. Dans les programmes usuels et les logiciels de calcul scientifique, les réels sont réduits à une approximation, qu'on appelle communément des flottants. À l'inverse pour énoncer et prouver des propriétés mathématiques sur les réels, ces approximations ne suffisent plus : on a besoin d'une représentation exacte des nombres réels.
+Les nombres réels posent un problème récurrent dans le domaine de l'informatique.
+Ce sont des objets mathématiques infinis et les représenter dans le monde fini de
+l'informatique, et \emph{a fortiori} de Coq, se révèle d'une grande difficulté.
+Dans les programmes usuels et les logiciels de calcul scientifique, les réels sont
+réduits à une approximation, qu'on appelle communément des flottants. À l'inverse
+pour énoncer et prouver des propriétés mathématiques sur les réels, ces
+approximations ne suffisent plus : on a besoin d'une représentation exacte des
+nombres réels.
 
 \subsubsection{Constructivisme}
 
-Ces nombres réels existent déjà dans Coq, mais leur représentation relève de la logique classique et les utiliser revient à abandonner la partie constructive de Coq. L'aspect constructif de Coq est un aspect important qui est intimement rélié à la correspondance de Curry-Howard. Il permet d'effectuer des calculs à l'intérieur de Coq, ce qui fait de lui un système à la fois de preuves mathématiques et de calculs informatiques. Cet aspect a fait ses preuves dans la preuve du théorème des quatre couleurs par Georges Gonthier et Benjamin Werner en 2005 : ce théorème implique qu'à l'aide de seulement quatre couleurs, on peut colorier chaque région d'une carte de sorte qu'aucune région n'en touche une autre de même couleur. La preuve de ce théorème est \emph{constructive} et de ce fait, on peut en déduire un programme qui, étant donnée une carte, colorie cette carte en respectant cette condition.
+Ces nombres réels existent déjà dans Coq, mais leur représentation relève de la
+logique classique et les utiliser revient à abandonner la partie constructive de
+Coq. L'aspect constructif de Coq est un aspect important qui est intimement rélié
+à la correspondance de Curry-Howard. Il permet d'effectuer des calculs à l'intérieur
+de Coq, ce qui fait de lui un système à la fois de preuves mathématiques et de
+calculs informatiques. Cet aspect a fait ses preuves dans la preuve du théorème
+des quatre couleurs par Georges Gonthier et Benjamin Werner en 2005 : ce théorème
+implique qu'à l'aide de seulement quatre couleurs, on peut colorier chaque région
+d'une carte de sorte qu'aucune région n'en touche une autre de même couleur. La
+preuve de ce théorème est \emph{constructive} et de ce fait, on peut en déduire
+un programme qui, étant donnée une carte, colorie cette carte en respectant cette
+condition.
 
-\subsubsection{Problématique}
-
-On souhaite donc conserver cet aspect constructif pour la définition des nombres réels. Cependant, la logique classique intervient aussi dans les démonstrations mathématiques usuelles. On cherche donc une définition des réels qui permet les preuves constructives et le calcul sur les nombres réels d'une part, et qui autorise l'utilisation d'une logique classique d'autre part.
+On souhaite donc conserver cet aspect constructif pour la définition des nombres
+réels. Cependant, la logique classique intervient aussi dans les démonstrations
+mathématiques usuelles. On cherche donc une définition des réels qui permet les
+preuves constructives et le calcul sur les nombres réels d'une part, et qui autorise
+l'utilisation d'une logique classique d'autre part.
 
 \subsubsection{Proposition}
 
-On propose alors une définition qui n'est plus basée sur la coupure de Dedekind, qui est essentiellement non constructive, mais sur les suites de Cauchy. Si on ne s'intéresse pas au constructivisme, ces deux définitions sont équivalentes. En revanche quand on s'y intéresse, seules les suites de Cauchy permettent un calcul des nombres réels. Un autre problème se pose, quand on divise par un nombre : en mathématique, on s'assure que le nombre est différent de zéro pour continuer. En construisant les nombres réels, on exige une preuve que ce nombre est non nul d'une manière qui autorise le calcul de l'inverse.
+On propose alors une définition qui n'est plus basée sur la coupure de Dedekind,
+qui est essentiellement non constructive, mais sur les suites de Cauchy. Si on ne
+s'intéresse pas au constructivisme, ces deux définitions sont équivalentes. En
+revanche quand on s'y intéresse, seules les suites de Cauchy permettent un calcul
+des nombres réels. Un autre problème se pose, quand on divise par un nombre : en
+mathématique, on s'assure que le nombre est différent de zéro pour continuer.
+En construisant les nombres réels, on exige une preuve que ce nombre est non nul
+d'une manière qui autorise le calcul de l'inverse.
 
-La définition des réels contient maintenant des techniques de séparation des preuves constructives et des preuves classiques. Elles utilisent un mécanisme basé sur les monades, un objet mathématique permettant l'utilisation de certains axiomes dans certains théorèmes ou programmes sans mettre en danger la cohérence des autres parties.
+La définition des réels contient maintenant des techniques de séparation des preuves
+constructives et des preuves classiques. Elles utilisent un mécanisme basé sur les
+monades, un objet mathématique permettant l'utilisation de certains axiomes dans
+certains théorèmes ou programmes sans mettre en danger la cohérence des autres parties.
 
 \subsection{Équations différentielles}
 
@@ -94,12 +117,13 @@ bibliothèques sur les suites réelles.
 
 \subsection{Continuité des résultats de \coquille{}}
 
-Dans la continuité du travail réalisé dans le projet \coquille{}, nous avons continué 
-le travail de formalisations de théorèmes usuels en analyse réelle. En particulier, 
-nous avons prouvé la règle de l'Hopital dans de nombreux cas intéressants. Ce résultat 
-permet d'établir des limites de fonctions très simplement. Nous avons également  
-prouvé le théorème de Cauchy dans ces versions les plus simples. Cela devrait permettre 
-de faciliter le travail sur les équations différentielles. 
+Dans la continuité du travail réalisé dans le projet \coquille{}, nous avons
+poursuivi le travail de formalisations de théorèmes usuels en analyse réelle.
+En particulier, nous avons prouvé la règle de l'Hopital dans de nombreux cas
+intéressants. Ce résultat permet d'établir des limites de fonctions très simplement.
+Nous avons également prouvé le théorème de Cauchy -- Lipschitz dans ces versions les
+plus simples. Cela devrait permettre de faciliter le travail sur les équations
+différentielles.
 
 \subsection{Graphes}
 
@@ -132,7 +156,13 @@ sein du laboratoire et les conséquences pratiques :
 
 \subsection{Constructive axiomatic for the real numbers - Coq Workshop}
 
-Le Coq Workshop nous a mis en contact avec les chercheurs les plus au courant du domaine. Une refondation des réels en Coq est un problème important et il était nécessaire à la fois de cerner un peu plus les approches existantes et de présenter la nôtre pour profiter des critiques des chercheurs du domaine. Notamment on a pu connaître les avancées récentes de C-CoRN, une approche des réels constructifs dont le principal inconvénient est sa lourdeur hiérarchique et une gestion moins fine de la distinction classique / constructive.
+Le Coq Workshop nous a mis en contact avec les chercheurs les plus au courant du
+domaine. Une refondation des réels en Coq est un problème important et il était
+nécessaire à la fois de cerner un peu plus les approches existantes et de présenter
+la nôtre pour profiter des critiques des chercheurs du domaine. Notamment on a pu
+connaître les avancées récentes de C-CoRN, une approche des réels constructifs dont
+le principal inconvénient est sa lourdeur hiérarchique et une gestion moins fine
+de la distinction classique / constructive.
 
 \subsection{Using reflection to solve some differential equations - Coq Workshop}
 
