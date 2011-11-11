@@ -62,6 +62,7 @@ let basename_noext filename =
 let mlAccu  = ref ([] : (string * string * dir) list)
 and mliAccu = ref ([] : (string * dir) list)
 and mllibAccu = ref ([] : (string * dir) list)
+and mlpackAccu = ref ([] : (string * dir) list)
 
 (** Coq files specifies on the command line:
     - first string is the full filename, with only its extension removed
@@ -107,11 +108,16 @@ let mkknown () =
 let add_ml_known, iter_ml_known, search_ml_known = mkknown ()
 let add_mli_known, iter_mli_known, search_mli_known = mkknown ()
 let add_mllib_known, _, search_mllib_known = mkknown ()
+let add_mlpack_known, _, search_mlpack_known = mkknown ()
 
 let vKnown = (Hashtbl.create 19 : (string list, string) Hashtbl.t)
 let coqlibKnown = (Hashtbl.create 19 : (string list, unit) Hashtbl.t)
 
 let clash_v = ref ([]: (string list * string list) list)
+
+let error_cannot_parse s (i,j) =
+  Printf.eprintf "File \"%s\", characters %i-%i: Syntax error\n" s i j;
+  exit 1
 
 let warning_module_notfound f s =
   eprintf "*** Warning: in file %s, library " f;
@@ -121,12 +127,12 @@ let warning_module_notfound f s =
 
 let warning_notfound f s =
   eprintf "*** Warning: in file %s, the file " f;
-  eprintf "%s.v is required and has not been found !\n" s;
+  eprintf "%s.v is required and has not been found!\n" s;
   flush stderr
 
 let warning_declare f s =
   eprintf "*** Warning: in file %s, declared ML module " f;
-  eprintf "%s has not been found !\n" s;
+  eprintf "%s has not been found!\n" s;
   flush stderr
 
 let warning_clash file dir =
@@ -226,27 +232,24 @@ let traite_fichier_ML md ext =
     | Some dep -> soustraite_fichier_ML dep md ext
     | None -> autotraite_fichier_ML md ext
 
-let traite_fichier_mllib md ext =
+let traite_fichier_modules md ext =
   try
     let chan = open_in (md ^ ext) in
     let list = mllib_list (Lexing.from_channel chan) in
-    let a_faire = ref "" in
-    let a_faire_opt = ref "" in
-    List.iter
-      (fun str -> match search_ml_known str with
-	 | Some mldir ->
-	     let file = file_name str mldir in
-	     a_faire := !a_faire^" "^file^".cmo";
-	     a_faire_opt := !a_faire_opt^" "^file^".cmx"
-	 | None -> ()) list;
-    (!a_faire, !a_faire_opt)
+    List.fold_left
+      (fun a_faire str -> match search_mlpack_known str with
+	| Some mldir ->
+	  let file = file_name str mldir in
+	  a_faire^" "^file
+	| None ->
+	  match search_ml_known str with
+	    | Some mldir ->
+	      let file = file_name str mldir in
+	      a_faire^" "^file
+	    | None -> a_faire) "" list
   with
-    | Sys_error _ -> ("","")
-    | Syntax_error (i,j) ->
-	Printf.eprintf "File \"%s%s\", characters %i-%i:\nError: Syntax error\n"
-	  md ext i j;
-	exit 1
-
+    | Sys_error _ -> ""
+    | Syntax_error (i,j) -> error_cannot_parse (md^ext) (i,j)
 
 (* Makefile's escaping rules are awful: $ is escaped by doubling and
    other special characters are escaped by backslash prefixing while
@@ -284,6 +287,216 @@ let canonize f =
   match List.filter (fun (_,full) -> f' = full) !vAccu with
     | (f,_) :: _ -> escape f
     | _ -> escape f
+
+let traite_fichier_Coq verbose f =
+  try
+    let chan = open_in f in
+    let buf = Lexing.from_channel chan in
+    let deja_vu_v = ref ([]: string list list)
+    and deja_vu_ml = ref ([] : string list) in
+    try
+      while true do
+      	let tok = coq_action buf in
+	match tok with
+	  | Require strl ->
+	      List.iter (fun str ->
+		if not (List.mem str !deja_vu_v) then begin
+	          addQueue deja_vu_v str;
+                  try
+                    let file_str = safe_assoc verbose f str in
+                    printf " %s%s" (canonize file_str) !suffixe
+                  with Not_found ->
+		    if verbose && not (Hashtbl.mem coqlibKnown str) then
+                      warning_module_notfound f str
+       		end) strl
+	  | RequireString s ->
+	      let str = Filename.basename s in
+	      if not (List.mem [str] !deja_vu_v) then begin
+	        addQueue deja_vu_v [str];
+                try
+                  let file_str = Hashtbl.find vKnown [str] in
+                  printf " %s%s" (canonize file_str) !suffixe
+                with Not_found ->
+		  if not (Hashtbl.mem coqlibKnown [str]) then
+		    warning_notfound f s
+       	      end
+	  | Declare sl ->
+	      let declare suff dir s =
+		let base = file_name s dir in
+		let opt = if !option_natdynlk then " "^base^".cmxs" else "" in
+		printf " %s%s%s" (escape base) suff opt
+	      in
+	      let decl str =
+                let s = basename_noext str in
+		if not (List.mem s !deja_vu_ml) then begin
+		  addQueue deja_vu_ml s;
+		  match search_mllib_known s with
+		    | Some mldir -> declare ".cma" mldir s
+		    | None ->
+		      match search_mlpack_known s with
+			| Some mldir -> declare ".cmo" mldir s
+			| None ->
+			  match search_ml_known s with
+			    | Some mldir -> declare ".cmo" mldir s
+			    | None -> warning_declare f str
+		end
+	      in List.iter decl sl
+	  | Load str ->
+	      let str = Filename.basename str in
+	      if not (List.mem [str] !deja_vu_v) then begin
+	        addQueue deja_vu_v [str];
+                try
+                  let file_str = Hashtbl.find vKnown [str] in
+                  printf " %s.v" (canonize file_str)
+                with Not_found -> ()
+       	      end
+          | AddLoadPath _ | AddRecLoadPath _ -> (* TODO *) ()
+      done
+    with Fin_fichier -> close_in chan
+       | Syntax_error (i,j) -> close_in chan; error_cannot_parse f (i,j)
+  with Sys_error _ -> ()
+
+
+let mL_dependencies () =
+  List.iter
+    (fun (name,ext,dirname) ->
+       let fullname = file_name name dirname in
+       let (dep,dep_opt) = traite_fichier_ML fullname ext in
+       let intf = match search_mli_known name with
+	 | None -> ""
+	 | Some mldir -> " "^(file_name name mldir)^".cmi"
+       in
+       let efullname = escape fullname in
+       printf "%s.cmo:%s%s\n" efullname dep intf;
+       printf "%s.cmx:%s%s\n" efullname dep_opt intf;
+       flush stdout)
+    (List.rev !mlAccu);
+  List.iter
+    (fun (name,dirname) ->
+       let fullname = file_name name dirname in
+       let (dep,_) = traite_fichier_ML fullname ".mli" in
+       printf "%s.cmi:%s\n" (escape fullname) dep;
+       flush stdout)
+    (List.rev !mliAccu);
+  List.iter
+    (fun (name,dirname) ->
+       let fullname = file_name name dirname in
+       let dep = traite_fichier_modules fullname ".mllib" in
+       let efullname = escape fullname in
+       printf "%s_MLLIB_DEPENDENCIES:=%s\n" efullname dep;
+       printf "%s.cma:$(addsuffix .cmo,$(%s_MLLIB_DEPENDENCIES))\n" efullname efullname;
+       printf "%s.cmxa %s.cmxs:$(addsuffix .cmx,$(%s_MLLIB_DEPENDENCIES))\n" efullname efullname efullname;
+       flush stdout)
+    (List.rev !mllibAccu);
+  List.iter
+    (fun (name,dirname) ->
+       let fullname = file_name name dirname in
+       let dep = traite_fichier_modules fullname ".mlpack" in
+       let efullname = escape fullname in
+       printf "%s_MLPACK_DEPENDENCIES:=%s\n" efullname dep;
+       printf "%s.cmo:$(addsuffix .cmo,$(%s_MLPACK_DEPENDENCIES))\n" efullname efullname;
+       printf "%s.cmx %s.cmxs:$(addsuffix .cmx,$(%s_MLPACK_DEPENDENCIES))\n" efullname efullname efullname;
+       flush stdout)
+    (List.rev !mlpackAccu)
+
+let coq_dependencies () =
+  List.iter
+    (fun (name,_) ->
+       let ename = escape name in
+       let glob = if !option_noglob then "" else " "^ename^".glob" in
+       printf "%s%s%s: %s.v" ename !suffixe glob ename;
+       traite_fichier_Coq true (name ^ ".v");
+       printf "\n";
+       flush stdout)
+    (List.rev !vAccu)
+
+
+let rec suffixes = function
+  | [] -> assert false
+  | [name] -> [[name]]
+  | dir::suffix as l -> l::suffixes suffix
+
+let add_known phys_dir log_dir f =
+  match get_extension f [".v";".ml";".mli";".ml4";".mllib";".mlpack"] with
+    | (basename,".v") ->
+	let name = log_dir@[basename] in
+	let file = phys_dir//basename in
+	let paths = suffixes name in
+	List.iter
+	  (fun n -> safe_hash_add clash_v vKnown (n,file)) paths
+    | (basename,(".ml"|".ml4")) -> add_ml_known basename (Some phys_dir)
+    | (basename,".mli") -> add_mli_known basename (Some phys_dir)
+    | (basename,".mllib") -> add_mllib_known basename (Some phys_dir)
+    | (basename,".mlpack") -> add_mlpack_known basename (Some phys_dir)
+    | _ -> ()
+
+(* Visits all the directories under [dir], including [dir],
+   or just [dir] if [recur=false] *)
+
+let rec add_directory recur add_file phys_dir log_dir =
+  let dirh = opendir phys_dir in
+  try
+    while true do
+      let f = readdir dirh in
+      (* we avoid . .. and all hidden files and subdirs (e.g. .svn, _darcs) *)
+      if f.[0] <> '.' && f.[0] <> '_' then
+        let phys_f = if phys_dir = "." then f else phys_dir//f in
+	match try (stat phys_f).st_kind with _ -> S_BLK with
+	  | S_DIR when recur ->
+	      if List.mem phys_f !norecdir_list then ()
+	      else
+		add_directory recur add_file phys_f (log_dir@[f])
+	  | S_REG -> add_file phys_dir log_dir f
+	  | _ -> ()
+    done
+  with End_of_file -> closedir dirh
+
+let add_dir add_file phys_dir log_dir =
+  try add_directory false add_file phys_dir log_dir with Unix_error _ -> ()
+
+let add_rec_dir add_file phys_dir log_dir =
+  handle_unix_error (add_directory true add_file phys_dir) log_dir
+
+let rec treat_file old_dirname old_name =
+  let name = Filename.basename old_name
+  and new_dirname = Filename.dirname old_name in
+  let dirname =
+    match (old_dirname,new_dirname) with
+      | (d, ".") -> d
+      | (None,d) -> Some d
+      | (Some d1,d2) -> Some (d1//d2)
+  in
+  let complete_name = file_name name dirname in
+  match try (stat complete_name).st_kind with _ -> S_BLK with
+    | S_DIR ->
+	(if name.[0] <> '.' then
+	   let dir=opendir complete_name in
+           let newdirname =
+             match dirname with
+               | None -> name
+               | Some d -> d//name
+	   in
+	   try
+	     while true do treat_file (Some newdirname) (readdir dir) done
+	   with End_of_file -> closedir dir)
+    | S_REG ->
+	(match get_extension name [".v";".ml";".mli";".ml4";".mllib";".mlpack"] with
+	   | (base,".v") ->
+	       let name = file_name base dirname
+	       and absname = absolute_file_name base dirname in
+	       addQueue vAccu (name, absname)
+	   | (base,(".ml"|".ml4" as ext)) -> addQueue mlAccu (base,ext,dirname)
+	   | (base,".mli") -> addQueue mliAccu (base,dirname)
+	   | (base,".mllib") -> addQueue mllibAccu (base,dirname)
+	   | (base,".mlpack") -> addQueue mlpackAccu (base,dirname)
+	   | _ -> ())
+    | _ -> ()
+
+
+
+
+
+(** Dumping a dependency graph **)
 
 let treat_coq_file verbose f =
   try
@@ -366,216 +579,60 @@ let treat_coq_file verbose f =
     loop loop_body []
   with Sys_error _ -> []
 
-let traite_fichier_Coq verbose f =
-  try
-    let chan = open_in f in
-    let buf = Lexing.from_channel chan in
-    let deja_vu_v = ref ([]: string list list)
-    and deja_vu_ml = ref ([] : string list) in
-    try
-      while true do
-      	let tok = coq_action buf in
-	match tok with
-	  | Require strl ->
-	      List.iter (fun str ->
-		if not (List.mem str !deja_vu_v) then begin
-	          addQueue deja_vu_v str;
-                  try
-                    let file_str = safe_assoc verbose f str in
-                    printf " %s%s" (canonize file_str) !suffixe
-                  with Not_found ->
-		    if verbose && not (Hashtbl.mem coqlibKnown str) then
-                      warning_module_notfound f str
-       		end) strl
-	  | RequireString s ->
-	      let str = Filename.basename s in
-	      if not (List.mem [str] !deja_vu_v) then begin
-	        addQueue deja_vu_v [str];
-                try
-                  let file_str = Hashtbl.find vKnown [str] in
-                  printf " %s%s" (canonize file_str) !suffixe
-                with Not_found ->
-		  if not (Hashtbl.mem coqlibKnown [str]) then
-		    warning_notfound f s
-       	      end
-	  | Declare sl ->
-	      let declare suff dir s =
-		let base = file_name s dir in
-		let opt = if !option_natdynlk then " "^base^".cmxs" else "" in
-		printf " %s%s%s" (escape base) suff opt
-	      in
-	      let decl str =
-                let s = basename_noext str in
-		if not (List.mem s !deja_vu_ml) then begin
-		  addQueue deja_vu_ml s;
-		  match search_mllib_known s with
-		    | Some mldir -> declare ".cma" mldir s
-		    | None ->
-			match search_ml_known s with
-			  | Some mldir -> declare ".cmo" mldir s
-			  | None -> warning_declare f str
-		end
-	      in List.iter decl sl
-	  | Load str ->
-	      let str = Filename.basename str in
-	      if not (List.mem [str] !deja_vu_v) then begin
-	        addQueue deja_vu_v [str];
-                try
-                  let file_str = Hashtbl.find vKnown [str] in
-                  printf " %s.v" (canonize file_str)
-                with Not_found -> ()
-       	      end
-      done
-    with Fin_fichier -> ();
-      close_in chan
-  with Sys_error _ -> ()
 
+type graph =
+  | Element of string
+  | Subgraph of string * graph list
 
-let mL_dependencies () =
-  List.iter
-    (fun (name,ext,dirname) ->
-       let fullname = file_name name dirname in
-       let (dep,dep_opt) = traite_fichier_ML fullname ext in
-       let intf = match search_mli_known name with
-	 | None -> ""
-	 | Some mldir -> " "^(file_name name mldir)^".cmi"
-       in
-       let efullname = escape fullname in
-       printf "%s.cmo:%s%s\n" efullname dep intf;
-       printf "%s.cmx:%s%s\n" efullname dep_opt intf;
-       flush stdout)
-    (List.rev !mlAccu);
-  List.iter
-    (fun (name,dirname) ->
-       let fullname = file_name name dirname in
-       let (dep,_) = traite_fichier_ML fullname ".mli" in
-       printf "%s.cmi:%s\n" (escape fullname) dep;
-       flush stdout)
-    (List.rev !mliAccu);
-  List.iter
-    (fun (name,dirname) ->
-       let fullname = file_name name dirname in
-       let (dep,dep_opt) = traite_fichier_mllib fullname ".mllib" in
-       let efullname = escape fullname in
-       printf "%s.cma:%s\n" efullname dep;
-       printf "%s.cmxa %s.cmxs:%s\n" efullname efullname dep_opt;
-       flush stdout)
-    (List.rev !mllibAccu)
+let rec insert_graph name path graphs = match path, graphs with
+  | [] , graphs -> (Element name) :: graphs
+  | (box :: boxes), (Subgraph (hd, names)) :: tl when hd = box ->
+    Subgraph (hd, insert_graph name boxes names) :: tl
+  | _, hd :: tl -> hd :: (insert_graph name path tl)
+  | (box :: boxes), [] -> [ Subgraph (box, insert_graph name boxes []) ]
 
-let coq_dependencies () =
-  List.iter
-    (fun (name,_) ->
-       let ename = escape name in
-       let glob = if !option_noglob then "" else " "^ename^".glob" in
-       printf "%s%s%s: %s.v" ename !suffixe glob ename;
-       traite_fichier_Coq true (name ^ ".v");
-       printf "\n";
-       flush stdout)
-    (List.rev !vAccu)
+let rec print_graphs = function
+  | [] -> ()
+  | (Element str) :: tl -> printf "%s\n" str; print_graphs tl
+  | Subgraph (box, names) :: tl ->
+    printf "subgraph cluster%s {\n label=\"%s\"" box box;
+    print_graphs names;
+    printf "}\n";
+    print_graphs tl
 
-let coq_dependencies_dump dumprec =
+let rec pop_common_prefix = function
+  | [Subgraph (_, graphs)] -> pop_common_prefix graphs
+  | graphs -> graphs
+
+let split_path = Str.split (Str.regexp "/")
+
+let rec pop_last = function
+  | [] -> []
+  | [ x ] -> []
+  | x :: xs -> x :: pop_last xs
+
+let get_boxes path = pop_last (split_path path)
+
+let insert_raw_graph file =
+  insert_graph (basename_noext file) (get_boxes file)
+
+let rec get_dependencies name args =
+  let ename = basename_noext name in
+  let vdep  = treat_coq_file true (name ^ ".v") in
+  List.fold_left
+    (fun (deps, graphs, alseen) (dep, _) ->
+    if not (List.mem dep alseen)
+    then get_dependencies dep ((ename, dep) :: deps, insert_raw_graph dep graphs, dep :: alseen)
+    else (deps, graphs, alseen))
+  args vdep
+
+let coq_dependencies_dump dumpboxes =
+  let (deps, graphs, _) =
+    List.fold_left (fun ih (name, _) -> get_dependencies name ih)
+    ([], List.fold_left (fun ih (file, _) -> insert_raw_graph file ih) [] !vAccu,
+    List.map fst !vAccu) !vAccu
+  in
   printf "digraph dependencies {\n"; flush stdout;
-  let already_seen = ref (List.map fst !vAccu) in
-  let rec print_dependencies name =
-    let ename = basename_noext name in
-    let vdep  = treat_coq_file true (name ^ ".v") in
-      List.iter
-        (fun (dep, _) -> printf "%s -> %s\n" (basename_noext dep) ename;
-        if not (List.mem dep !already_seen) && dumprec
-        then (already_seen := dep :: !already_seen; print_dependencies dep)
-        else already_seen := dep :: !already_seen)
-      vdep; flush stdout
-  in
-  List.iter (fun (name, _) -> print_dependencies name) !vAccu;
-(*
-      let ename = basename_noext name in
-      let vdep  = treat_coq_file true (name ^ ".v") in
-      List.iter
-        (fun (dep, suf) -> printf "%s -> %s\n" (basename_noext dep) ename;
-        (if not (List.mem dep !already_seen)
-        then vAccu := (dep, suf) :: !vAccu);
-        already_seen := dep :: !already_seen
-        )
-        vdep;
-      flush stdout)
-    !vAccu;
-*)  printf "}\n"; flush stdout
-
-let rec suffixes = function
-  | [] -> assert false
-  | [name] -> [[name]]
-  | dir::suffix as l -> l::suffixes suffix
-
-let add_known phys_dir log_dir f =
-  match get_extension f [".v";".ml";".mli";".ml4";".mllib"] with
-    | (basename,".v") ->
-	let name = log_dir@[basename] in
-	let file = phys_dir//basename in
-	let paths = suffixes name in
-	List.iter
-	  (fun n -> safe_hash_add clash_v vKnown (n,file)) paths
-    | (basename,(".ml"|".ml4")) -> add_ml_known basename (Some phys_dir)
-    | (basename,".mli") -> add_mli_known basename (Some phys_dir)
-    | (basename,".mllib") -> add_mllib_known basename (Some phys_dir)
-    | _ -> ()
-
-(* Visits all the directories under [dir], including [dir],
-   or just [dir] if [recur=false] *)
-
-let rec add_directory recur add_file phys_dir log_dir =
-  let dirh = opendir phys_dir in
-  try
-    while true do
-      let f = readdir dirh in
-      (* we avoid . .. and all hidden files and subdirs (e.g. .svn, _darcs) *)
-      if f.[0] <> '.' && f.[0] <> '_' then
-        let phys_f = if phys_dir = "." then f else phys_dir//f in
-	match try (stat phys_f).st_kind with _ -> S_BLK with
-	  | S_DIR when recur ->
-	      if List.mem phys_f !norecdir_list then ()
-	      else
-		add_directory recur add_file phys_f (log_dir@[f])
-	  | S_REG -> add_file phys_dir log_dir f
-	  | _ -> ()
-    done
-  with End_of_file -> closedir dirh
-
-let add_dir add_file phys_dir log_dir =
-  try add_directory false add_file phys_dir log_dir with Unix_error _ -> ()
-
-let add_rec_dir add_file phys_dir log_dir =
-  handle_unix_error (add_directory true add_file phys_dir) log_dir
-
-let rec treat_file old_dirname old_name =
-  let name = Filename.basename old_name
-  and new_dirname = Filename.dirname old_name in
-  let dirname =
-    match (old_dirname,new_dirname) with
-      | (d, ".") -> d
-      | (None,d) -> Some d
-      | (Some d1,d2) -> Some (d1//d2)
-  in
-  let complete_name = file_name name dirname in
-  match try (stat complete_name).st_kind with _ -> S_BLK with
-    | S_DIR ->
-	(if name.[0] <> '.' then
-	   let dir=opendir complete_name in
-           let newdirname =
-             match dirname with
-               | None -> name
-               | Some d -> d//name
-	   in
-	   try
-	     while true do treat_file (Some newdirname) (readdir dir) done
-	   with End_of_file -> closedir dir)
-    | S_REG ->
-	(match get_extension name [".v";".ml";".mli";".ml4";".mllib"] with
-	   | (base,".v") ->
-	       let name = file_name base dirname
-	       and absname = absolute_file_name base dirname in
-	       addQueue vAccu (name, absname)
-	   | (base,(".ml"|".ml4" as ext)) -> addQueue mlAccu (base,ext,dirname)
-	   | (base,".mli") -> addQueue mliAccu (base,dirname)
-	   | (base,".mllib") -> addQueue mllibAccu (base,dirname)
-	   | _ -> ())
-    | _ -> ()
+  List.iter (fun (name, dep) -> printf "%s -> %s\n" (basename_noext dep) name) deps;
+  if dumpboxes then print_graphs (pop_common_prefix graphs);
+  printf "}\n"

@@ -1,0 +1,11 @@
+I. How to get a working graph generator?
+
+1. Download coq's trunk
+2. Put the ml/mli files in coq's trunk tools/ directory
+3. Make tools
+4. Your modifier version of coqdepend is in coq's trunk bin/ directory
+
+II. How to get a nice graph?
+
+1. Run coqdep -dumpgraph
+2. Use tred to get rid of redundant edges
