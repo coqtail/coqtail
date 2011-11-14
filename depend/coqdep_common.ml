@@ -623,7 +623,7 @@ let rec get_dependencies name args =
     (fun (deps, graphs, alseen) (dep, _) ->
     if not (List.mem dep alseen)
     then get_dependencies dep ((ename, dep) :: deps, insert_raw_graph dep graphs, dep :: alseen)
-    else (deps, graphs, alseen))
+    else ((ename, dep) :: deps, graphs, alseen))
   args vdep
 
 let coq_dependencies_dump dumpboxes =

@@ -4,7 +4,7 @@ I. How to get a working graph generator?
 2. Replace [Makefile.build] in coq's trunk root directory
 3. Replace [coqdep_common(ml/mli), coqdep.ml] in coq's trunk tools/ directory
 3. Make tools
-4. Your modifier version of coqdep is in coq's trunk bin/ directory
+4. Your modified version of coqdep is in coq's trunk bin/ directory
 
 II. How to get a nice graph?
 
