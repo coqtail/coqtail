@@ -633,6 +633,8 @@ let coq_dependencies_dump dumpboxes =
     List.map fst !vAccu) !vAccu
   in
   printf "digraph dependencies {\n"; flush stdout;
+  if dumpboxes
+  then print_graphs (pop_common_prefix graphs)
+  else List.iter (fun (name, _) -> printf "%s\n" (basename_noext name)) !vAccu;
   List.iter (fun (name, dep) -> printf "%s -> %s\n" (basename_noext dep) name) deps;
-  if dumpboxes then print_graphs (pop_common_prefix graphs);
   printf "}\n"
