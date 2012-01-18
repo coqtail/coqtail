@@ -2,6 +2,12 @@
   include('handleurl.php');
   include('top.inc.php');
 
+if (1326866399 < time() && time() < 1326952800)
+{
+
+}
+else
+{
   if ($pagename == "home") {
     if ($lang == "en") {
       ?>
@@ -197,5 +203,6 @@
      }
     }
   }
-  include('foot.inc.php')
+  include('foot.inc.php');
+}
 ?>

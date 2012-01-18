@@ -30,6 +30,29 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
     })();
   </script>
 </head>
+<?php
+if (1326866399 < time() && time() < 1326952800)
+{
+?>
+<body style="background-color:black">
+<div style="margin:auto; border:1px solid #FFFFFF; width:500px; color:#FFFFFF; padding:20px">
+
+<p>Le site de Coqtail est temporairement inaccessible en signe d'opposition
+à SOPA et PIPA. Plus d'information sur ces lois de censure du net est
+disponible <a href="http://fr.wikipedia.org/wiki/Stop_Online_Piracy_Act">ici</a></p>
+
+<p>Coqtail's website is temporarily down in sign of protest against SOPA
+and PIPA. For more information on these bills bringing censorship to the
+web, one can go <a href="http://en.wikipedia.org/wiki/Stop_Online_Piracy_Act">here</a></p>
+
+</div>
+</body>
+</html>
+<?
+}
+else
+{
+?>
 <body>
 <div id="container">
 
@@ -72,3 +95,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
   </div>
 
   <div id="middle">
+<?php
+}
+?>
