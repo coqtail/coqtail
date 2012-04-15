@@ -13,16 +13,17 @@ else
       ?>
 
       <div id="news"><h3>News</h3>
-      <p>[08/26] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq workshop</a> on a constructive axiomatics for &#x211d; and resolution of differential equations using reflection</p>
-      <p>[07/31] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> on Coq with power series.</p>
-      <p>[2010-11] COQTAIL is now a junior lab funded by the <a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
-      <p>[03/07] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
+      <p>[2012-03-12] Proof of Lagrange's four-square theorem.</p>
+      <p>[2011-08-26] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq work&shy;shop</a> on a constructive axiomatics for &#x211d; and resolution of differential equations using reflection</p>
+      <p>[2011-07-31] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> on Coq with power series.</p>
+      <p>[2010-2011] COQTAIL is now a junior lab funded by the <a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
+      <p>[2010-03-07] The first release is now available! You can download it <a href="http://sourceforge.net/projects/coqtail/files/">here</a>.</p>
       </div>
 
       <h2>Origin &amp; Objectives</h2>
 
       <p>The <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> project is the biological
-      son of the workpackage `Proofs` of the <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>
+      son of the workpackage ‘Proofs’ of the <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>
       project. It is therefore based on all the results obtained during the development of COQUILLE.</p>
 
       <p>In addition to implementing tools dedicated to the easy formalization of mathematics as we see
@@ -42,15 +43,16 @@ else
     } elseif ($lang == "fr") {
       ?>
       <div id="news"><h3>News</h3>
-      <p>[26 août] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq workshop</a> sur une axiomatique constructive pour &#x211d; et la résolution d'équations différentielles par reflection</p>
-      <p>[31 juillet] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> sur les séries entières en Coq.</p>
-      <p>[2010-11] COQTAIL est maintenant un laboratoire junior de l'<a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
-      <p>[07 avril] La première révision est maintenant disponible ! Vous pouvez la télécharger <a href="http://sourceforge.net/projects/coqtail/files/">ici</a>.</p>
+      <p>[2012-03-12] Preuve du théorème des quatres carrés de Lagrange</p>
+      <p>[26 août 2011] Talks @ <a href="http://www.cs.ru.nl/~spitters/coqw.html">Coq workshop</a> sur une axiomatique constructive pour &#x211d; et la réso&shy;lution d'équations diffé&shy;ren&shy;tielles par reflection</p>
+      <p>[31 juillet 2011] Talk @ <a href="http://www.uc.pt/en/congressos/thedu">THedu</a> sur les séries entières en Coq.</p>
+      <p>[2010-2011] COQTAIL est main&shy;tenant un laboratoire junior de l'<a href="http://www.ens-lyon.fr">ENS Lyon</a>.</p>
+      <p>[07 avril 2012] La première révi&shy;sion est maintenant disponible ! Vous pouvez la télécharger <a href="http://sourceforge.net/projects/coqtail/files/">ici</a>.</p>
       </div>
 
       <h2>Origine &amp; Objectifs</h2>
 
-      <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail `Preuves` du projet
+      <p>Le projet <a href="https://sourceforge.net/projects/coqtail/">COQTAIL</a> est le fils biologique du groupe de travail « Preuves » du projet
       <a href="http://graal.ens-lyon.fr/coquille">COQUILLE</a>. Il se fonde donc sur
       l'intégralité des résultats obtenus lors du semestre de développement de COQUILLE.</p>
 
@@ -123,6 +125,7 @@ else
         <li>The reals axioms imply Markov principle</li>
         <li>Basel problem (<em>1+1/2²+1/3²+1/4²+...= &pi;²/6</em>)</li>
         <li>Stirling Formula (approximation for <em>n!</em>)</li>
+	<li>Lagrange's four-square theorem</li>
       </ul>
 
       <h2>New libraries</h2>
@@ -143,6 +146,7 @@ else
         <li>L'axiomatique des réels implique le principe de Markov</li>
         <li>Problème de Bâle (<em>1+1/2²+1/3²+1/4²+...= &pi;²/6</em>)</li>
         <li>Formule de Stirling (approximation de <em>n!</em>)</li>
+	<li>Théorème des quatre carrés de Lagrange</li>
       </ul>
 
       <h2>De nouvelles bibliothèques</h2>
