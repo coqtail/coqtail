@@ -404,7 +404,7 @@ let coq_dependencies () =
     (fun (name,_) ->
        let ename = escape name in
        let glob = if !option_noglob then "" else " "^ename^".glob" in
-       printf "%s%s%s: %s.v" ename !suffixe glob ename;
+       printf "%s%s%s %s.v.beautified: %s.v" ename !suffixe glob ename ename;
        traite_fichier_Coq true (name ^ ".v");
        printf "\n";
        flush stdout)
@@ -591,14 +591,16 @@ let rec insert_graph name path graphs = match path, graphs with
   | _, hd :: tl -> hd :: (insert_graph name path tl)
   | (box :: boxes), [] -> [ Subgraph (box, insert_graph name boxes []) ]
 
-let rec print_graphs = function
-  | [] -> ()
-  | (Element str) :: tl -> printf "%s\n" str; print_graphs tl
+let print_graphs graph =
+  let rec print_aux name = function
+  | [] -> name
+  | (Element str) :: tl -> printf "%s\n" str; print_aux name tl
   | Subgraph (box, names) :: tl ->
-    printf "subgraph cluster%s {\n label=\"%s\"" box box;
-    print_graphs names;
-    printf "}\n";
-    print_graphs tl
+    printf "subgraph cluster%n {\n label=\"%s\"" name box;
+    let name = print_aux (name + 1) names in
+    printf "}\n"; print_aux name tl
+  in
+  let _ = print_aux 0 graph in ()
 
 let rec pop_common_prefix = function
   | [Subgraph (_, graphs)] -> pop_common_prefix graphs

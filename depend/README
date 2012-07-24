@@ -12,7 +12,7 @@ II. How to get a nice graph?
 
 1. Run [coqdep -dumpgraph] or [coqdep -dumpgraph boxes]
 2. Use tred (graphviz) to get rid of redundant edges
-3. To get coqtail's dependencies graph, go to coqtail's
-   src/ directory, run [./generate_makedep.sh] which will
-   followed by [./Dependencies]. The result is in [graph.pdf]
+3. To get coqtail's dependencies' graph, go to coqtail's
+   src/ directory, run [./generate_makedep.sh] followed by
+   [./dependencies]. The result is in [graph.pdf]
 
