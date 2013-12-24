@@ -1,0 +1,4 @@
+## This file allows to join the different accounts of a same person.
+## Cf for instance: git shortlog -nse. More details via: man git shortlog
+
+Pierre-Marie Pédrot <pierre-marie.pedrot@inria.fr> ppedrot <ppedrot@7194d10d-a3ed-4628-aea2-7b4a0dfde000>
