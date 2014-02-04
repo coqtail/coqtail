@@ -17,7 +17,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <link href="main.css" rel="stylesheet" type="text/css" media="all" />
   <link href="doc/coqdoc.css" rel="stylesheet" type="text/css" media="all" />
-
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  
   <title>Coqtail - site officiel</title>
   <script type="text/javascript">
     var _gaq = _gaq || [];
