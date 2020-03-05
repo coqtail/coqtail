@@ -2,6 +2,9 @@
 *.d
 *.d.raw
 *.vo
+*.vok
+*.vos
+*.lia.cache
 *.cm*
 *.annot
 *.spit
