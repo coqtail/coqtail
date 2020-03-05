@@ -1,8 +1,14 @@
-# Requirements
+# Coqtail
 
-`master` is developed with Coq 8.11.0, but the following tags point
-to snapshots for different version of Coq, which should cover 8.5 to
-8.11.
+[Coqtail](https://coqtail.github.io/index.html) is a library of
+mathematical theorems and tools proved inside the Coq proof assistant.
+Results range mostly from arithmetic to real and complex analysis.
+
+## Requirements
+
+`master` is developed with Coq 8.11.0, which is its only requirement,
+but the following git tags point to snapshots for different versions
+of Coq, which should cover most versions from 8.5 to 8.11.
 
 - tag `v8.6.1` for Coq 8.5pl3 and Coq 8.6.1
 - tag `v8.7.2` for Coq 8.7.2
@@ -16,13 +22,13 @@ that those tags are for backward compatibility only, there is no
 intention of maintaining them as branches: use master instead for
 development.
 
-# Compiling
+## Compiling
 
 Running `cd src; make` should suffice. It uses a `_CoqProject` file,
 which should also allow you to use coqide and proofgeneral with no
 further configuration.
 
-# Developer's todo list
+## Developer's todo list
 
 Big things:
 
