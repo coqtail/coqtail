@@ -36,7 +36,6 @@ Lemmas to prove:
 
 Maintenance:
 
-- Add a "public" README at the root directory
 - Check for commented lemmas (and admits)
 - Remove useless "Require"s
 - Check for admits (run "./todos.sh").
