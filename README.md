@@ -42,6 +42,8 @@ Lemmas to prove:
 
 Maintenance:
 
+- Use -Q instead of -R and fix the resulting loadpath problems
+- Opam package for `make install`
 - Check for commented lemmas (and admits)
 - Remove useless "Require"s
 - Check for admits (run "./todos.sh").
