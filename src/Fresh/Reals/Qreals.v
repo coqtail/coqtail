@@ -1,53 +1,91 @@
 Require Raxiom.
-Require Import ZArith.
-Require Import Max.
+Require Import Arith QArith Qabs Max Qminmax.
+Require Import Lia Lra.
 
-(* (Tentative of) instantiation of real numbers without using Coq's stdlib
-note that this work may already completed at:
-https://coq.inria.fr/distrib/current/stdlib/Coq.Reals.ConstructiveCauchyReals.html
-but there may be subtle differences
-*)
+(* changer le nom Qreals est deja utilisé dans la stdlib *)
+(* (Tentative of) instantiation of real numbers without using Coq's stdlib *)
 
-(* We use sequences of the form (z_n/2^n) so the property "Zseq_Cauchy" is quite verbose *)
+Open Scope Q_scope.
 
-Definition pow2 : nat -> positive := fix f n := match n with O => xH |  S n' => xO (f n') end.
+Definition cauchy (a : nat -> Q) : Prop :=
+  forall eps : Q,
+    0 < eps ->
+    exists N : nat,
+    forall p q,
+      le N p -> le N q ->
+      Qabs (a p - a q) <= eps.
 
-Definition Zseq_Cauchy (Un : nat -> Z) : Type := forall neps : nat,
-  {N : nat & forall p q, (N <= p)%nat -> (N <= q)%nat -> 
-    (
-      Zneg (pow2 p * pow2 q)  <=
-      ((Un p) * Zpos (pow2 q) - (Un q) * Zpos (pow2 p)) * Zpos (pow2 neps) <=
-      Zpos (pow2 p * pow2 q)
-    )%Z
-  }.
+(* Definition cauchy_prop (a : nat -> Prop) : Prop := *)
+(*   exists N, forall p q, le N p -> le N q -> a p <-> a q. *)
+
+Definition cauchy_continuous1 (f : Q -> Q) :=
+  forall a, cauchy a -> cauchy (fun n => f (a n)).
+
+Definition cauchy_continuous2 (f : Q -> Q -> Q) :=
+  forall a b, cauchy a -> cauchy b -> cauchy (fun n => f (a n) (b n)).
+
+Lemma const_cauchy x : cauchy (fun _ => x). Abort.
+Lemma Qopp_cauchy : cauchy_continuous1 Qopp. Abort.
+Lemma Qabs_cauchy : cauchy_continuous1 Qabs. Abort.
+Lemma Qplus_cauchy : cauchy_continuous2 Qplus. Abort.
+Lemma Qmult_cauchy : cauchy_continuous2 Qmult. Abort.
+
+Definition strong_le_seq (a b : nat -> Q) : Prop := exists N, forall n, le N n -> a n <= b n.
+Definition pos (a : nat -> Q) : Prop := exists q, 0 < q /\ strong_le_seq (fun _ => q) a.
 
 Module Rrealize : Raxiom.CReals.
   (*Inductive _R : Type := Rcauchy : forall Un, Zseq_Cauchy Un -> _R.*)
-  
-  Record _R : Type := Rdef {
-    Rseq : nat -> Z;
-    Rcauchy : Zseq_Cauchy Rseq
-  }.
-  
-  Definition R := _R.
-  
-  Program Definition Const (c : Z) := Rdef (fun n => (c * Zpos (pow2 n))%Z) _.
+
+  Record R_ : Type :=
+    Rdef { approx : nat -> Q;
+           R_cauchy : cauchy approx }.
+
+  Definition R := R_.
+
+  Ltac qelim :=
+    repeat
+      match goal with
+      | a : Q |- _ => let a1 := fresh a in destruct a as [a a1]
+      end;
+    unfold Qminus, Qopp, Qmult, Qplus, Qabs, Qdiv, Qinv, Qlt, Qle in *; simpl in *.
+
+  Program Definition Q2R (x : Q) := Rdef (fun _ => x) _.
   Next Obligation.
   Proof.
-    intros neps.
+    intros eps Heps.
     exists O; intros p q _ _.
-    repeat rewrite <- Zmult_assoc.
-    rewrite (Zmult_comm (Zpos (pow2 p))).
-    rewrite Zminus_diag, Zmult_0_l.
-    split.
-     apply Zlt_le_weak, Zlt_neg_0.
-     apply Zle_0_pos.
+    ring_simplify (x - x).
+    qelim.
+    lia.
   Qed.
-  
-  Definition R0 := Const Z0.
-  Definition R1 := Const 1%Z.
-  
-  Program Definition Radd a b := Rdef (fun n => (Rseq a n + Rseq b n)%Z) _.
+
+  Definition R0 := Q2R 0.
+  Definition R1 := Q2R 1.
+
+  Instance Qle_Setoid : PreOrder Qle. Admitted.
+  Instance Qlt_Setoid : StrictOrder Qle. Admitted.
+  Instance Qplus_Qle : Proper (Qle ==> Qle ==> Qle) Qplus. Admitted.
+
+  Lemma eps_split a b ε : a <= ε / 2 -> b <= ε / 2 -> a + b <= ε.
+  Proof.
+    intros -> ->. qelim. lia.
+  Qed.
+
+  Lemma Qmult_pos (a b : Q) : 0 < a -> 0 < b -> 0 < a * b. Admitted.
+  Lemma Qdiv_pos (a b : Q) : 0 < a -> 0 < b -> 0 < a / b. Admitted.
+  (* Lemma Qplus_pos (a b : Q) : 0 < a -> 0 < b -> 0 < a + b. Admitted. *)
+  Lemma Qmax_pos_l (a b : Q) : 0 < a -> 0 < Qmax a b. Admitted.
+  Lemma Qmax_pos_r (a b : Q) : 0 < b -> 0 < Qmax a b. Admitted.
+  Lemma Qplus_pos_l (a b : Q) : 0 < a -> 0 <= b -> 0 < a + b. Admitted.
+  Lemma Qplus_pos_r (a b : Q) : 0 <= a -> 0 < b -> 0 < a + b. Admitted.
+  Lemma Qplus_pos' (a b : Q) : 0 <= a -> 0 <= b -> 0 <= a + b. Admitted.
+  Lemma pos_pos' (a : Q) : 0 < a -> 0 <= a. Admitted.
+  Lemma Zpos_pos (d n : positive) : 0 < Zpos d # n. Admitted.
+  Lemma Qabs_pos' (a : Q) : 0 <= Qabs a. Admitted.
+  Lemma Qmult_Qle (a b c d : Q) : 0 <= a <= b -> 0 <= c <= d -> a * c <= b * d. Admitted.
+  Hint Resolve Qmult_pos Qdiv_pos (* Qplus_pos *) Qplus_pos_l Qplus_pos_r Qabs_pos' Qplus_pos' pos_pos' eps_split : qarith.
+
+  Program Definition Radd a b := Rdef (fun n => approx a n + approx b n) _.
   (*Program Definition Radd a b := match a, b with Rcauchy u Hu, Rcauchy v Hv =>
     Rcauchy (fun n => (u n + v n)%Z) _
   end.*)
@@ -55,125 +93,108 @@ Module Rrealize : Raxiom.CReals.
   Proof.
     destruct a as (u, Hu).
     destruct b as (v, Hv).
-    intros neps.
-    destruct (Hu (S neps)) as (Nu, HNu).
-    destruct (Hv (S neps)) as (Nv, HNv).
+    intros ε Hε. simpl approx.
+    destruct (Hu (ε / 2)) as (Nu, HNu); auto with qarith.
+    destruct (Hv (ε / 2)) as (Nv, HNv); auto with qarith.
     exists (max Nu Nv).
     intros p q Hp Hq.
-    pose proof (max_lub_l _ _ _ Hp) as Hpu;
-    pose proof (max_lub_r _ _ _ Hp) as Hpv;
-    pose proof (max_lub_l _ _ _ Hq) as Hqu;
-    pose proof (max_lub_r _ _ _ Hq) as Hqv; clear Hp Hq.
-    pose proof (HNu p q Hpu Hqu) as U.
-    pose proof (HNv p q Hpv Hqv) as V.
-    assert (HR : forall a b c d e f g, (((a + b) * c - (d + e) * f) * g = (a * c - d * f) * g + (b * c - e * f) * g)%Z)
-      by (intros; ring).
-    rewrite HR.
-    cut (forall e f a b,
-      (Zneg e <= a * 2 * f <= Zpos e ->
-      Zneg e <= b * 2 * f <= Zpos e ->
-      Zneg e <= a * f + b * f <= Zpos e)%Z).
-     intros HA; apply HA; simpl pow2 in U, V; rewrite Zpos_xO, Zmult_assoc in U, V; assumption.
-     clear.
-     intros e f a b Ha Hb.
-     rewrite <- (Z.opp_involutive (Zneg e)), Zopp_neg in *.
-     repeat rewrite <- (Zmult_comm f), Zmult_assoc in *; rewrite <- (Zmult_comm f).
-     assert (He : (0 < Zpos e)%Z) by reflexivity.
-     remember (Zpos e) as Pe.
-     remember (f * a)%Z as fa.
-     remember (f * b)%Z as fb.
-     omega.
+    assert (u p + v p - (u q + v q) == u p - u q + (v p - v q)) as -> by ring.
+    rewrite Qabs_triangle, HNu, HNv. auto 20 with qarith. all: eauto with *.
   Qed.
 
-  (* Lemma bound (a : _R) : exists N, forall n, N <= n -> Z.abs (Rseq a n) * Zpos (pow2 n). *)
-
-  Program Definition Rmul a b := Rdef (fun n => (Rseq a n * Rseq b n * Zpos (pow2 n))%Z) _.
+  Program Definition Rmul a b := Rdef (fun n => approx a n * approx b n) _.
   Next Obligation.
     destruct a as (a, Ca).
     destruct b as (b, Cb).
+    simpl approx.
     (* we need to bound |a| and |b| *)
-    destruct (Ca 0) as [na0 Hna0].
-    destruct (Cb 0) as [nb0 Hnb0].
-    pose (n0 := Nat.max na0 nb0).
-    (* a n <= a n0 + 1 *)
-    (* a' n / 2^n <= a n0/2^n0 + 1 *)
-    pose (bound := (Z.abs (a n0) + Z.abs (b n0) + Zpos (pow2 n0))%Z).
-    assert (Ba : forall n, n0 <= n -> a n * Zpow2 n <= bound * Zpos (pow2 n0)).
-    intros eps.
-    simpl.
-    specialize (Ca eps).
-    specialize (Cb eps).
-    destruct Ca as (na, Ca).
-    destruct Cb as (nb, Cb).
-    exists (max na nb).
-    intros p q Hp Hq.
-    specialize (Ca p q).
-    specialize (Cb p q).
-    (* show:
-       |a p * b p - a q * b q| <= 2^-eps
-       by trig eq:
-       |a p * (b p - b q)| <= 2^-eps-1
-       |b q * (a p - a q)| <= 2^-eps-1
-       pour ça il faut borner a p et b q
-       *)
-    
-   (* TODO *)
-  Admitted.
-  
-  Program Definition Ropp a := Rdef (fun n => - Rseq a n)%Z _.
-  Next Obligation.
-    destruct a as (u, Hu).
-    intros neps.
-    destruct (Hu neps) as (N, HN).
-    exists N; intros p q Hp Hq.
-    pose proof HN p q Hp Hq.
-    cut (forall e a a' b b' f, (Zneg e <= (a * a' - b * b') * f <= Zpos e ->
-      Zneg e <= (- a * a' - - b * b') * f <= Zpos e)%Z).
-     intros HA; apply HA; auto.
-     
-     clear.
-     intros e a a' b b' f Hab.
-     rewrite Zmult_minus_distr_r in *.
-     repeat rewrite <- Zopp_mult_distr_l in *.
-     rewrite <- (Z.opp_involutive (Zneg e)), Zopp_neg in *.
-     assert (He : (0 < Zpos e)%Z) by reflexivity.
-     remember (Zpos e) as Pe.
-     remember (a * a' * f)%Z as fa.
-     remember (b * b' * f)%Z as fb.
-     omega.
+    destruct (Ca 1) as [na0 Hna0]. qelim. lia.
+    destruct (Cb 1) as [nb0 Hnb0]. qelim. lia.
+    pose (n0 := max na0 nb0).
+    pose (bound := Qmax (1 + Qabs (a n0)) (1 + Qabs (b n0))).
+    assert (Hbound : 0 < bound) by (apply Qmax_pos_l, Qplus_pos_l; eauto 10 with qarith).
+    (* assert (Hbound : 0 < bound) by (apply Qplus_pos_r; try apply Qplus_pos'; eauto 10 with qarith). *)
+    assert (Ba : forall n, le n0 n -> Qabs (a n) <= bound).
+    { intros n Hn. assert (a n == (a n - a n0) + a n0) as -> by ring.
+      rewrite Qabs_triangle. unfold bound. rewrite <-Q.le_max_l. apply Qplus_Qle.
+      apply Hna0. transitivity n0. all: unfold n0; auto 10 with *. }
+    assert (Bb : forall n, le n0 n -> Qabs (b n) <= bound).
+    { intros n Hn. assert (b n == (b n - b n0) + b n0) as -> by ring.
+      rewrite Qabs_triangle. unfold bound. rewrite <-Q.le_max_r. apply Qplus_Qle.
+      apply Hnb0. transitivity n0. all: unfold n0; auto 10 with *. }
+    intros ε Hε.
+    destruct (Ca (ε / 2 / bound)) as [na1 Hna1]. auto 20 with qarith.
+    destruct (Cb (ε / 2 / bound)) as [nb1 Hnb1]. auto 20 with qarith.
+    exists (max n0 (max na1 nb1)). intros p q Hp Hq.
+    assert (a p * b p - a q * b q == a p * (b p - b q) + b q * (a p - a q)) as -> by ring.
+    rewrite Qabs_triangle.
+    assert (ε == bound * (ε / 2 / bound) + bound * (ε / 2 / bound)) as -> by (field; auto with *).
+    rewrite 2Qabs_Qmult.
+    apply Qplus_Qle.
+    - apply Qmult_Qle.
+      + split; auto with *. apply Ba. lia.
+      + split; auto with *. apply Hnb1; lia.
+    - apply Qmult_Qle.
+      + split; auto with *. apply Bb. lia.
+      + split; auto with *. apply Hna1; lia.
   Qed.
-  
+
+  Program Definition Ropp a := Rdef (fun n => - approx a n) _.
+  Next Obligation.
+    destruct a as (a, Ca).
+    intros ε Hε.
+    simpl approx.
+    destruct (Ca ε Hε) as (N, HN).
+    exists N; intros p q Hp Hq.
+    rewrite <-(HN p q Hp Hq).
+    rewrite <-Qabs_opp at 1.
+    ring_simplify (- (- a p - - a q)).
+    reflexivity.
+  Qed.
+
   Definition Rsub a b := Radd a (Ropp b).
-  
+
+  Program Definition Rabs (r : R) := Rdef (
+
+  Lemma Req_spec (a b : R) : Req a b <-> forall ε, ε > 0 -> Rabs (a - b) <= ε.
+  Proof.
+    ?
+  Qed.
+
   (*Inductive _Rlt : R -> R -> Type :=
     | Rlt_c : forall (neps : nat) (N : nat) u (Hu : Zseq_Cauchy u) v (Hv : Zseq_Cauchy v),
         (forall n, le N n -> u n * Zpos (pow2 neps) + 1 < v n * Zpos (pow2 neps))%Z ->
         _Rlt (Rcauchy u Hu) (Rcauchy v Hv).*)
-  
+
   (*Definition Rlt (a b : R) : Type := match a, b with
     | Rcauchy u Hu, Rcauchy v Hv => sigT (fun neps => sigT (fun N =>
         forall n, le N n -> u n * Zpos (pow2 neps) + Zpos (pow2 n) < v n * Zpos (pow2 neps))%Z)
   end.*)
-  
-  Definition Rlt (a b : R) : Type := sigT (fun neps => sigT (fun N =>
-    forall n, le N n -> 
-      Rseq a n * Zpos (pow2 neps) + Zpos (pow2 n) <=
-      Rseq b n * Zpos (pow2 neps))%Z).
-  
-  Definition Rgt (r1 r2 : R) := Rlt r2 r1.
+
+  Definition Rpos (a : R) : Prop := exists δ, δ > 0 /\ exists N, forall n, le N n -> δ <= approx a n.
+  Definition Rlt (a b : R) : Prop := Rpos (Rsub b a).
+  Definition Rgt (a b : R) : Prop := Rpos (Rsub a b).
   Definition Rdiscr (r1 r2 : R) := sum (Rlt r1 r2) (Rlt r2 r1).
   Definition Req (r1 r2 : R) := Rdiscr r1 r2 -> False.
   Definition Rle (r1 r2 : R) := sumor (Rlt r1 r2) (Req r1 r2).
   Definition Rge (r1 r2 : R) := Rle r2 r1.
-  
-  Program Definition Rinv (x : R) (_ : Rdiscr x R0) :=
-    Rdef (fun n => Z.div (Zpos (pow2 n)) (Rseq x n))%Z _.
+
+  Lemma Ropp_R0 : Req (Ropp R0) R0.
+  Proof.
+    
+  Qed.
+
+  Program Definition Rinv (x : R) (Hx : Rdiscr x R0) :=
+    Rdef (fun n => / approx x n) _.
   Next Obligation.
-    set (P2 := fun n => Zpos (pow2 n)).
-    destruct x as (u, Cu).
-    destruct H as [ xneg | xpos ].
-      (* Cas : x < 0 *)
-      admit.
+    unfold Rdiscr in *.
+    unfold Rlt in *.
+    
+    destruct x as (u, Cu). simpl approx.
+    intros ε Hε.
+    destruct Hx as [ Hx | Hx ].
+    - admit.
+    - destruct Hx as (δ & Hδ & N & Hx).
       
       (* Cas : x > 0 *)
       destruct xpos as (en, (Nen, Hen)).

@@ -1,179 +1,59 @@
 Require Raxiom.
-Require Import ZArith.
-Require Import Max.
-
-(* (Tentative of) instantiation of real numbers without using Coq's stdlib
-note that this work may already completed at:
-https://coq.inria.fr/distrib/current/stdlib/Coq.Reals.ConstructiveCauchyReals.html
-but there may be subtle differences
-*)
-
-(* We use sequences of the form (z_n/2^n) so the property "Zseq_Cauchy" is quite verbose *)
-
-Definition pow2 : nat -> positive := fix f n := match n with O => xH |  S n' => xO (f n') end.
-
-Definition Zseq_Cauchy (Un : nat -> Z) : Type := forall neps : nat,
-  {N : nat & forall p q, (N <= p)%nat -> (N <= q)%nat -> 
-    (
-      Zneg (pow2 p * pow2 q)  <=
-      ((Un p) * Zpos (pow2 q) - (Un q) * Zpos (pow2 p)) * Zpos (pow2 neps) <=
-      Zpos (pow2 p * pow2 q)
-    )%Z
-  }.
+Require Import Coq.Reals.ConstructiveCauchyReals.
 
 Module Rrealize : Raxiom.CReals.
-  (*Inductive _R : Type := Rcauchy : forall Un, Zseq_Cauchy Un -> _R.*)
-  
-  Record _R : Type := Rdef {
-    Rseq : nat -> Z;
-    Rcauchy : Zseq_Cauchy Rseq
-  }.
-  
-  Definition R := _R.
-  
-  Program Definition Const (c : Z) := Rdef (fun n => (c * Zpos (pow2 n))%Z) _.
-  Next Obligation.
+
+  Definition R := CReal.
+
+  Definition R0 := 0%CReal.
+  Definition R1 := 1%CReal.
+  Definition Radd a b := (a + b)%CReal.
+  Definition Rsub a b := (a - b)%CReal.
+  Definition Rmul a b := (a * b)%CReal.
+  Definition Ropp a := (-a)%CReal.
+  Fail Definition Rinv a pr := CReal_inv. (* not found yet? *)
+
+  Program Definition Rabs (r : R) := Rdef (
+
+  Lemma Req_spec (a b : R) : Req a b <-> forall ε, ε > 0 -> Rabs (a - b) <= ε.
   Proof.
-    intros neps.
-    exists O; intros p q _ _.
-    repeat rewrite <- Zmult_assoc.
-    rewrite (Zmult_comm (Zpos (pow2 p))).
-    rewrite Zminus_diag, Zmult_0_l.
-    split.
-     apply Zlt_le_weak, Zlt_neg_0.
-     apply Zle_0_pos.
-  Qed.
-  
-  Definition R0 := Const Z0.
-  Definition R1 := Const 1%Z.
-  
-  Program Definition Radd a b := Rdef (fun n => (Rseq a n + Rseq b n)%Z) _.
-  (*Program Definition Radd a b := match a, b with Rcauchy u Hu, Rcauchy v Hv =>
-    Rcauchy (fun n => (u n + v n)%Z) _
-  end.*)
-  Next Obligation.
-  Proof.
-    destruct a as (u, Hu).
-    destruct b as (v, Hv).
-    intros neps.
-    destruct (Hu (S neps)) as (Nu, HNu).
-    destruct (Hv (S neps)) as (Nv, HNv).
-    exists (max Nu Nv).
-    intros p q Hp Hq.
-    pose proof (max_lub_l _ _ _ Hp) as Hpu;
-    pose proof (max_lub_r _ _ _ Hp) as Hpv;
-    pose proof (max_lub_l _ _ _ Hq) as Hqu;
-    pose proof (max_lub_r _ _ _ Hq) as Hqv; clear Hp Hq.
-    pose proof (HNu p q Hpu Hqu) as U.
-    pose proof (HNv p q Hpv Hqv) as V.
-    assert (HR : forall a b c d e f g, (((a + b) * c - (d + e) * f) * g = (a * c - d * f) * g + (b * c - e * f) * g)%Z)
-      by (intros; ring).
-    rewrite HR.
-    cut (forall e f a b,
-      (Zneg e <= a * 2 * f <= Zpos e ->
-      Zneg e <= b * 2 * f <= Zpos e ->
-      Zneg e <= a * f + b * f <= Zpos e)%Z).
-     intros HA; apply HA; simpl pow2 in U, V; rewrite Zpos_xO, Zmult_assoc in U, V; assumption.
-     clear.
-     intros e f a b Ha Hb.
-     rewrite <- (Z.opp_involutive (Zneg e)), Zopp_neg in *.
-     repeat rewrite <- (Zmult_comm f), Zmult_assoc in *; rewrite <- (Zmult_comm f).
-     assert (He : (0 < Zpos e)%Z) by reflexivity.
-     remember (Zpos e) as Pe.
-     remember (f * a)%Z as fa.
-     remember (f * b)%Z as fb.
-     omega.
+    ?
   Qed.
 
-  (* Lemma bound (a : _R) : exists N, forall n, N <= n -> Z.abs (Rseq a n) * Zpos (pow2 n). *)
-
-  Program Definition Rmul a b := Rdef (fun n => (Rseq a n * Rseq b n * Zpos (pow2 n))%Z) _.
-  Next Obligation.
-    destruct a as (a, Ca).
-    destruct b as (b, Cb).
-    (* we need to bound |a| and |b| *)
-    destruct (Ca 0) as [na0 Hna0].
-    destruct (Cb 0) as [nb0 Hnb0].
-    pose (n0 := Nat.max na0 nb0).
-    (* a n <= a n0 + 1 *)
-    (* a' n / 2^n <= a n0/2^n0 + 1 *)
-    pose (bound := (Z.abs (a n0) + Z.abs (b n0) + Zpos (pow2 n0))%Z).
-    assert (Ba : forall n, n0 <= n -> a n * Zpow2 n <= bound * Zpos (pow2 n0)).
-    intros eps.
-    simpl.
-    specialize (Ca eps).
-    specialize (Cb eps).
-    destruct Ca as (na, Ca).
-    destruct Cb as (nb, Cb).
-    exists (max na nb).
-    intros p q Hp Hq.
-    specialize (Ca p q).
-    specialize (Cb p q).
-    (* show:
-       |a p * b p - a q * b q| <= 2^-eps
-       by trig eq:
-       |a p * (b p - b q)| <= 2^-eps-1
-       |b q * (a p - a q)| <= 2^-eps-1
-       pour ça il faut borner a p et b q
-       *)
-    
-   (* TODO *)
-  Admitted.
-  
-  Program Definition Ropp a := Rdef (fun n => - Rseq a n)%Z _.
-  Next Obligation.
-    destruct a as (u, Hu).
-    intros neps.
-    destruct (Hu neps) as (N, HN).
-    exists N; intros p q Hp Hq.
-    pose proof HN p q Hp Hq.
-    cut (forall e a a' b b' f, (Zneg e <= (a * a' - b * b') * f <= Zpos e ->
-      Zneg e <= (- a * a' - - b * b') * f <= Zpos e)%Z).
-     intros HA; apply HA; auto.
-     
-     clear.
-     intros e a a' b b' f Hab.
-     rewrite Zmult_minus_distr_r in *.
-     repeat rewrite <- Zopp_mult_distr_l in *.
-     rewrite <- (Z.opp_involutive (Zneg e)), Zopp_neg in *.
-     assert (He : (0 < Zpos e)%Z) by reflexivity.
-     remember (Zpos e) as Pe.
-     remember (a * a' * f)%Z as fa.
-     remember (b * b' * f)%Z as fb.
-     omega.
-  Qed.
-  
-  Definition Rsub a b := Radd a (Ropp b).
-  
   (*Inductive _Rlt : R -> R -> Type :=
     | Rlt_c : forall (neps : nat) (N : nat) u (Hu : Zseq_Cauchy u) v (Hv : Zseq_Cauchy v),
         (forall n, le N n -> u n * Zpos (pow2 neps) + 1 < v n * Zpos (pow2 neps))%Z ->
         _Rlt (Rcauchy u Hu) (Rcauchy v Hv).*)
-  
+
   (*Definition Rlt (a b : R) : Type := match a, b with
     | Rcauchy u Hu, Rcauchy v Hv => sigT (fun neps => sigT (fun N =>
         forall n, le N n -> u n * Zpos (pow2 neps) + Zpos (pow2 n) < v n * Zpos (pow2 neps))%Z)
   end.*)
-  
-  Definition Rlt (a b : R) : Type := sigT (fun neps => sigT (fun N =>
-    forall n, le N n -> 
-      Rseq a n * Zpos (pow2 neps) + Zpos (pow2 n) <=
-      Rseq b n * Zpos (pow2 neps))%Z).
-  
-  Definition Rgt (r1 r2 : R) := Rlt r2 r1.
+
+  Definition Rpos (a : R) : Prop := exists δ, δ > 0 /\ exists N, forall n, le N n -> δ <= approx a n.
+  Definition Rlt (a b : R) : Prop := Rpos (Rsub b a).
+  Definition Rgt (a b : R) : Prop := Rpos (Rsub a b).
   Definition Rdiscr (r1 r2 : R) := sum (Rlt r1 r2) (Rlt r2 r1).
   Definition Req (r1 r2 : R) := Rdiscr r1 r2 -> False.
   Definition Rle (r1 r2 : R) := sumor (Rlt r1 r2) (Req r1 r2).
   Definition Rge (r1 r2 : R) := Rle r2 r1.
-  
-  Program Definition Rinv (x : R) (_ : Rdiscr x R0) :=
-    Rdef (fun n => Z.div (Zpos (pow2 n)) (Rseq x n))%Z _.
+
+  Lemma Ropp_R0 : Req (Ropp R0) R0.
+  Proof.
+    
+  Qed.
+
+  Program Definition Rinv (x : R) (Hx : Rdiscr x R0) :=
+    Rdef (fun n => / approx x n) _.
   Next Obligation.
-    set (P2 := fun n => Zpos (pow2 n)).
-    destruct x as (u, Cu).
-    destruct H as [ xneg | xpos ].
-      (* Cas : x < 0 *)
-      admit.
+    unfold Rdiscr in *.
+    unfold Rlt in *.
+    
+    destruct x as (u, Cu). simpl approx.
+    intros ε Hε.
+    destruct Hx as [ Hx | Hx ].
+    - admit.
+    - destruct Hx as (δ & Hδ & N & Hx).
       
       (* Cas : x > 0 *)
       destruct xpos as (en, (Nen, Hen)).
