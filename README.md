@@ -4,6 +4,11 @@
 mathematical theorems and tools proved inside the Coq proof assistant.
 Results range mostly from arithmetic to real and complex analysis.
 
+[Coqtail is now being developed and maintained at
+coq-community](https://github.com/coq-community/coqtail-math), where
+contributions are welcome! The present repository only exists for
+related, older, materials, please do not use it for development.
+
 ## Requirements
 
 `master` is developed with Coq 8.11.0, which is its only requirement,
@@ -16,11 +21,13 @@ of Coq, which should cover most versions from 8.5 to 8.11.
 - tag `v8.9.1` for Coq 8.9.1
 - tag `v8.10.2` for Coq 8.10.2
 - tag `v8.11.0` for Coq 8.11.0
+- see the [new repository](https://github.com/coq-community/coqtail-math) for Coq 8.12+
 
 Use e.g. `git checkout v8.10.2` if you want to use Coq 8.10.2. Note
 that those tags are for backward compatibility only, there is no
-intention of maintaining them as branches: use master instead for
-development.
+intention of maintaining them as branches. Go to the
+[new repository](https://github.com/coq-community/coqtail-math)
+instead for development.
 
 ## Compiling
 
